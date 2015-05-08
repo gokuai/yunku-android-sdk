@@ -8,16 +8,66 @@
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <ListView
-        android:id="@+id/list"
+    <TextView
+        android:id="@+id/folder_path_title_tv"
+        style="@style/black_medium_text"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/my_toolbar" />
+        android:layout_height="24dp"
+        android:layout_below="@+id/my_toolbar"
+        android:background="@color/color_d"
+        android:gravity="center" />
+
+    <LinearLayout
+        android:id="@+id/list_ll"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_below="@+id/folder_path_title_tv"
+
+        android:orientation="vertical">
+
+        <ListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
+        <LinearLayout
+            android:id="@+id/empty_ll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_f"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <include layout="@layout/filelist_header" />
+
+            <TextView
+                android:id="@+id/empty"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/file_list_empty"
+                android:textColor="@color/color_c"
+                android:textSize="@dimen/text_big" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/folder_ok_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/list_ll"
+        android:background="@drawable/finish_btn_bg"
+        android:textColor="@color/color_f"
+        android:text="@string/ok" />
 
 </RelativeLayout>

@@ -24,4 +24,5 @@
     <dimen name="text_tiny">12sp</dimen>
     <dimen name="text_big">19sp</dimen>
     <dimen name="text_large">24sp</dimen>
+    <dimen name="divider_height">1px</dimen>
 </resources>

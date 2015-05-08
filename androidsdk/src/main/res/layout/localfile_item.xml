@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/file_item_selected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:focusable="false"
+        android:paddingLeft="@dimen/thick_padding"
+        android:src="@drawable/checkbox_normal" />
+
+    <ImageView
+        android:id="@+id/file_item_pic"
+        android:layout_width="@dimen/list_item_image_size"
+        android:layout_height="@dimen/list_item_image_size"
+        android:layout_margin="@dimen/thick_margin"
+        android:layout_toRightOf="@+id/file_item_selected"
+        android:src="@drawable/ic_back" />
+
+    <!--<ImageView-->
+    <!--android:id="@+id/file_item_selected"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_alignBottom="@+id/file_item_pic"-->
+    <!--android:layout_alignRight="@id/file_item_pic"-->
+    <!--android:src="@drawable/ic_local"-->
+    <!--android:visibility="gone" />-->
+
+    <TextView
+        android:id="@+id/file_item_name"
+        style="@style/black_medium_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="8dp"
+        android:layout_toRightOf="@id/file_item_pic"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="@string/tip_file_list_header" />
+
+    <TextView
+        android:id="@+id/file_item_size"
+        style="@style/gray_small_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/file_item_pic"
+        android:layout_toRightOf="@id/file_item_pic"
+        android:paddingBottom="6dp"
+        android:singleLine="true" />
+
+    <TextView
+        android:id="@+id/file_item_time"
+        style="@style/gray_small_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/file_item_size"
+        android:layout_alignParentRight="true"
+        android:paddingBottom="6dp"
+        android:paddingRight="8dp"
+        android:singleLine="true" />
+
+    <View
+        android:id="@+id/item_divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_below="@+id/file_item_pic"
+        android:background="@color/divider_color" />
+
+</RelativeLayout>

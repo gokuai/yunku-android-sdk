@@ -2,13 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:gokuai="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/item_move"
-        android:title="@string/move"
-        android:visible="true"
-        gokuai:showAsAction="ifRoom|withText" />
-    <item
-        android:id="@+id/item_copy"
-        android:title="@string/copy"
+        android:id="@+id/item_rename"
+        android:title="@string/rename"
         android:visible="true"
         gokuai:showAsAction="ifRoom|withText" />
     <item

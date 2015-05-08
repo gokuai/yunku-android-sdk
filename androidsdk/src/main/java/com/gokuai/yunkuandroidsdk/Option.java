@@ -6,7 +6,8 @@ package com.gokuai.yunkuandroidsdk;
 public class Option {
 
     public boolean canUpload;
-    public boolean canCopy;
-    public boolean canMove;
+//    public boolean canCopy;
+//    public boolean canMove;
     public boolean canDel;
+    public boolean canRename;
 }

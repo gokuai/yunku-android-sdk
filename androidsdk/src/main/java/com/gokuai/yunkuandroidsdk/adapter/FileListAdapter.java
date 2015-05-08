@@ -1,6 +1,7 @@
 package com.gokuai.yunkuandroidsdk.adapter;
 
 import android.content.Context;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,8 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
     private FileItemClickListener mListener;
     private int mSortType;
     private boolean isOperationEnable;
+    private String mHighlightItemStr;
+    private Handler mHandler;
 
     @Override
     public void onClick(View v) {
@@ -41,6 +44,10 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
             int position = (int) v.getTag();
             mListener.onItemClick(this, position, v);
         }
+    }
+
+    public void setHighlightItemString(String highlightItemString) {
+        mHighlightItemStr = highlightItemString;
     }
 
     public interface FileItemClickListener {
@@ -55,10 +62,11 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
         mImageFetcher = imageFetcher;
         mImageFetcher.setLoadingImage(R.drawable.ic_img);
         mListener = listener;
+        mHandler=new Handler();
 
         Option option = ((YKMainView) listener).getOption();
         if (option != null) {
-            isOperationEnable = option.canCopy || option.canDel || option.canMove;
+            isOperationEnable = option.canDel || option.canRename;
         }
 
         mSortType = Config.getListSortType(context);
@@ -142,6 +150,13 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
             }
             holder.filesize.setText(Util.formatFileSize(mContext, data.getFilesize()) + ",");
         }
+        if (mHighlightItemStr != null && mHighlightItemStr.equals(data.getFullpath())) {
+            startAnimation(holder.itemll);
+            mHighlightItemStr = null;
+        } else {
+            convertView.setBackgroundResource(R.drawable.listview_selector);
+        }
+
         return convertView;
     }
 
@@ -259,6 +274,18 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
         private Button dropdownbtn;
         private View itemll;
     }
+
+    private void startAnimation(final View counterView) {
+        counterView.setBackgroundColor(counterView.getResources().getColor(R.color.list_selected));
+        mHandler.postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                counterView.setBackgroundResource(R.drawable.listview_selector);
+            }
+        }, 500);
+    }
+
 
 
 }

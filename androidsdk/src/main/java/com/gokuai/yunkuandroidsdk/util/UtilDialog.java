@@ -1,19 +1,20 @@
 package com.gokuai.yunkuandroidsdk.util;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
 import com.gokuai.yunkuandroidsdk.GKApplication;
 import com.gokuai.yunkuandroidsdk.R;
+import com.gokuai.yunkuandroidsdk.callback.CallBack;
 
 public class UtilDialog {
 
@@ -134,4 +135,15 @@ public class UtilDialog {
     }
 
 
+    public static void showDialogSameFileExist(Context context, final CallBack callBack) {
+        new AlertDialog.Builder(context)
+                .setTitle(R.string.tip).setMessage(context.getString(R.string.tip_replace_for_same_file))
+                .setPositiveButton(R.string.replace, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        callBack.call();
+                    }
+                }).setNegativeButton(R.string.cancel, null).setCancelable(false).create().show();
+
+    }
 }

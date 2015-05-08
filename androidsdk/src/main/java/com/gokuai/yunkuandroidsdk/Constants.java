@@ -21,6 +21,9 @@ public class Constants {
     public static final String GKNOTE_URI = "gknote_uri";
     public static final String GKNOTE_EDIT = "gknote_edit";
 
+    public static final String FILESELECT_TYPE = "fileselect_type";
+    public static final int FILESELECT_TYPE_COPY = 1;
+    public static final int FILESELECT_TYPE_MOVE = 0;
 
-    public static final int ACTION_ID_ADD_FILE = 0;
+
 }

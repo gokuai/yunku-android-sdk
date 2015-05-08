@@ -25,8 +25,7 @@ public class MainActivity extends BaseActivity implements HookCallback {
         YKMainView view = new YKMainView(this);
         Option option = new Option();
         option.canDel = true;
-        option.canMove = true;
-        option.canCopy = true;
+        option.canRename = true;
         option.canUpload = true;
         view.setOption(option);
         setContentView(view);

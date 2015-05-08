@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/folder_path_title_tv" />
+
+    <LinearLayout
+        android:id="@+id/empty_ll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/color_f"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/file_list_empty"
+            android:textColor="@color/color_c"
+            android:textSize="@dimen/text_big" />
+    </LinearLayout>
+
+</merge>

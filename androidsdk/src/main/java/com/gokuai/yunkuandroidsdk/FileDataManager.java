@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
 
-import com.gokuai.yunkuandroidsdk.callback.ParamsCallBack;
 import com.gokuai.yunkuandroidsdk.data.BaseData;
 import com.gokuai.yunkuandroidsdk.data.FileData;
 import com.gokuai.yunkuandroidsdk.data.FileListData;
@@ -17,6 +16,7 @@ import com.yunkuent.sdk.upload.UploadCallBack;
 import org.apache.http.HttpStatus;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by Brandon on 15/4/10.
@@ -29,6 +29,7 @@ public class FileDataManager {
     public static final int ACTION_ID_DELETE = 2;
     public static final int ACTION_ID_MOVE = 3;
     public static final int ACTION_ID_COPY = 4;
+    public static final int ACTION_ID_RENAME = 5;
 
 
     private String mRootPath = Config.ORG_ROOT_PATH;
@@ -72,29 +73,79 @@ public class FileDataManager {
         mEntFileManager = new EntFileManager(mOrgClientId, mOrgClientSecret);
     }
 
-    public void rename(String fullPath, String newName, ParamsCallBack callBack) {
-        //todo
-    }
+    public AsyncTask rename(final String fullPath, final String newName, final DataListener listener) {
+        if (!Util.isNetworkAvailableEx()) {
+            listener.onNetUnable();
+            return null;
+        }
 
-    public void copy(String fullPath, String targetPath, ParamsCallBack callBack) {
-        //todo
-    }
 
-    public void move(final String fullPaths, final String targetPath, final ParamsCallBack callBack) {
-        new AsyncTask<Void, Void, Object>() {
+        if (isHookRegisted() && !mCallback.hookInvoke(HookCallback.HookType.HOOK_TYPE_MOVE, fullPath)) {
+            return null;
+        }
+
+
+        return new AsyncTask<Void, Void, Object>() {
 
             @Override
             protected Object doInBackground(Void... params) {
-                return mEntFileManager.move((int) Util.getUnixDateline(), fullPaths, targetPath, "");
+                return mEntFileManager.move((int) Util.getUnixDateline(), fullPath, Util.getParentPath(fullPath) + "/" + newName, "Brandon");
             }
 
             @Override
             protected void onPostExecute(Object o) {
                 super.onPostExecute(o);
-                if (isHookRegisted() && mCallback.hookInvoke(HookCallback.HookType.HOOK_TYPE_MOVE, fullPaths, targetPath)) {
-                    return;
+                BaseData baseData = BaseData.create(o.toString());
+                if (baseData != null) {
+                    if (baseData.getCode() == HttpStatus.SC_OK) {
+                        listener.onReceiveHttpResponse(ACTION_ID_RENAME);
+                    } else {
+                        listener.onError(baseData.getErrorMsg());
+                    }
+                } else {
+                    listener.onError(GKApplication.getInstance().getString(R.string.tip_connect_server_failed));
                 }
-                callBack.callBack(o);
+            }
+        }.execute();
+    }
+
+    public AsyncTask copy(String fullPath, String targetPath, DataListener callBack) {
+        //todo
+        return null;
+    }
+
+    public AsyncTask move(final String fullPath, final String targetPath, final DataListener listener) {
+        if (!Util.isNetworkAvailableEx()) {
+            listener.onNetUnable();
+            return null;
+        }
+
+
+        if (isHookRegisted() && !mCallback.hookInvoke(HookCallback.HookType.HOOK_TYPE_MOVE, fullPath)) {
+            return null;
+        }
+
+
+        return new AsyncTask<Void, Void, Object>() {
+
+            @Override
+            protected Object doInBackground(Void... params) {
+                return mEntFileManager.move((int) Util.getUnixDateline(), fullPath, targetPath, "");
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                BaseData baseData = BaseData.create(o.toString());
+                if (baseData != null) {
+                    if (baseData.getCode() == HttpStatus.SC_OK) {
+                        listener.onReceiveHttpResponse(ACTION_ID_MOVE);
+                    } else {
+                        listener.onError(baseData.getErrorMsg());
+                    }
+                } else {
+                    listener.onError(GKApplication.getInstance().getString(R.string.tip_connect_server_failed));
+                }
             }
         }.execute();
 
@@ -223,57 +274,54 @@ public class FileDataManager {
      *
      * @param fullPath
      * @param listener
+     * @param dir
      */
-    public void getFileList(final String fullPath, final FileDataListener listener) {
-        mFileTask = new AsyncTask<Void, Object, Object>() {
+    public void getFileList(final String fullPath, final FileDataListener listener, final int dir) {
+
+        if (isHookRegisted() && !mCallback.hookInvoke(HookCallback.HookType.HOOK_TYPE_FILE_LIST, fullPath)) {
+            return;
+        }
+
+        mFileTask = new Thread() {
 
             @Override
-            protected Object doInBackground(Void... params) {
-                publishProgress(Constants.FILELIST_ON_CACHE_DATA, getFilesFromPath(fullPath));
+            public void run() {
+                ArrayList<FileData> cacheList = getFilesFromPath(fullPath);
+                if (dir == FileData.DIRIS) {
+                    filterFiles(cacheList);
+                }
+                listener.onReceiveCacheData(cacheList);
+
                 if (!Util.isNetworkAvailableEx()) {
-                    publishProgress(Constants.FILELIST_ON_NET_UNENABLE);
+                    listener.onNetUnable();
                 } else {
                     String result = mEntFileManager.getFileList((int) Util.getUnixDateline(), 0, fullPath);
                     FileListData fileListData = FileListData.create(result);
                     if (fileListData.getCode() == HttpStatus.SC_OK) {
-                        publishProgress(Constants.FILELIST_ON_HTTP_DATA, fileListData.getList(), fullPath);
-                        mMap.put(fullPath, fileListData.getList());
+                        ArrayList<FileData> httpList = (ArrayList<FileData>)fileListData.getList().clone();
+
+                        if (dir == FileData.DIRIS) {
+                            filterFiles(httpList);
+                        }
+
+                        listener.onReceiveHttpData(fileListData.getList(), fullPath);
+                        mFilesMap.put(fullPath, fileListData.getList());
+
                     } else {
-                        publishProgress(Constants.FILELIST_ON_ERROR, fileListData.getErrorMsg());
+                        listener.onError(fileListData.getErrorMsg());
                     }
                 }
-                return null;
             }
+        };
 
-            @Override
-            protected void onProgressUpdate(Object... values) {
-                super.onProgressUpdate(values);
-                switch ((int) values[0]) {
-                    case Constants.FILELIST_ON_CACHE_DATA:
-                        listener.onReceiveCacheData((ArrayList<FileData>) values[1]);
-                        break;
-                    case Constants.FILELIST_ON_HTTP_DATA:
-                        listener.onReceiveHttpData((ArrayList<FileData>) values[1], values[2].toString());
-                        break;
-                    case Constants.FILELIST_ON_ERROR:
-                        listener.onError(values[1].toString());
-                        break;
-                    case Constants.FILELIST_ON_NET_UNENABLE:
-                        listener.onNetUnable();
-                        break;
-
-                }
-            }
-
-        }.execute();
-
+        mFileTask.start();
     }
 
-    private AsyncTask mFileTask;
+    private Thread mFileTask;
 
     public void cancelFileTask() {
         if (mFileTask != null) {
-            mFileTask.cancel(true);
+            mFileTask.interrupt();
             mFileTask = null;
         }
     }
@@ -293,12 +341,22 @@ public class FileDataManager {
         return new ArrayList<>();
     }
 
+    private void filterFiles(ArrayList<FileData> list) {
+        Iterator<FileData> iterator = list.iterator();
+        while (iterator.hasNext()) {
+            FileData fileData = iterator.next();
+            if (fileData.getDir() != FileData.DIRIS && !fileData.isHeader()) {
+                iterator.remove();
+            }
+        }
+    }
+
 
     private static final int CACHE_CAPACITY = 64;
-    private final LruCache<String, ArrayList<FileData>> mMap = new LruCache<>(CACHE_CAPACITY);
+    private final LruCache<String, ArrayList<FileData>> mFilesMap = new LruCache<>(CACHE_CAPACITY);
 
     private ArrayList<FileData> getFilesFromMemory(String fullPath) {
-        return mMap.get(fullPath);
+        return mFilesMap.get(fullPath);
     }
 
     private boolean isRootPath(String fullPath) {

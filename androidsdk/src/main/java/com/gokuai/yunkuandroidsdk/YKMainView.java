@@ -16,7 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,6 +24,7 @@ import com.gokuai.yunkuandroidsdk.adapter.FileListAdapter;
 import com.gokuai.yunkuandroidsdk.data.FileData;
 import com.gokuai.yunkuandroidsdk.dialog.FolderSelectDialog;
 import com.gokuai.yunkuandroidsdk.dialog.NewFolderDialogManager;
+import com.gokuai.yunkuandroidsdk.dialog.RenameDialogManager;
 import com.gokuai.yunkuandroidsdk.imageutils.ImageFetcher;
 import com.gokuai.yunkuandroidsdk.imageutils.Utils;
 import com.gokuai.yunkuandroidsdk.util.Util;
@@ -50,7 +50,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
     private Option mOption;
 
     private final ArrayList<Integer> mPositionPopStack = new ArrayList<>();
-    private String redirectPath;
+    private String mRedirectPath;
 
     public YKMainView(Context context) {
         super(context);
@@ -68,8 +68,8 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
 
     }
 
-    private boolean checkIfExtendBaseActivity(){
-        if(mContext instanceof BaseActivity){
+    private boolean checkIfExtendBaseActivity() {
+        if (mContext instanceof BaseActivity) {
             return true;
         }
         DebugFlag.log("need extend BaseActivity in this Activity");
@@ -79,6 +79,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
 
     private void setUpView(Context context) {
         mContext = context;
+        checkIfExtendBaseActivity();
 
         inflate(context, R.layout.widget_main_view, this);
         mLV_FileList = (ListView) findViewById(android.R.id.list);
@@ -146,6 +147,10 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
             PopupMenu popupMenu = new PopupMenu(mContext, view);
             popupMenu.setOnMenuItemClickListener(this);
             popupMenu.inflate(R.menu.file_operation_menu);
+            if (mOption != null) {
+                popupMenu.getMenu().getItem(0).setVisible(mOption.canRename);
+                popupMenu.getMenu().getItem(1).setVisible(mOption.canDel);
+            }
             popupMenu.show();
             mShowPopMenuPosition = position;
         }
@@ -164,6 +169,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
         String parentPath = Util.getParentPath(fullPath);
         parentPath += (TextUtils.isEmpty(parentPath) || parentPath.endsWith("/")) ? "" : "/";
 
+        setRedirectPath(fullPath);
         openFolder(parentPath);
     }
 
@@ -178,7 +184,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
         //set return view
         mReturnViewInEmpty.setVisibility(isRoot() ? View.GONE : View.VISIBLE);
 
-        FileDataManager.getInstance().getFileList(fullPath, this);
+        FileDataManager.getInstance().getFileList(fullPath, this, 0);
 
     }
 
@@ -226,8 +232,13 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
     }
 
     @Override
-    public void onReceiveCacheData(ArrayList<FileData> list) {
-        bindListView(list);
+    public void onReceiveCacheData(final ArrayList<FileData> list) {
+        ((AppCompatActivity) mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                bindListView(list);
+            }
+        });
     }
 
     private void refresh() {
@@ -245,13 +256,44 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
 
 
     @Override
-    public void onReceiveHttpData(ArrayList<FileData> list, String parentPath) {
-        if (parentPath.equals(mPath)) {
-            bindListView(list);
-            mTV_CloudEmpty.setText(R.string.file_list_empty);
-        }
-        onRefreshComplete();
+    public void onReceiveHttpData(final ArrayList<FileData> list, final String parentPath) {
+        ((AppCompatActivity) mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (parentPath.equals(mPath)) {
+                    bindListView(list);
 
+                    if (!TextUtils.isEmpty(mRedirectPath)) {
+                        redirectAndHighLight(list);
+                    }
+                    mTV_CloudEmpty.setText(R.string.file_list_empty);
+                }
+                onRefreshComplete();
+            }
+        });
+
+
+    }
+
+    private void redirectAndHighLight(ArrayList<FileData> list) {
+        for (int i = 0; i < list.size(); i++) {
+            FileData fileData = list.get(i);
+            if (fileData.getFullpath().equals(mRedirectPath)) {
+                // 导航之后重置数据
+                setRedirectPath("");
+                if (mPositionPopStack.size() > 0) {
+                    int index = mPositionPopStack.size() - 1;
+                    int position = mPositionPopStack.get(index);
+                    mLV_FileList.setSelection(position);
+                    mPositionPopStack.remove(index);
+                } else {
+                    mLV_FileList.setSelection(i);
+                }
+                mFileListAdapter.setHighlightItemString(fileData.getFullpath());
+                break;
+            }
+
+        }
     }
 
     //绑定filelist的数据
@@ -272,29 +314,43 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
     }
 
     @Override
-    public void onReceiveHttpResponse(int actionId) {
-        UtilDialog.dismissLoadingDialog(mContext);
-        if (actionId == FileDataManager.ACTION_ID_DELETE) {
-            refresh();
-        } else if (actionId == FileDataManager.ACTION_ID_CREATE_FOLDER) {
-            refresh();
-        }
+    public void onReceiveHttpResponse(final int actionId) {
+        ((AppCompatActivity) mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                UtilDialog.dismissLoadingDialog(mContext);
+                if (actionId == FileDataManager.ACTION_ID_DELETE) {
+                    refresh();
+                }
+            }
+        });
+
 
     }
 
     @Override
-    public void onError(String errorMsg) {
-        UtilDialog.dismissLoadingDialog(mContext);
-        onRefreshComplete();
-        UtilDialog.showNormalToast(errorMsg);
+    public void onError(final String errorMsg) {
+        ((AppCompatActivity) mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                UtilDialog.dismissLoadingDialog(mContext);
+                onRefreshComplete();
+                UtilDialog.showNormalToast(errorMsg);
+            }
+        });
+
     }
 
     @Override
     public void onNetUnable() {
-        UtilDialog.dismissLoadingDialog(mContext);
-        onRefreshComplete();
-        UtilDialog.showNormalToast(R.string.network_not_available);
-
+        ((AppCompatActivity) mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                UtilDialog.dismissLoadingDialog(mContext);
+                onRefreshComplete();
+                UtilDialog.showNormalToast(R.string.network_not_available);
+            }
+        });
     }
 
     public void onCreateOptionsMenu(MenuInflater menuInflater, Menu menu) {
@@ -320,9 +376,6 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
         }
 
     }
-
-    private AsyncTask mNewFolderTask;
-    private Button mBtn_NewFolderOK;
 
     /**
      * 新建文件夹
@@ -358,25 +411,19 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
 
     }
 
-    private void copyFileAtPopPosition() {
-        Bundle args = new Bundle();
-        args.putString("title", "Dialog with Action Bar");
-        FolderSelectDialog actionbarDialog = new FolderSelectDialog();
-        actionbarDialog.setArguments(args);
-        actionbarDialog.show(((AppCompatActivity) mContext).getSupportFragmentManager(),
-                "action_bar_frag");
+    private void renameFileAtPopPosition() {
+        FileData fileData = (FileData) mFileListAdapter.getItem(mShowPopMenuPosition);
+        final String fullPath = fileData.getFullpath();
+       new RenameDialogManager(mContext).showDialog(fullPath, new RenameDialogManager.DialogActionListener() {
+           @Override
+           public void onDone(String fullPath) {
+               setRedirectPath(fullPath);
+               refresh();
+           }
+       });
 
     }
 
-    private void moveFileAtPopPosition() {
-        Bundle args = new Bundle();
-        args.putString("title", "Dialog with Action Bar");
-        FolderSelectDialog actionbarDialog = new FolderSelectDialog();
-        actionbarDialog.setArguments(args);
-        actionbarDialog.show(((AppCompatActivity) mContext).getSupportFragmentManager(),
-                "action_bar_frag");
-
-    }
 
     @Override
     public void onRefresh() {
@@ -393,10 +440,8 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
     public boolean onMenuItemClick(MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.item_delete) {
             deleteFileAtPopPosition();
-        } else if (menuItem.getItemId() == R.id.item_copy) {
-            copyFileAtPopPosition();
-        } else if (menuItem.getItemId() == R.id.item_move) {
-            moveFileAtPopPosition();
+        } else if (menuItem.getItemId() == R.id.item_rename) {
+            renameFileAtPopPosition();
         }
         return false;
     }
@@ -407,7 +452,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
     }
 
     public void setRedirectPath(String redirectPath) {
-        this.redirectPath = redirectPath;
+        mRedirectPath = redirectPath;
     }
 
     public void setOption(Option option) {

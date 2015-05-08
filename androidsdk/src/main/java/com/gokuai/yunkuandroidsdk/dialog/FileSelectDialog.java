@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.gokuai.yunkuandroidsdk.R;
@@ -23,8 +24,7 @@ public class FileSelectDialog extends DialogFragment {
         Bundle args = getArguments();
         String title = args.getString("title");
         View v = inflater.inflate(R.layout.action_bar_dialog, container, false);
-        TextView tv = (TextView) v.findViewById(R.id.text);
-        tv.setText("This is an instance of ActionBarDialog");
+        ListView tv = (ListView) v.findViewById(R.id.list);
         Toolbar toolbar = (Toolbar) v.findViewById(R.id.my_toolbar);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override

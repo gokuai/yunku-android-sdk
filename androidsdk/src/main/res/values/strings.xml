@@ -76,5 +76,27 @@
     <string name="tip_same_file_name_exist">Same file exist</string>
     <string name="confirm_to_delete">Are you sure to delete this file?</string>
     <string name="deleting">Deleting</string>
+    <string name="copy_to">Copy to</string>
+    <string name="move_to">Move to</string>
+    <string name="tip_target_path_is_same_with_orginpath">Target path is same with origin path</string>
+    <string name="tip_is_copying">Copying</string>
+    <string name="tip_is_moving">Moving</string>
+    <string name="tip_file_list_header">Go to back</string>
+    <string name="rename">Rename</string>
+    <string name="tip_audio_empty">No audio files</string>
+    <string name="tip_img_empty">No image files</string>
+    <string name="tip_video_empty">No video files</string>
+    <string name="tip_doc_empty">No document files</string>
+    <string name="format_find_many_in_total">Find %1$s files</string>
+    <string name="all_select">All</string>
+    <string name="finish">Finish</string>
+    <string name="tip">Tip</string>
+    <string name="tip_replace_for_same_file">Threse is same name file in folder,do you want overwrite it ?</string>
+    <string name="replace">Replace</string>
+    <string name="tip_upload_selected_file_list_error">You need select more than one item</string>
+    <string name="tip_cant_copy_to_son_folder">Can\'t copy to son folder</string>
+    <string name="tip_cant_move_to_son_folder">Can\'t move to son folder</string>
+    <string name="dialog_rename_hint">Rename</string>
+    <string name="tip_is_renaming">Renaming</string>
 
 </resources>

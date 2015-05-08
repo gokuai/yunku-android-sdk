@@ -19,7 +19,7 @@ import java.util.Set;
 
 public class Config {
 
-    private static final String SDCARD_PATH = Environment.getExternalStorageDirectory().toString();
+    public static final String SDCARD_PATH = Environment.getExternalStorageDirectory().toString();
     public static final String DCIM_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString();
     private static String ROOTPATH = SDCARD_PATH + "/gokuaicloud/";
     private static final String TRANSMIT_PATH = "/transmit/";
