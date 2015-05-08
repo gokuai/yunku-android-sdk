@@ -1,0 +1,80 @@
+<resources>
+    <string name="app_name">YunkuAndroidSDK</string>
+    <string name="okay">Okay</string>
+    <string name="fill_out_text_field">Fill out text field</string>
+    <string name="cannot_open_file_Path">Cannot open file: %1$s</string>
+    <string name="cannot_open_document">Cannot open document</string>
+    <string name="choose_value">Choose value</string>
+    <string name="cannot_open_buffer">Cannot open buffer</string>
+    <string name="tip_is_loading">Loading…</string>
+    <string name="tip_open_image_failed">Open image failed</string>
+    <string name="tip_is_copied_to_clipboard">Copy to clipboard</string>
+    <string name="tip_is_preparing_for_data">Loading data…</string>
+    <string name="cancel">Cancel</string>
+    <string name="file_list_empty">Empty Folder</string>
+
+    <!-- userd in openning file -->
+    <string name="title_open_image">Image open with</string>
+    <string name="no_way_to_open_image">No app to open image</string>
+    <string name="title_open_audio">Audio open with</string>
+    <string name="no_way_to_open_audio">No app to open audio</string>
+    <string name="title_open_video">Video open with</string>
+    <string name="no_way_to_open_video">No app to open video</string>
+    <string name="title_send_file">Send with</string>
+    <string name="no_way_to_send_file">No app to send file</string>
+    <string name="no_way_to_send_email">No app to send Email</string>
+    <string name="no_way_to_send_message">No app to send SMS</string>
+    <string name="title_open_file">File open with</string>
+    <string name="no_way_to_open_file">No app to open this file</string>
+    <string name="tip_file_not_exist">File not exist！</string>
+    <string name="web_browser_not_find">Did not find opened browser</string>
+
+    <!-- used in compress image -->
+    <string name="out_of_memory">Out of memory</string>
+
+    <!--date-->
+    <string name="date_yesterday">Yesterday</string>
+    <string name="date_monday">Monday</string>
+    <string name="date_tuesday">Tuesday</string>
+    <string name="date_wednesday">Wednesday</string>
+    <string name="date_thursday">Thursday</string>
+    <string name="date_friday">Friday</string>
+    <string name="date_saturday">Saturday</string>
+    <string name="date_sunday">Sunday</string>
+
+    <string name="text_not_found">Text not found</string>
+    <string name="searching_">Searching&#8230;</string>
+    <string name="no_further_occurrences_found">No further occurrences found</string>
+    <string name="dismiss">Dismiss</string>
+
+    <string name="tip_open_file_with_excepiton">Occur a exception with opening file！</string>
+    <string name="tip_content_has_change">Do you want to exit without saving?</string>
+    <string name="tip_content_must_not_be_empty">Content must not be empty!</string>
+
+    <string name="tip_upload_exception">Exception when uploading file,please try again!</string>
+    <string name="not_supported">Not supported</string>
+    <string name="file_list_header">Return</string>
+    <string name="network_not_available">Network is not available</string>
+    <string name="menu_add">Add</string>
+    <string name="menu_folders">Folders</string>
+    <string name="menu_files">Files</string>
+    <string name="menu_take_photos">Take Photos</string>
+    <string name="menu_notes">Notes</string>
+    <string name="menu_records">Records</string>
+    <string name="move">Move</string>
+    <string name="copy">Copy</string>
+    <string name="delete">Delete</string>
+    <string name="more">More</string>
+    <string name="dialog_new_folder_hint">Input folder name</string>
+    <string name="new_folder">New Folder</string>
+    <string name="ok">OK</string>
+    <string name="tip_is_creating">creating</string>
+    <string name="tip_name_contain_special_char">Special char inside</string>
+    <string name="tip_name_invalid_folder_name">Invalid folder name</string>
+    <string name="tip_net_is_not_available">Network not available</string>
+    <string name="tip_connect_server_failed">Connect server failded</string>
+    <string name="tip_same_file_name_exist">Same file exist</string>
+    <string name="confirm_to_delete">Are you sure to delete this file?</string>
+    <string name="deleting">Deleting</string>
+
+</resources>

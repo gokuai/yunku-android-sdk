@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:gokuai="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/btn_menu_function"
+        android:title="@string/menu_add"
+        gokuai:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/menu_folders"
+                android:title="@string/menu_folders"
+                gokuai:showAsAction="withText" />
+            <item
+                android:id="@+id/menu_files"
+                android:title="@string/menu_files"
+                gokuai:showAsAction="withText" />
+            <item
+                android:id="@+id/menu_take_photos"
+                android:title="@string/menu_take_photos"
+                gokuai:showAsAction="withText" />
+            <item
+                android:id="@+id/menu_notes"
+                android:title="@string/menu_notes"
+                gokuai:showAsAction="withText" />
+            <item
+                android:id="@+id/menu_records"
+                android:title="@string/menu_records"
+                gokuai:showAsAction="withText" />
+        </menu>
+
+    </item>
+
+</menu>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="black_text">
+        <item name="android:textColor">@color/color_0</item>
+    </style>
+
+    <style name="black_big_text" parent="black_text">
+        <item name="android:textSize">@dimen/text_big</item>
+    </style>
+
+    <style name="black_large_text" parent="black_text">
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+
+    <style name="black_medium_text" parent="black_text">
+        <item name="android:textSize">@dimen/text_medium</item>
+    </style>
+
+    <style name="black_small_text" parent="black_text">
+        <item name="android:textSize">@dimen/text_small</item>
+    </style>
+
+    <style name="gray_text">
+        <item name="android:textColor">#b3b3b3b3</item>
+    </style>
+
+    <style name="gray_big_text" parent="gray_text">
+        <item name="android:textSize">@dimen/text_big</item>
+    </style>
+
+    <style name="gray_medium_text" parent="gray_text">
+        <item name="android:textSize">@dimen/text_medium</item>
+    </style>
+
+    <style name="gray_small_text" parent="gray_text">
+        <item name="android:textSize">@dimen/text_small</item>
+    </style>
+
+    <style name="gray_tiny_text" parent="gray_text">
+        <item name="android:textSize">@dimen/text_tiny</item>
+    </style>
+
+    <style name="white_text">
+        <item name="android:textColor">@color/color_f</item>
+    </style>
+
+    <style name="white_large_text" parent="white_text">
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+
+    <style name="white_big_text" parent="white_text">
+        <item name="android:textSize">@dimen/text_big</item>
+    </style>
+
+    <style name="white_medium_text" parent="white_text">
+        <item name="android:textSize">@dimen/text_medium</item>
+    </style>
+
+    <style name="white_small_text" parent="white_text">
+        <item name="android:textSize">@dimen/text_small</item>
+    </style>
+
+    <style name="white_tiny_text">
+        <item name="android:textSize">@dimen/text_tiny</item>
+    </style>
+
+    <style name="PopupTheme" parent="Theme.AppCompat.Light">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowSoftInputMode">stateAlwaysHidden</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+</resources>
