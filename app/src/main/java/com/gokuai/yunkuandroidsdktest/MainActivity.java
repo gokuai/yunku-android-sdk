@@ -13,8 +13,8 @@ import com.gokuai.yunkuandroidsdk.YKMainView;
 public class MainActivity extends BaseActivity implements HookCallback {
 
     static {
-        Config.ORG_CLIENT_ID = "c7ac1162d6bacb19e9f340df117ec7cb";
-        Config.ORG_CLIENT_SECRET = "eb96ee1f19003ec4dc3a073e91a64631";
+        Config.ORG_CLIENT_ID = "294925cc5b65f075677a3227141b9467";
+        Config.ORG_CLIENT_SECRET = "e195dbb3f9c263890a269010f18bea50";
         Config.ORG_ROOT_PATH = "";
         Config.ORG_ROOT_TITLE = "MyTest";
     }

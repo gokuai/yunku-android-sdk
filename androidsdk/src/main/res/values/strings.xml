@@ -81,7 +81,6 @@
     <string name="tip_target_path_is_same_with_orginpath">Target path is same with origin path</string>
     <string name="tip_is_copying">Copying</string>
     <string name="tip_is_moving">Moving</string>
-    <string name="tip_file_list_header">Go to back</string>
     <string name="rename">Rename</string>
     <string name="tip_audio_empty">No audio files</string>
     <string name="tip_img_empty">No image files</string>
@@ -98,5 +97,10 @@
     <string name="tip_cant_move_to_son_folder">Can\'t move to son folder</string>
     <string name="dialog_rename_hint">Rename</string>
     <string name="tip_is_renaming">Renaming</string>
+    <string name="opening">opening</string>
+    <string name="downloading">Downloading…</string>
+    <string name="connecting">Connecting…</string>
+    <string name="download_failed">Download failed</string>
+    <string name="get_file_info_failed">Get file infomation failed</string>
 
 </resources>

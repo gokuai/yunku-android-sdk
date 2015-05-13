@@ -2,8 +2,10 @@ package com.gokuai.yunkuandroidsdk;
 
 import android.app.Application;
 import android.content.res.XmlResourceParser;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import com.gokuai.yunkuandroidsdk.mime.MimeTypeParser;
@@ -14,6 +16,7 @@ import com.gokuai.yunkuandroidsdk.util.UtilFile;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -73,7 +76,9 @@ public class GKApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        instance=this;
+
+        Config.setCachePath(this);
+        instance = this;
     }
 
 

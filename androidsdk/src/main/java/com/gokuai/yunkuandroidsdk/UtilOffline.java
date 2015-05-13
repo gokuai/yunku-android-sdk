@@ -8,7 +8,6 @@ import java.io.File;
 
 public class UtilOffline {
 
-    private static final String CACHEPATH = "/cache/";
     private static final String CACHEPATH_TEMP = ".temp/";
     private static final String CACHEPATH_ZIP_TEMP = "zips/";
     private static final String CACHE_FILENAME_USERINFO = "userinfo";
@@ -22,7 +21,7 @@ public class UtilOffline {
      * @return
      */
     public static String getCachePath() {
-        return Config.getRootPath() + CACHEPATH;
+        return Config.getRootPath();
     }
 
     /**
@@ -31,11 +30,11 @@ public class UtilOffline {
      * @return
      */
     public static String getCacheTempPath() {
-        return Config.getRootPath() + CACHEPATH + CACHEPATH_TEMP;
+        return Config.getRootPath() + CACHEPATH_TEMP;
     }
 
     public static String getOpenTempPath() {
-        return Config.getRootPath() + CACHEPATH + CACHE_OPEN_TEMP_PATH;
+        return Config.getRootPath() + CACHE_OPEN_TEMP_PATH;
     }
 
     public static String getZipCachePath() {
@@ -48,7 +47,7 @@ public class UtilOffline {
      * @return
      */
     public static void delCache() {
-        Util.deleteFile(Config.getRootPath() + CACHEPATH);
+        Util.deleteFile(getCachePath());
     }
 
     public static void delUserInfo() {

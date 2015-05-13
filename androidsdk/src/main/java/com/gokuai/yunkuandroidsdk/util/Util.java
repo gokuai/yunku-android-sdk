@@ -382,28 +382,23 @@ public class Util {
     }
 
     public interface FileOpenListener {
-        public void onHandle(int type);
+        void onHandle(int type);
 
-        public void onError(String errorMsg);
+        void onError(String errorMsg);
     }
 
-    public static AsyncTask handleLocalFile(final Context context,
-                                            final String filehash, final String fileName, final long filesize,
-                                            final FileOpenListener listener, final int handleType) {
+    public static Thread handleLocalFile(final Context context,
+                                         final String filehash, final String fileName, final long filesize,
+                                         final FileOpenListener listener, final int handleType) {
         if (TextUtils.isEmpty(filehash)) {
             listener.onError(context.getString(R.string.tip_open_file_with_excepiton));
             return null;
         }
         final String openPath = UtilOffline.getOpenTempPath() + filehash + "/" + fileName;
 
-        AsyncTask task = new AsyncTask<Object, Void, Void>() {
+        Thread thread= new Thread(){
             @Override
-            protected void onPreExecute() {
-
-            }
-
-            @Override
-            protected Void doInBackground(Object... params) {
+            public void run() {
                 try {
                     Util.copyToOpenTempPath(openPath, filehash, filesize);
                     if (handleType == Constants.HANDLE_TYPE_OPEN) {
@@ -411,25 +406,19 @@ public class Util {
                     } else if (handleType == Constants.HANDLE_TYPE_SEND) {
                         Util.send(context, openPath);
                     }
-
-
                 } catch (FileOperationException e) {
                     listener.onError(e.getErrorDescription());
                 }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void result) {
                 listener.onHandle(handleType);
 
             }
-        }.execute("");
-        return task;
+        };
+        thread.start();
+        return thread;
     }
 
     public interface FileCopyListener {
-        public void onCopy();
+        void onCopy();
     }
 
     public static AsyncTask copyFileAsync(final String openPath, final String filehash, final long filesize, final FileCopyListener listener) {

@@ -9,11 +9,9 @@ import com.gokuai.yunkuandroidsdk.Config;
 import com.gokuai.yunkuandroidsdk.util.FirstLetterUtil;
 import com.gokuai.yunkuandroidsdk.util.Util;
 import com.gokuai.yunkuandroidsdk.util.UtilFile;
-import com.google.gson.Gson;
+import com.yunkuent.sdk.data.ReturnResult;
 
 import org.json.JSONObject;
-
-import java.util.HashMap;
 
 /**
  * 用来显示在文件列表中的每一条数据
@@ -186,7 +184,7 @@ public class FileData extends BaseData implements Parcelable {
 
 
     public static FileData create(JSONObject json) {
-        FileData data=new FileData();
+        FileData data = new FileData();
         data.setMountId(json.optInt(KEY_MOUNTID));
         data.setUuidHash(json.optString(KEY_HASH));
         data.setFilehash(json.optString(KEY_FILEHASH));
@@ -204,6 +202,42 @@ public class FileData extends BaseData implements Parcelable {
         data.setCreateMemberName(json.optString(KEY_CREATE_NAME));
         data.setUpFullpath(Util.getParentPath(data.getFullpath()));
         data.setLock(json.optInt(KEY_LOCK));
+        return data;
+    }
+
+    public static FileData create(String result) {
+        FileData data = new FileData();
+
+        ReturnResult returnResult = ReturnResult.create(result);
+        int code = returnResult.getStatusCode();
+        data.setCode(code);
+        JSONObject json;
+        try {
+            json = new JSONObject(returnResult.getResult());
+        } catch (Exception e) {
+            json = null;
+        }
+
+        if (json != null) {
+            data.setMountId(json.optInt(KEY_MOUNTID));
+            data.setUuidHash(json.optString(KEY_HASH));
+            data.setFilehash(json.optString(KEY_FILEHASH));
+            data.setFilesize(json.optLong(KEY_FILESIZE));
+            data.setFullpath(json.optString(KEY_FULLPATH));
+            data.setFilename(json.optString(KEY_FILENAME));
+            data.setDir(json.optInt(KEY_DIR));
+            data.setCmd(json.optInt(KEY_CMD));
+            data.setDateline(json.optLong(KEY_LASTDATELINE));
+            data.setLastMemberId(json.optInt(KEY_LASTMEMBERID, -1));
+            data.setLastMemberName(json.optString(KEY_LASTMEMBERNAME));
+            data.setVersion(json.optString(KEY_VERSION));
+            data.setCreateId(json.optInt(KEY_CREATE_ID));
+            data.setCreateTime(json.optInt(KEY_CREATE_TIME));
+            data.setCreateMemberName(json.optString(KEY_CREATE_NAME));
+            data.setUpFullpath(Util.getParentPath(data.getFullpath()));
+            data.setLock(json.optInt(KEY_LOCK));
+            data.setUri(json.optString(KEY_URI));
+        }
         return data;
     }
 

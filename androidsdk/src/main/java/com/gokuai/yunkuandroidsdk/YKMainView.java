@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 
 import com.gokuai.yunkuandroidsdk.adapter.FileListAdapter;
 import com.gokuai.yunkuandroidsdk.data.FileData;
-import com.gokuai.yunkuandroidsdk.dialog.FolderSelectDialog;
 import com.gokuai.yunkuandroidsdk.dialog.NewFolderDialogManager;
 import com.gokuai.yunkuandroidsdk.dialog.RenameDialogManager;
 import com.gokuai.yunkuandroidsdk.imageutils.ImageFetcher;
@@ -97,6 +95,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout_list);
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
+
         this.setId(R.id.yk_main_view);
     }
 
@@ -121,25 +120,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
                 openFolder(data.getFullpath());
 
             } else {
-
-//            if (UtilFile.isImageFile(data.getFilename())) {
-//                Intent intent = new Intent(getActivity(), GalleryUrlActivity.class);
-//                intent.putExtra(GalleryUrlActivity.EXTRA_LOCAL_FILE_PATH, data.getFullpath());
-//                intent.putExtra(Constants.EXTRA_GALLERY_MODE, Constants.EXTRA_GALLERY_MODE_LIST);
-//                intent.putExtra(Constants.EXTRA_KEY_MOUNT_PROPERTY_DATA, mMountPropertyData);
-//                intent.putExtra(Constants.EXTRA_MOUNT_ID, data.getMountId());
-//                intent.putExtra(Constants.EXTRA_ENT_ID, mEntId);
-//                startActivity(intent);
-//            } else if (UtilFile.isPreviewFile(data.getFilename())) {
-//                Intent intent = new Intent(getActivity(), PreviewActivity.class);
-//                intent.putExtra(Constants.EXTRA_FILEDATA, data);
-//                intent.putExtra(Constants.EXTRA_KEY_FILE_READ, access);
-////                            intent.putExtra(Constants.EXTRA_KEY_FILE_LINK, mMountPropertyData.isFileLink());
-//                startActivity(intent);
-//
-//            } else {
-//                HandleFileDialogManger.getInstance().handle(getActivity(), data, Constants.HANDLE_TYPE_OPEN);
-//            }
+                FileOpenManager.getInstance().handle(mContext,data);
             }
         } else if (view.getId() == R.id.file_item_dropdown_btn) {
             //文件列表单项下啦
@@ -237,6 +218,9 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
             @Override
             public void run() {
                 bindListView(list);
+                if (!TextUtils.isEmpty(mRedirectPath)) {
+                    redirectAndHighLight(list);
+                }
             }
         });
     }
@@ -414,13 +398,13 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
     private void renameFileAtPopPosition() {
         FileData fileData = (FileData) mFileListAdapter.getItem(mShowPopMenuPosition);
         final String fullPath = fileData.getFullpath();
-       new RenameDialogManager(mContext).showDialog(fullPath, new RenameDialogManager.DialogActionListener() {
-           @Override
-           public void onDone(String fullPath) {
-               setRedirectPath(fullPath);
-               refresh();
-           }
-       });
+        new RenameDialogManager(mContext).showDialog(fullPath, new RenameDialogManager.DialogActionListener() {
+            @Override
+            public void onDone(String fullPath) {
+                setRedirectPath(fullPath);
+                refresh();
+            }
+        });
 
     }
 

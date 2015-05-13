@@ -1,9 +1,6 @@
 package com.gokuai.yunkuandroidsdk;
 
-import android.app.Dialog;
-import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.gokuai.yunkuandroidsdk.adapter.LocalFileListAdapter;
@@ -94,8 +90,8 @@ public class FileUploadActivity extends BaseActivity {
         mImageFetcher = getNewImageFetcher();
         switch (mUploadType) {
             case UPLOAD_TYPE_OTHERFILE:
-                mLocalFileDataList = getFilelist(TextUtils.isEmpty(mSDCardPath) ? Config.SDCARD_PATH : mSDCardPath);
-                getSupportActionBar().setTitle(Config.SDCARD_PATH);
+                mLocalFileDataList = getFilelist(TextUtils.isEmpty(mSDCardPath) ? Config.CACHE_PATH : mSDCardPath);
+                getSupportActionBar().setTitle(Config.CACHE_PATH);
                 bindView();
                 mTV_empty.setText(R.string.tip_is_loading);
                 break;
@@ -124,7 +120,7 @@ public class FileUploadActivity extends BaseActivity {
 
                     @Override
                     protected Void doInBackground(Void... voids) {
-                        listFiles(new File(Config.SDCARD_PATH));
+                        listFiles(new File(Config.CACHE_PATH));
                         return null;
                     }
 
@@ -213,7 +209,7 @@ public class FileUploadActivity extends BaseActivity {
         if (!headerList.isEmpty()) {
             headerList.remove(headerList.size() - 1);
         }
-        if (path.equals(Config.SDCARD_PATH)) {
+        if (path.equals(Config.CACHE_PATH)) {
             getSupportActionBar().setTitle(path);
         } else {
             getSupportActionBar().setTitle(Util.getNameFromPath(path).substring(1));

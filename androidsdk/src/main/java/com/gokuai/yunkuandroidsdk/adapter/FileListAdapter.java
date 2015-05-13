@@ -62,7 +62,7 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
         mImageFetcher = imageFetcher;
         mImageFetcher.setLoadingImage(R.drawable.ic_img);
         mListener = listener;
-        mHandler=new Handler();
+        mHandler = new Handler();
 
         Option option = ((YKMainView) listener).getOption();
         if (option != null) {
@@ -124,6 +124,7 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
             holder.dropdownbtn.setOnClickListener(this);
             holder.itemll = convertView.findViewById(R.id.file_item_view_ll);
             holder.itemll.setOnClickListener(this);
+            holder.descriptionll = convertView.findViewById(R.id.file_item_description_ll);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -136,25 +137,35 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
         holder.dropdownbtn.setTag(position);
         holder.itemll.setTag(position);
         holder.img.setBackgroundDrawable(null);
-        if (data.getDir() == FileData.DIRIS) {
-
-            holder.img.setImageResource(R.drawable.ic_dir);
-            holder.filesize.setText("");
+        if (data.isHeader()) {
+            holder.name.setText(R.string.file_list_header);
+            holder.img.setImageResource(R.drawable.ic_back);
+            holder.dropdownbtn.setVisibility(View.GONE);
+            holder.descriptionll.setVisibility(View.GONE);
         } else {
+            holder.dropdownbtn.setVisibility(View.VISIBLE);
+            holder.descriptionll.setVisibility(View.VISIBLE);
+            if (data.getDir() == FileData.DIRIS) {
 
-            holder.img.setImageResource(data.getExt(mContext));
+                holder.img.setImageResource(R.drawable.ic_dir);
+                holder.filesize.setText("");
+            } else {
 
-            if (UtilFile.isImageFile(data.getFilename())) {
-                String thumbNailUrl = data.getThumbSmall();
-                mImageFetcher.loadImage(thumbNailUrl, holder.img, false);
+                holder.img.setImageResource(data.getExt(mContext));
+
+                if (UtilFile.isImageFile(data.getFilename())) {
+                    String thumbNailUrl = data.getThumbSmall();
+                    mImageFetcher.loadImage(thumbNailUrl, holder.img, false);
+                }
+                holder.filesize.setText(Util.formatFileSize(mContext, data.getFilesize()) + ",");
             }
-            holder.filesize.setText(Util.formatFileSize(mContext, data.getFilesize()) + ",");
-        }
-        if (mHighlightItemStr != null && mHighlightItemStr.equals(data.getFullpath())) {
-            startAnimation(holder.itemll);
-            mHighlightItemStr = null;
-        } else {
-            convertView.setBackgroundResource(R.drawable.listview_selector);
+
+            if (mHighlightItemStr != null && mHighlightItemStr.equals(data.getFullpath())) {
+                startAnimation(holder.itemll);
+                mHighlightItemStr = null;
+            } else {
+                convertView.setBackgroundResource(R.drawable.listview_selector);
+            }
         }
 
         return convertView;
@@ -270,6 +281,7 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
         private TextView dateline;
         private TextView lastmembername;
         private TextView filesize;
+        private View descriptionll;
         private ImageView img;
         private Button dropdownbtn;
         private View itemll;
@@ -285,7 +297,6 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
             }
         }, 500);
     }
-
 
 
 }

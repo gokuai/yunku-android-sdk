@@ -89,7 +89,12 @@ public class FileDataManager {
 
             @Override
             protected Object doInBackground(Void... params) {
-                return mEntFileManager.move((int) Util.getUnixDateline(), fullPath, Util.getParentPath(fullPath) + "/" + newName, "Brandon");
+
+                String parentPath = Util.getParentPath(fullPath);
+                String newPath = parentPath + (TextUtils.isEmpty(parentPath) ? "" : "/") + newName;
+
+                return mEntFileManager.move((int) Util.getUnixDateline(), fullPath,
+                        newPath, "");
             }
 
             @Override
@@ -149,6 +154,10 @@ public class FileDataManager {
             }
         }.execute();
 
+    }
+
+    public FileData getFileInfoSync(String fullPath) {
+        return FileData.create(mEntFileManager.getFileInfo((int) Util.getUnixDateline(), fullPath));
     }
 
     public void addFile(String fullPath, String localPath, UploadCallBack callBack) {
@@ -298,7 +307,7 @@ public class FileDataManager {
                     String result = mEntFileManager.getFileList((int) Util.getUnixDateline(), 0, fullPath);
                     FileListData fileListData = FileListData.create(result);
                     if (fileListData.getCode() == HttpStatus.SC_OK) {
-                        ArrayList<FileData> httpList = (ArrayList<FileData>)fileListData.getList().clone();
+                        ArrayList<FileData> httpList = (ArrayList<FileData>) fileListData.getList().clone();
 
                         if (dir == FileData.DIRIS) {
                             filterFiles(httpList);
