@@ -3,15 +3,6 @@
     xmlns:gokuai="http://schemas.android.com/apk/res-auto"
     >
     <item
-        android:id="@+id/btn_menu_all"
-        android:title="@string/all_select"
-        gokuai:showAsAction="always" />
-    <item
-        android:id="@+id/btn_menu_cancel"
-        android:title="@string/cancel"
-        android:visible="false"
-        gokuai:showAsAction="always" />
-    <item
         android:id="@+id/btn_menu_ok"
         android:title="@string/finish"
         gokuai:showAsAction="always" />

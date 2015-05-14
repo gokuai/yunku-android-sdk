@@ -18,13 +18,13 @@ import android.widget.TextView;
 
 import com.gokuai.yunkuandroidsdk.adapter.LocalFileListAdapter;
 import com.gokuai.yunkuandroidsdk.callback.CallBack;
-import com.gokuai.yunkuandroidsdk.data.FileData;
 import com.gokuai.yunkuandroidsdk.data.LocalFileData;
 import com.gokuai.yunkuandroidsdk.imageutils.ImageFetcher;
 import com.gokuai.yunkuandroidsdk.util.Util;
 import com.gokuai.yunkuandroidsdk.util.UtilDialog;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,10 +37,8 @@ public class FileUploadActivity extends BaseActivity {
 
     private ListView mLV;
     private ArrayList<LocalFileData> mLocalFileDataList;
-    private final ArrayList<FileData> mAddedFileList = new ArrayList<>();
     private LocalFileListAdapter mLocalFileListAdapter;
     private ArrayList<LocalFileData> headerList = new ArrayList<LocalFileData>();
-    private Menu mMenu;
     private TextView mTV_empty;
 
     private String mPath;
@@ -58,30 +56,43 @@ public class FileUploadActivity extends BaseActivity {
 
     private ImageFetcher mImageFetcher;
 
+    private LocalFileData mSelectedData;
+
     private final static int MSG_UPDATE_FIND_FILE_COUNT = 1;
-    private Handler mHandler = new Handler() {
+
+    private static class MyHandler extends Handler {
+        private final WeakReference<FileUploadActivity> mManager;
+
+        public MyHandler(FileUploadActivity manager) {
+            mManager = new WeakReference<>(manager);
+        }
+
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_UPDATE_FIND_FILE_COUNT:
-                    TextView tv = (TextView) findViewById(R.id.loading_view_progress_tv);
-                    if (tv != null) {
-                        tv.setVisibility(View.VISIBLE);
-                        tv.setText(String.format(getResources().getString(R.string.format_find_many_in_total), mFileList.size()));
-                    }
-                    break;
-                default:
-                    break;
+            final FileUploadActivity manager = mManager.get();
+            if (manager != null) {
+                switch (msg.what) {
+                    case MSG_UPDATE_FIND_FILE_COUNT:
+                        TextView tv = (TextView) manager.findViewById(R.id.loading_view_progress_tv);
+                        if (tv != null) {
+                            tv.setVisibility(View.VISIBLE);
+                            tv.setText(String.format(manager.getResources().getString(R.string.format_find_many_in_total), manager.mFileList.size()));
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         }
-    };
+    }
+
+    private Handler mHandler = new MyHandler(this);
 
     private AsyncTask mFindFileTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().show();
 
     }
 
@@ -90,7 +101,7 @@ public class FileUploadActivity extends BaseActivity {
         mImageFetcher = getNewImageFetcher();
         switch (mUploadType) {
             case UPLOAD_TYPE_OTHERFILE:
-                mLocalFileDataList = getFilelist(TextUtils.isEmpty(mSDCardPath) ? Config.CACHE_PATH : mSDCardPath);
+                mLocalFileDataList = getFilelist(TextUtils.isEmpty(mSDCardPath) ? Config.SD_CARD_PATH : mSDCardPath);
                 getSupportActionBar().setTitle(Config.CACHE_PATH);
                 bindView();
                 mTV_empty.setText(R.string.tip_is_loading);
@@ -120,7 +131,7 @@ public class FileUploadActivity extends BaseActivity {
 
                     @Override
                     protected Void doInBackground(Void... voids) {
-                        listFiles(new File(Config.CACHE_PATH));
+                        listFiles(new File(Config.SD_CARD_PATH));
                         return null;
                     }
 
@@ -201,10 +212,6 @@ public class FileUploadActivity extends BaseActivity {
      * @param data
      */
     private void back(LocalFileData data) {
-        if (mMenu != null) {
-            mMenu.getItem(0).setVisible(true);
-            mMenu.getItem(1).setVisible(false);
-        }
         String path = Util.getParentPath(data.getFullpath());
         if (!headerList.isEmpty()) {
             headerList.remove(headerList.size() - 1);
@@ -223,7 +230,6 @@ public class FileUploadActivity extends BaseActivity {
         setUpView();
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_file_upload, menu);
-        mMenu = menu;
         return true;
     }
 
@@ -231,18 +237,6 @@ public class FileUploadActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
-        } else if (item.getItemId() == R.id.btn_menu_all) {
-            if (mMenu != null) {
-                mMenu.getItem(0).setVisible(false);
-                mMenu.getItem(1).setVisible(true);
-            }
-            selectedFileList(true);
-        } else if (item.getItemId() == R.id.btn_menu_cancel) {
-            if (mMenu != null) {
-                mMenu.getItem(0).setVisible(true);
-                mMenu.getItem(1).setVisible(false);
-            }
-            selectedFileList(false);
         } else if (item.getItemId() == R.id.btn_menu_ok) {
             if (mLocalFileDataList == null) {
                 UtilDialog.showNormalToast(R.string.tip_upload_selected_file_list_error);
@@ -269,7 +263,7 @@ public class FileUploadActivity extends BaseActivity {
                         UtilDialog.showDialogSameFileExist(FileUploadActivity.this, new CallBack() {
                             @Override
                             public void call() {
-                                uploadSelectedFileList(true);
+                                uploadSelectedFileList();
                             }
                         });
                         return false;
@@ -278,7 +272,7 @@ public class FileUploadActivity extends BaseActivity {
                 }
             }
 
-            uploadSelectedFileList(false);
+            uploadSelectedFileList();
         }
 
 
@@ -291,17 +285,15 @@ public class FileUploadActivity extends BaseActivity {
      * @param data
      */
     private void openFileList(LocalFileData data) {
-        if (mMenu != null) {
-            mMenu.getItem(0).setVisible(true);
-            mMenu.getItem(1).setVisible(false);
-        }
         if (data.getDir()) {
             headerList.add(data);
             getSupportActionBar().setTitle(data.getFilename());
             openFromPath(data.getFullpath());
         } else {
             if (mLocalFileListAdapter != null) {
+                mLocalFileListAdapter.clearSelects();
                 data.setSelected(!data.getSelected());
+                mSelectedData = data;
                 mLocalFileListAdapter.updateSelect();
             }
         }
@@ -450,30 +442,12 @@ public class FileUploadActivity extends BaseActivity {
         }
     }
 
-    /**
-     * 全选、取消
-     *
-     * @param selected
-     */
-    private void selectedFileList(boolean selected) {
-        if (mLocalFileListAdapter != null) {
-            for (LocalFileData data : mLocalFileDataList) {
-                if (!data.getDir()) {
-                    data.setSelected(selected);
-                }
-            }
-            mLocalFileListAdapter.updateSelect();
-        }
-    }
 
     /**
      * 上传选中的文件
-     *
-     * @param overWrite
      */
-    private void uploadSelectedFileList(final boolean overWrite) {
-
-
+    private void uploadSelectedFileList() {
+        FileUploadManager.getInstance().upload(this, mPath, mSelectedData);
     }
 
 

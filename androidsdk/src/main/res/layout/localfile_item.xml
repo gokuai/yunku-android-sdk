@@ -39,7 +39,7 @@
         android:layout_toRightOf="@id/file_item_pic"
         android:ellipsize="end"
         android:singleLine="true"
-        android:text="@string/tip_file_list_header" />
+        android:text="@string/file_list_header" />
 
     <TextView
         android:id="@+id/file_item_size"

@@ -2,8 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gokuai.yunkuandroidsdktest">
 
+    <!--Should have these permission below-->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- End -->
 
     <application
         android:name=".MyApplication"
@@ -19,9 +22,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.gokuai.yunkuandroidsdk.FileSelectActivity"/>
-        <activity android:name="com.gokuai.yunkuandroidsdk.FolderSelectActivity"/>
-        <activity android:name="com.gokuai.yunkuandroidsdk.GKNoteEditorActivity"/>
+        <!--Should have these Ativity below-->
+        <activity android:name="com.gokuai.yunkuandroidsdk.FileUploadActivity"/><!--File uploading manager-->
+        <activity android:name="com.gokuai.yunkuandroidsdk.GKNoteEditorActivity"/><!--Gknote Editor-->
+        <!-- End -->
     </application>
 
 </manifest>

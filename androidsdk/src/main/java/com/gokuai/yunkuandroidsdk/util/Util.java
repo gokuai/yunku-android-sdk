@@ -400,6 +400,11 @@ public class Util {
             @Override
             public void run() {
                 try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                try {
                     Util.copyToOpenTempPath(openPath, filehash, filesize);
                     if (handleType == Constants.HANDLE_TYPE_OPEN) {
                         Util.openLocalFile(context, openPath, filesize);

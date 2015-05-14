@@ -3,6 +3,7 @@ package com.gokuai.yunkuandroidsdk;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -61,6 +62,7 @@ public class FileOpenManager {
         private final WeakReference<FileOpenManager> mManager;
 
         public MyHandler(FileOpenManager manager) {
+            super(Looper.getMainLooper());
             mManager = new WeakReference<>(manager);
         }
 
@@ -126,6 +128,11 @@ public class FileOpenManager {
             mDownloadTask = new Thread() {
                 @Override
                 public void run() {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     try {
                         FileData fileData = FileDataManager.getInstance().getFileInfoSync(data.getFullpath());
                         downloadFile(fileData);

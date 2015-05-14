@@ -101,6 +101,9 @@
     <string name="downloading">Downloading…</string>
     <string name="connecting">Connecting…</string>
     <string name="download_failed">Download failed</string>
-    <string name="get_file_info_failed">Get file infomation failed</string>
+    <string name="get_file_info_failed">Get file information failed</string>
+    <string name="upload_type">Upload Type</string>
+    <string name="uploading">Uploading…</string>
+    <string name="upload_success">Upload complete</string>
 
 </resources>

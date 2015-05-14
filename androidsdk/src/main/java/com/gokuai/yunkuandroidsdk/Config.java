@@ -27,13 +27,14 @@ public class Config {
     public static String ORG_CLIENT_SECRET = "";
     public static String ORG_ROOT_PATH = "";
     public static String ORG_ROOT_TITLE = "";
+    public static String ORG_OPT_NAME = "";
 
     //======================================
 
-    public static final String DCIM_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString();
+    public static final String DCIM_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getPath();
+    public static final String SD_CARD_PATH = Environment.getExternalStorageDirectory().getPath();
 
     private static final String CUSTOMER_DB_PATH = "App_DB/";
-    private static final String CACHE_FOLDER_NAME = "YunkuSdk";
 
     public static String URL_SOCKET_PREVIEW;//getPreviewSite
     public static String HTTPREFERER = "www.gokuai.com";

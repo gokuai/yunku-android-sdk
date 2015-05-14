@@ -15,8 +15,9 @@ public class MainActivity extends BaseActivity implements HookCallback {
     static {
         Config.ORG_CLIENT_ID = "294925cc5b65f075677a3227141b9467";
         Config.ORG_CLIENT_SECRET = "e195dbb3f9c263890a269010f18bea50";
-        Config.ORG_ROOT_PATH = "";
+        Config.ORG_ROOT_PATH = "";//访问文件的根目录
         Config.ORG_ROOT_TITLE = "MyTest";
+        Config.ORG_OPT_NAME = "Brandon";//操作人，例如文件上传、改名、删除等
     }
 
     @Override
@@ -30,7 +31,7 @@ public class MainActivity extends BaseActivity implements HookCallback {
         view.setOption(option);
         setContentView(view);
         view.startToInitData(getNewImageFetcher());
-        FileDataManager.getInstance().registHook(this);
+        FileDataManager.getInstance().registerHook(this);
     }
 
     @Override

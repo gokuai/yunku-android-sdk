@@ -43,11 +43,11 @@ public class FileDataManager {
 
     private HookCallback mCallback;
 
-    public void registHook(HookCallback calback) {
+    public void registerHook(HookCallback calback) {
         mCallback = calback;
     }
 
-    public void unRegistHook() {
+    public void unRegisterHook() {
         mCallback = null;
     }
 
@@ -160,8 +160,8 @@ public class FileDataManager {
         return FileData.create(mEntFileManager.getFileInfo((int) Util.getUnixDateline(), fullPath));
     }
 
-    public void addFile(String fullPath, String localPath, UploadCallBack callBack) {
-        mEntFileManager.uploadByBlock((int) Util.getUnixDateline(), fullPath, "", 0, localPath, true, callBack);
+    public Thread addFile(String fullPath, String localPath, UploadCallBack callBack) {
+        return mEntFileManager.uploadByBlock((int) Util.getUnixDateline(), fullPath, Config.ORG_OPT_NAME, 0, localPath, true, callBack);
     }
 
     /**
@@ -186,7 +186,7 @@ public class FileDataManager {
 
             @Override
             protected Object doInBackground(Void... params) {
-                return mEntFileManager.createFolder((int) Util.getUnixDateline(), fullPath, "");
+                return mEntFileManager.createFolder((int) Util.getUnixDateline(), fullPath, Config.ORG_OPT_NAME);
             }
 
             @Override
@@ -229,7 +229,7 @@ public class FileDataManager {
 
             @Override
             protected Object doInBackground(Void... params) {
-                return mEntFileManager.del((int) Util.getUnixDateline(), fullPath, "");
+                return mEntFileManager.del((int) Util.getUnixDateline(), fullPath, Config.ORG_OPT_NAME);
             }
 
             @Override

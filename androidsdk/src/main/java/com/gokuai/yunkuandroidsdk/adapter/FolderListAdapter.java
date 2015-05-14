@@ -70,7 +70,7 @@ public class FolderListAdapter extends BaseAdapter {
 
         FileData data = mList.get(position);
         if (data.isHeader()) {
-            holder.filename.setText(R.string.tip_file_list_header);
+            holder.filename.setText(R.string.file_list_header);
             holder.image.setImageResource(R.drawable.ic_back);
         } else {
             holder.filename.setText(data.getFilename());

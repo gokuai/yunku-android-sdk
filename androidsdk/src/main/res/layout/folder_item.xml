@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="middle"
                 android:singleLine="true"
-                android:text="@string/tip_file_list_header" />
+                android:text="@string/file_list_header" />
 
 
         </LinearLayout>

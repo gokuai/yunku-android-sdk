@@ -3,6 +3,7 @@ package com.gokuai.yunkuandroidsdk;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -120,7 +121,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
                 openFolder(data.getFullpath());
 
             } else {
-                FileOpenManager.getInstance().handle(mContext,data);
+                FileOpenManager.getInstance().handle(mContext, data);
             }
         } else if (view.getId() == R.id.file_item_dropdown_btn) {
             //文件列表单项下啦
@@ -350,7 +351,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
         if (item.getItemId() == R.id.menu_folders) {
             newFolderDialog();
         } else if (item.getItemId() == R.id.menu_files) {
-
+            filesChooseDialog();
         } else if (item.getItemId() == R.id.menu_notes) {
 
         } else if (item.getItemId() == R.id.menu_records) {
@@ -373,6 +374,37 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
                 refresh();
             }
         });
+
+    }
+
+    public void filesChooseDialog() {
+        new AlertDialog.Builder(mContext).setTitle(R.string.upload_type).setItems(R.array.upload_file_type, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(mContext, FileUploadActivity.class);
+                intent.putExtra(FileUploadActivity.EXTRA_NAME_PATH, mPath);
+                switch (which) {
+                    case 0:
+                        intent.putExtra(FileUploadActivity.EXTRA_UPLOAD_TYPE, FileUploadActivity.UPLOAD_TYPE_IMAGEFILE);
+                        break;
+                    case 1:
+                        intent.putExtra(FileUploadActivity.EXTRA_UPLOAD_TYPE, FileUploadActivity.UPLOAD_TYPE_VIDEOFILE);
+                        break;
+                    case 2:
+                        intent.putExtra(FileUploadActivity.EXTRA_UPLOAD_TYPE, FileUploadActivity.UPLOAD_TYPE_AUDIOFILE);
+                        break;
+                    case 3:
+                        intent.putExtra(FileUploadActivity.EXTRA_UPLOAD_TYPE, FileUploadActivity.UPLOAD_TYPE_DOCFILE);
+                        break;
+                    case 4:
+                        intent.putExtra(FileUploadActivity.EXTRA_UPLOAD_TYPE, FileUploadActivity.UPLOAD_TYPE_OTHERFILE);
+                        break;
+                }
+
+                mContext.startActivity(intent);
+
+            }
+        }).show();
 
     }
 

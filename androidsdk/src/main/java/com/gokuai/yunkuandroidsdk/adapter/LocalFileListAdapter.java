@@ -13,7 +13,6 @@ import com.gokuai.yunkuandroidsdk.data.LocalFileData;
 import com.gokuai.yunkuandroidsdk.imageutils.ImageFetcher;
 import com.gokuai.yunkuandroidsdk.util.Util;
 import com.gokuai.yunkuandroidsdk.util.UtilFile;
-import com.yunkuent.sdk.utils.Constants;
 
 import java.util.ArrayList;
 
@@ -57,6 +56,17 @@ public class LocalFileListAdapter extends BaseImageAdapter {
     public void updateSelect() {
         if (mList != null) {
             notifyDataSetChanged();
+        }
+    }
+
+    public void clearSelects() {
+        if (mList != null) {
+            for (LocalFileData data : mList) {
+                if (data.getSelected()) {
+                    data.setSelected(false);
+                    break;
+                }
+            }
         }
     }
 
@@ -105,7 +115,7 @@ public class LocalFileListAdapter extends BaseImageAdapter {
         setDescribeVisibility(holder.filename, holder.filesize, holder.time, data.getHeader() || data.getDir() ? View.GONE : View.VISIBLE);
         holder.select.setVisibility(!data.getHeader() && !data.getDir() ? View.VISIBLE : View.GONE);
         if (data.getHeader()) {
-            holder.filename.setText(R.string.tip_file_list_header);
+            holder.filename.setText(R.string.file_list_header);
             holder.filename.setTextColor(mContext.getResources().getColor(R.color.color_0));
             holder.pic.setImageResource(R.drawable.ic_back);
         } else {
