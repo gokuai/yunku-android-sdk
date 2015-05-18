@@ -73,7 +73,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
     }
 
     private boolean checkIfExtendBaseActivity() {
-        if (mContext instanceof BaseActivity) {
+        if (mContext instanceof MainViewBaseActivity) {
             return true;
         }
         DebugFlag.log("need extend BaseActivity in this Activity");
@@ -105,9 +105,12 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
         this.setId(R.id.yk_main_view);
     }
 
-    public void startToInitData(ImageFetcher imageFetcher) {
+    public void initData() {
+        openFolder(Config.ORG_ROOT_PATH);
+    }
+
+    public void setImageFetcher(ImageFetcher imageFetcher) {
         mImageFetcher = imageFetcher;
-        openFolder("");
     }
 
     private int mShowPopMenuPosition;
@@ -183,7 +186,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
     private int mFirstPosition;
 
     public boolean isRoot() {
-        return TextUtils.isEmpty(mPath);
+        return FileDataManager.getInstance().isRootPath(mPath);
     }
 
     @Override
@@ -414,7 +417,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
                         break;
                 }
 
-                ((BaseActivity) mContext).startActivityForResult(intent, Constants.REQUEST_CODE_UPLOAD_SUCCESS);
+                ((MainViewBaseActivity) mContext).startActivityForResult(intent, Constants.REQUEST_CODE_UPLOAD_SUCCESS);
 
             }
         }).show();

@@ -1,0 +1,8 @@
+.GRADLE
+/local.properties
+/.idea/workspace.xml
+/.DS_Store
+/.idea
+/SlidingMenu/build/
+/PinnedHeaderListview/build/
+*.iml

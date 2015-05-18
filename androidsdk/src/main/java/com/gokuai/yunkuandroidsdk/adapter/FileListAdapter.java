@@ -143,7 +143,7 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
             holder.dropdownbtn.setVisibility(View.GONE);
             holder.descriptionll.setVisibility(View.GONE);
         } else {
-            holder.dropdownbtn.setVisibility(View.VISIBLE);
+            holder.dropdownbtn.setVisibility(isOperationEnable ? View.VISIBLE : View.GONE);
             holder.descriptionll.setVisibility(View.VISIBLE);
             if (data.getDir() == FileData.DIRIS) {
 

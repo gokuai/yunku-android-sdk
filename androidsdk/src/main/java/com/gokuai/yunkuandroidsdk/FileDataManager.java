@@ -368,7 +368,7 @@ public class FileDataManager {
         return mFilesMap.get(fullPath);
     }
 
-    private boolean isRootPath(String fullPath) {
+    public boolean isRootPath(String fullPath) {
         return fullPath.equals(mRootPath);
     }
 

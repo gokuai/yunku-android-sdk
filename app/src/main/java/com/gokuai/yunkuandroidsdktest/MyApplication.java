@@ -3,7 +3,13 @@ package com.gokuai.yunkuandroidsdktest;
 import com.gokuai.yunkuandroidsdk.GKApplication;
 
 /**
- * Created by Brandon on 15/4/14.
+ * 需要继承GKApplication
  */
 public class MyApplication extends GKApplication {
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+    }
 }
