@@ -8,7 +8,7 @@ import com.gokuai.yunkuandroidsdk.DebugFlag;
 
 public  class WebAppInterface {
         public interface JsReceiver {
-            public void send(String s);
+            void send(String s);
         }
 
         private JsReceiver mJsReceiver;

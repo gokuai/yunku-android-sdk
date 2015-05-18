@@ -1,10 +1,13 @@
 package com.gokuai.yunkuandroidsdk;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -29,7 +32,9 @@ import com.gokuai.yunkuandroidsdk.imageutils.Utils;
 import com.gokuai.yunkuandroidsdk.util.Util;
 import com.gokuai.yunkuandroidsdk.util.UtilDialog;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by Brandon on 15/4/10.
@@ -262,12 +267,15 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
 
     /**
      * 在list 高亮显示
+     *
      * @param list
      */
     private void redirectAndHighLight(ArrayList<FileData> list) {
+
         for (int i = 0; i < list.size(); i++) {
             FileData fileData = list.get(i);
             if (fileData.getFullpath().equals(mRedirectPath)) {
+
                 // 导航之后重置数据
                 setRedirectPath("");
                 if (mPositionPopStack.size() > 0) {
@@ -357,11 +365,12 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
         } else if (item.getItemId() == R.id.menu_files) {
             filesChooseDialog();
         } else if (item.getItemId() == R.id.menu_notes) {
-
+            ((AppCompatActivity) mContext).startActivityForResult(
+                    new Intent(mContext, GKNoteEditorActivity.class), Constants.REQUEST_CODE_UPLOAD_SUCCESS);
         } else if (item.getItemId() == R.id.menu_records) {
-
+            createAudio();
         } else if (item.getItemId() == R.id.menu_take_photos) {
-
+            createPicture();
         }
 
     }
@@ -473,6 +482,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
 
     /**
      * 设置定位路径
+     *
      * @param redirectPath
      */
     private void setRedirectPath(String redirectPath) {
@@ -484,9 +494,59 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
         mOption = option;
     }
 
-    public void redirectToFile(String fullPath){
+    public void redirectToFile(String fullPath) {
         setRedirectPath(fullPath);
         refresh();
+    }
+
+    /**
+     * 录音上传
+     */
+    private void createAudio() {
+        Intent intent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
+        try {
+            ((AppCompatActivity) mContext).startActivityForResult(intent, Constants.REQUEST_CODE_TAKE_AUDIO);
+        } catch (Exception e) {
+            UtilDialog.showNormalToast(R.string.tip_no_available_device_to_take_audio);
+        }
+    }
+
+    private Uri mCameraImageUri;
+
+    /**
+     * 拍照上传
+     */
+    private void createPicture() {
+        ContentValues values = new ContentValues();
+        long dateTaken = System.currentTimeMillis();
+        Date date = new Date(dateTaken);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                mContext.getString(R.string.image_file_name_format));
+        String title = dateFormat.format(date);
+
+        String filename = title + ".jpg";
+        values.put(MediaStore.MediaColumns.TITLE, "my image");
+        values.put(MediaStore.MediaColumns.DISPLAY_NAME, filename);
+        values.put(MediaStore.Images.ImageColumns.DESCRIPTION, "image captured by camera");
+
+        mCameraImageUri = mContext.getContentResolver().insert(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, mCameraImageUri);
+        try {
+            ((AppCompatActivity) mContext).startActivityForResult(intent, Constants.REQUEST_CODE_TAKE_PIC);
+        } catch (Exception e) {
+            UtilDialog.showNormalToast(R.string.tip_no_available_device_to_take_camera);
+        }
+    }
+
+
+    public String getCurrentPath() {
+        return mPath;
+    }
+
+    public Uri getCameraUri() {
+        return mCameraImageUri;
     }
 
 

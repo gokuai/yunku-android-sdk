@@ -1,6 +1,12 @@
 package com.gokuai.yunkuandroidsdk.data;
 
+import android.net.Uri;
 import android.text.TextUtils;
+import android.webkit.URLUtil;
+
+import com.gokuai.yunkuandroidsdk.util.Util;
+
+import java.io.File;
 
 /**
  * 用来显示在本地文件列表中的每一条数据
@@ -17,6 +23,11 @@ public class LocalFileData {
     private boolean isHeader = false;
     private boolean selected = false;
     private boolean isFavourate = false;
+
+    public static LocalFileData create(Uri uri) {
+        File file = new File(URLUtil.isFileUrl(uri.toString()) ? uri.getPath() : Util.getRealPathFromURI(uri));
+        return new LocalFileData(file.getName(), file.length(), file.getPath(), file.isDirectory(), file.lastModified());
+    }
 
     /**
      * @param filename
@@ -115,20 +126,7 @@ public class LocalFileData {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("filename is:" + filename + "\n");
-        sb.append("filesize is:" + filesize + "\n");
-        sb.append("fullpath is:" + fullpath + "\n");
-        sb.append("filedate is:" + filedate + "\n");
-        sb.append("dir is:" + dir + "\n");
-        return sb.toString();
+        return ("filename is:" + filename + "\n") + "filesize is:" + filesize + "\n" + "fullpath is:" + fullpath + "\n" + "filedate is:" + filedate + "\n" + "dir is:" + dir + "\n";
     }
 
-    public boolean isFavourate() {
-        return isFavourate;
-    }
-
-    public void setFavourate(boolean isFavourate) {
-        this.isFavourate = isFavourate;
-    }
 }

@@ -2,7 +2,6 @@ package com.gokuai.yunkuandroidsdk.dialog;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -18,32 +17,32 @@ import com.gokuai.yunkuandroidsdk.R;
 import com.gokuai.yunkuandroidsdk.util.Util;
 
 /**
- * Created by Brandon on 15/5/8.
+ * Created by Brandon on 15/5/18.
  */
-public class NewFolderDialogManager extends DialogManger{
+public class GknoteNameDialogManager extends DialogManger {
 
-    private AsyncTask mNewFolderTask;
 
-    public NewFolderDialogManager(Context context) {
+    public GknoteNameDialogManager(Context context) {
         super(context);
     }
 
+    private Button mOKBtn;
 
     @Override
-    public void showDialog(final String parentFullPath, final DialogActionListener listener) {
+    public void showDialog(final String parentPath, final DialogActionListener listener) {
         final View editView = LayoutInflater.from(mContext).inflate(R.layout.alert_dialog_edit_with_check, null);
         final EditText editText = (EditText) editView.findViewById(R.id.dialog_edit);
+
+        String hintText = String.format(mContext.getString(R.string.gknote_name_format), System.currentTimeMillis());
+
+        editText.setHint(hintText);
         final TextView textView = (TextView) editView.findViewById(R.id.dialog_check);
-        final TextView doingTextView = (TextView) editView.findViewById(R.id.dialog_doing);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext).setView(editView)
                 .setTitle(R.string.new_folder)
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (mNewFolderTask != null) {
-                            mNewFolderTask.cancel(true);
-                            mNewFolderTask = null;
-                        }
                     }
                 })
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -53,6 +52,7 @@ public class NewFolderDialogManager extends DialogManger{
 
                     }
                 });
+
         final AlertDialog dialog = builder.create();
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
@@ -64,44 +64,23 @@ public class NewFolderDialogManager extends DialogManger{
                     @Override
                     public void onClick(View v) {
 
-                        doingTextView.setText(R.string.tip_is_creating);
-                        doingTextView.setVisibility(View.VISIBLE);
-
-                        //判断是否有同名文件夹
-                        final String dirName = Util.getTrimDirName(editText.getText().toString());
-                        final String fullPath = parentFullPath + dirName + "/";
-
-                        boolean hasSame = FileDataManager.getInstance().fileExistInCache(fullPath);
-                        if (hasSame) {
-                            doingTextView.setVisibility(View.GONE);
-                            textView.setVisibility(View.VISIBLE);
-                            textView.setText(R.string.tip_same_file_name_exist);
-                            return;
+                        String fileName;
+                        String input = editText.getText().toString();
+                        if (TextUtils.isEmpty(input)) {
+                            fileName = editText.getHint().toString();
+                        } else {
+                            fileName = editText.getText().toString() + ".gknote";
                         }
 
+                        String fullPath = parentPath + fileName;
+                        if (FileDataManager.getInstance().fileExistInCache(parentPath + fileName)) {
+                            textView.setVisibility(View.VISIBLE);
+                            textView.setText(R.string.tip_same_file_name_exist);
+                        } else {
 
-                        mOKBtn.setEnabled(false);
-                        //网络发送添加文件夹的请求
-                        mNewFolderTask = FileDataManager.getInstance().addDir(fullPath, new FileDataManager.DataListener() {
-                                    @Override
-                                    public void onReceiveHttpResponse(int actionId) {
-                                        dialog.dismiss();
-                                        listener.onDone(fullPath);
-                                    }
+                            listener.onDone(fullPath);
 
-                                    @Override
-                                    public void onError(String errorMsg) {
-                                        mOKBtn.setEnabled(true);
-                                        doingTextView.setText(errorMsg);
-                                    }
-
-                                    @Override
-                                    public void onNetUnable() {
-                                        mOKBtn.setEnabled(true);
-                                        doingTextView.setText(R.string.tip_net_is_not_available);
-                                    }
-                                }
-                        );
+                        }
                     }
                 });
             }
@@ -115,7 +94,6 @@ public class NewFolderDialogManager extends DialogManger{
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //验证文件名的可用性
                 boolean isContainSpecial = Util.isContainSpecail(s.toString());
                 boolean isContainExpression = Util.isContainExpression(s);
 
@@ -126,8 +104,7 @@ public class NewFolderDialogManager extends DialogManger{
                     textView.setText(R.string.tip_name_invalid_folder_name);
                 }
                 textView.setVisibility(isContainSpecial || isValid || isContainExpression ? View.VISIBLE : View.GONE);
-                mOKBtn.setEnabled(!isContainSpecial && !isContainExpression
-                        && !TextUtils.isEmpty(s.toString().trim()) && !isValid && s.length() > 0);
+                mOKBtn.setEnabled(!isContainSpecial && !isContainExpression && !isValid);
 
             }
 
@@ -141,7 +118,6 @@ public class NewFolderDialogManager extends DialogManger{
         dialog.show();
         Util.showSoftKeyBoard(mContext, editText);
 
+
     }
-
-
 }

@@ -20,22 +20,18 @@ import com.gokuai.yunkuandroidsdk.util.Util;
 /**
  * Created by Brandon on 15/5/8.
  */
-public class RenameDialogManager {
-    private Context mContext;
+public class RenameDialogManager extends DialogManger {
     private AsyncTask mRenameTask;
-    private Button mBtn_RenameOk;
 
     public RenameDialogManager(Context context) {
-        mContext = context;
+        super(context);
     }
 
-    public interface DialogActionListener {
-        void onDone(String fullPath);
-    }
 
-    public void showDialog(final String fullPath, final DialogActionListener listener) {
-        final String parentFullPath = Util.getParentPath(fullPath) + "/";
-        final String fileName=Util.getNameFromPath(fullPath);
+    @Override
+    public void showDialog(final String beChangeName, final DialogActionListener listener) {
+        final String parentFullPath = Util.getParentPath(beChangeName) + "/";
+        final String fileName=Util.getNameFromPath(beChangeName);
 
         final View editView = LayoutInflater.from(mContext).inflate(R.layout.alert_dialog_edit_with_check, null);
         final EditText editText = (EditText) editView.findViewById(R.id.dialog_edit);
@@ -75,9 +71,9 @@ public class RenameDialogManager {
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(final DialogInterface dialog) {
-                mBtn_RenameOk = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                mBtn_RenameOk.setEnabled(false);
-                mBtn_RenameOk.setOnClickListener(new View.OnClickListener() {
+                mOKBtn = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                mOKBtn.setEnabled(false);
+                mOKBtn.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
@@ -96,9 +92,9 @@ public class RenameDialogManager {
                         }
 
 
-                        mBtn_RenameOk.setEnabled(false);
+                        mOKBtn.setEnabled(false);
                         //网络发送添加文件夹的请求
-                        mRenameTask = FileDataManager.getInstance().rename(fullPath, newName, new FileDataManager.DataListener() {
+                        mRenameTask = FileDataManager.getInstance().rename(beChangeName, newName, new FileDataManager.DataListener() {
                                     @Override
                                     public void onReceiveHttpResponse(int actionId) {
                                         dialog.dismiss();
@@ -107,13 +103,13 @@ public class RenameDialogManager {
 
                                     @Override
                                     public void onError(String errorMsg) {
-                                        mBtn_RenameOk.setEnabled(true);
+                                        mOKBtn.setEnabled(true);
                                         doingTextView.setText(errorMsg);
                                     }
 
                                     @Override
                                     public void onNetUnable() {
-                                        mBtn_RenameOk.setEnabled(true);
+                                        mOKBtn.setEnabled(true);
                                         doingTextView.setText(R.string.tip_net_is_not_available);
                                     }
                                 }
@@ -144,7 +140,7 @@ public class RenameDialogManager {
                     textView.setText(R.string.tip_name_invalid_folder_name);
                 }
                 textView.setVisibility(isContainSpecial || isValid || isContainExpression ? View.VISIBLE : View.GONE);
-                mBtn_RenameOk.setEnabled(!fileName.equals(s.toString()) && !isContainSpecial
+                mOKBtn.setEnabled(!fileName.equals(s.toString()) && !isContainSpecial
                         && !isContainExpression && s.length() > 0 && !isValid
                         && !isLowcaseSame && !TextUtils.isEmpty(s.toString().trim()));
 

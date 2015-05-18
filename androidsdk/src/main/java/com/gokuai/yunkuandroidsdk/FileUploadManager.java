@@ -2,6 +2,7 @@ package com.gokuai.yunkuandroidsdk;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -12,9 +13,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.gokuai.yunkuandroidsdk.data.LocalFileData;
+import com.gokuai.yunkuandroidsdk.util.Util;
 import com.gokuai.yunkuandroidsdk.util.UtilDialog;
 import com.yunkuent.sdk.upload.UploadCallBack;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 
 /**
@@ -72,6 +75,9 @@ public class FileUploadManager implements UploadCallBack {
                     case MSG_SUCCESS:
                         UtilDialog.showNormalToast(R.string.upload_success);
                         manager.mDialog.dismiss();
+                        if (manager.mListener != null) {
+                            manager.mListener.onComplete();
+                        }
                         break;
 
                 }
@@ -88,6 +94,10 @@ public class FileUploadManager implements UploadCallBack {
     private Thread mUploadThread;
     private AlertDialog mDialog;
 
+    private String mUploadingPath;
+    private String mLocalFilePath;
+    private Context mContext;
+
     /**
      * 上传单个文件
      *
@@ -96,6 +106,7 @@ public class FileUploadManager implements UploadCallBack {
      * @param localPath
      */
     public void upload(Context context, String fullPath, LocalFileData localPath) {
+        mContext = context;
         View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_progressbar, null);
         mTv_DialogStatus = (TextView) dialogView.findViewById(R.id.dialog_status_tv);
         mTv_DialogCount = (TextView) dialogView.findViewById(R.id.dialog_progress_bar_count_tv);
@@ -116,13 +127,32 @@ public class FileUploadManager implements UploadCallBack {
         mDialog.show();
 
         mTv_DialogStatus.setText(R.string.uploading);
-        mUploadThread = FileDataManager.getInstance().addFile(fullPath + localPath.getFilename(), localPath.getFullpath(), this);
+        mUploadingPath = fullPath + localPath.getFilename();
+        mLocalFilePath = localPath.getFullpath();
+        mUploadThread = FileDataManager.getInstance().addFile(mUploadingPath, mLocalFilePath, this);
     }
 
+    public String getUploadingPath() {
+        return mUploadingPath;
+    }
+
+    public interface UploadCompleteListener {
+        void onComplete();
+    }
+
+    public UploadCompleteListener mListener;
+
+    public void setUploadCompleteListener(UploadCompleteListener listener) {
+        mListener = listener;
+    }
+
+
     @Override
-    public void onSuccess(long l) {
+    public void onSuccess(long l, String filehash) {
         isSuccess = true;
+        Util.copyFile(mContext, Uri.fromFile(new File(mLocalFilePath)), filehash);
         mHandler.sendEmptyMessage(MSG_SUCCESS);
+
     }
 
     @Override

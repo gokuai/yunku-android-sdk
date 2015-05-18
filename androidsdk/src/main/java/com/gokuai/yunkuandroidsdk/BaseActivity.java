@@ -1,5 +1,6 @@
 package com.gokuai.yunkuandroidsdk;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.gokuai.yunkuandroidsdk.data.LocalFileData;
 import com.gokuai.yunkuandroidsdk.imageutils.ImageFetcher;
 
 import java.util.HashMap;
@@ -114,14 +116,47 @@ public class BaseActivity extends AppCompatActivity {
 
         switch (requestCode) {
             case Constants.REQUEST_CODE_UPLOAD_SUCCESS:
-                int actionId = data.getIntExtra(Constants.EXTRA_ACTION_ID, -1);
-                switch (actionId) {
-                    case Constants.ACTION_ID_REFRESH:
-                        if (mYKMainView != null) {
-                            String fullPath = data.getStringExtra(Constants.EXTRA_REDIRECT_FULLPATH);
-                            mYKMainView.redirectToFile(fullPath);
+                if (mYKMainView != null) {
+                    if (resultCode == Activity.RESULT_OK) {
+                        int actionId = data.getIntExtra(Constants.EXTRA_ACTION_ID, -1);
+                        switch (actionId) {
+                            case Constants.ACTION_ID_REFRESH:
+                                mYKMainView.redirectToFile(FileUploadManager.getInstance().getUploadingPath());
+                                break;
                         }
-                        break;
+                    }
+                }
+
+                break;
+            case Constants.REQUEST_CODE_TAKE_AUDIO:
+                if (mYKMainView != null) {
+                    if (resultCode == Activity.RESULT_OK) {
+                        FileUploadManager.getInstance().upload(this, mYKMainView.getCurrentPath(), LocalFileData.create(data.getData()));
+                        FileUploadManager.getInstance().setUploadCompleteListener(new FileUploadManager.UploadCompleteListener() {
+                            @Override
+                            public void onComplete() {
+                                if (mYKMainView != null) {
+                                    mYKMainView.redirectToFile(FileUploadManager.getInstance().getUploadingPath());
+                                }
+                            }
+                        });
+                    }
+                }
+
+                break;
+            case Constants.REQUEST_CODE_TAKE_PIC:
+                if (mYKMainView != null) {
+                    if (resultCode == Activity.RESULT_OK) {
+                        FileUploadManager.getInstance().upload(this, mYKMainView.getCurrentPath(), LocalFileData.create(mYKMainView.getCameraUri()));
+                        FileUploadManager.getInstance().setUploadCompleteListener(new FileUploadManager.UploadCompleteListener() {
+                            @Override
+                            public void onComplete() {
+                                if (mYKMainView != null) {
+                                    mYKMainView.redirectToFile(FileUploadManager.getInstance().getUploadingPath());
+                                }
+                            }
+                        });
+                    }
                 }
                 break;
 
@@ -140,6 +175,10 @@ public class BaseActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         imageFetcherExitTaskEarly(true);
+        if(mYKMainView!=null){
+            Config.setRootFullPath(this,mYKMainView.getCurrentPath());
+        }
+
     }
 
     @Override

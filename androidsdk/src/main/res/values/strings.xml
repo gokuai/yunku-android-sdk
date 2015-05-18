@@ -105,5 +105,13 @@
     <string name="upload_type">Upload Type</string>
     <string name="uploading">Uploading…</string>
     <string name="upload_success">Upload complete</string>
+    <string name="tip_is_handling">Handling...</string>
+    <string name="notes_upload">Gknote</string>
+    <string name="tip_no_available_device_to_take_audio">No available device to record audio！</string>
+    <string name="image_file_name_format">\'IMG\'_yyyyMMdd_HHmmss</string>
+    <string name="tip_no_available_device_to_take_camera">No available device to take photos！</string>
+    <string name="gknote_name_format">note_%1$s.gknote</string>
+    <string name="name_a_file">Name a file</string>
+    <string name="save">Save</string>
 
 </resources>

@@ -33,6 +33,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.provider.Telephony;
+import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.text.Html;
 import android.text.Spannable;
@@ -97,9 +98,6 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 
 public class Util {
@@ -396,7 +394,7 @@ public class Util {
         }
         final String openPath = UtilOffline.getOpenTempPath() + filehash + "/" + fileName;
 
-        Thread thread= new Thread(){
+        Thread thread = new Thread() {
             @Override
             public void run() {
                 try {
@@ -596,7 +594,7 @@ public class Util {
         Intent intent = new Intent(context, GKNoteEditorActivity.class);
         intent.putExtra(Constants.GKNOTE_URI, uri);
         intent.putExtra(Constants.GKNOTE_EDIT, true);
-        context.startActivity(intent);
+        ((AppCompatActivity) context).startActivityForResult(intent, Constants.REQUEST_CODE_UPLOAD_SUCCESS);
     }
 
     /**
@@ -1379,7 +1377,6 @@ public class Util {
         intent.setType("image/*");
         context.startActivity(intent);
     }
-
 
 
     private static String buildTransaction(final String type) {

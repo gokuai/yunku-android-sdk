@@ -21,10 +21,8 @@ public class FileSelectDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Bundle args = getArguments();
-        String title = args.getString("title");
         View v = inflater.inflate(R.layout.action_bar_dialog, container, false);
-        ListView tv = (ListView) v.findViewById(R.id.list);
+        ListView lv = (ListView) v.findViewById(R.id.list);
         Toolbar toolbar = (Toolbar) v.findViewById(R.id.my_toolbar);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -34,7 +32,6 @@ public class FileSelectDialog extends DialogFragment {
             }
         });
         toolbar.inflateMenu(R.menu.file_operation_menu);
-        toolbar.setTitle(title);
         return v;
     }
 

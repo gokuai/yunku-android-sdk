@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!-- End -->
 
     <application
@@ -23,8 +24,12 @@
         </activity>
 
         <!--Should have these Ativity below-->
-        <activity android:name="com.gokuai.yunkuandroidsdk.FileUploadActivity"/><!--File uploading manager-->
-        <activity android:name="com.gokuai.yunkuandroidsdk.GKNoteEditorActivity"/><!--Gknote Editor-->
+        <activity android:name="com.gokuai.yunkuandroidsdk.FileUploadActivity" />
+        <!--File uploading manager-->
+        <activity
+            android:name="com.gokuai.yunkuandroidsdk.GKNoteEditorActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <!--Gknote Editor-->
         <!-- End -->
     </application>
 

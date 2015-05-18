@@ -283,7 +283,6 @@ public class FileUploadActivity extends BaseActivity {
         if (FileUploadManager.getInstance().isSuccess()) {
             Intent intent = new Intent();
             intent.putExtra(Constants.EXTRA_ACTION_ID, Constants.ACTION_ID_REFRESH);
-            intent.putExtra(Constants.EXTRA_REDIRECT_FULLPATH, mUploadingPath);
             setResult(RESULT_OK, intent);
 
             FileUploadManager.getInstance().resetSuccessStatus();
@@ -454,14 +453,12 @@ public class FileUploadActivity extends BaseActivity {
         }
     }
 
-    private String mUploadingPath = "";
 
     /**
      * 上传选中的文件
      */
     private void uploadSelectedFileList() {
         FileUploadManager.getInstance().upload(this, mPath, mSelectedData);
-        mUploadingPath = mPath + mSelectedData.getFilename();
     }
 
 
