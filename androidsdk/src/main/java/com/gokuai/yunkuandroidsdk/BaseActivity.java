@@ -1,8 +1,8 @@
 package com.gokuai.yunkuandroidsdk;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -108,6 +108,27 @@ public class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case Constants.REQUEST_CODE_UPLOAD_SUCCESS:
+                int actionId = data.getIntExtra(Constants.EXTRA_ACTION_ID, -1);
+                switch (actionId) {
+                    case Constants.ACTION_ID_REFRESH:
+                        if (mYKMainView != null) {
+                            String fullPath = data.getStringExtra(Constants.EXTRA_REDIRECT_FULLPATH);
+                            mYKMainView.redirectToFile(fullPath);
+                        }
+                        break;
+                }
+                break;
+
+        }
+
+
+    }
 
     @Override
     protected void onResume() {
@@ -131,10 +152,10 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-            if(mYKMainView!=null){
-                if(!mYKMainView.isRoot()){
+            if (mYKMainView != null) {
+                if (!mYKMainView.isRoot()) {
                     mYKMainView.onBackEvent();
-                }else{
+                } else {
                     finish();
                 }
                 return true;

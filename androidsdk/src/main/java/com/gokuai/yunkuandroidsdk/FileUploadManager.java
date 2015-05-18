@@ -23,6 +23,7 @@ import java.lang.ref.WeakReference;
 public class FileUploadManager implements UploadCallBack {
 
 
+    private boolean isSuccess;
     private static FileUploadManager mInstance;
 
     public synchronized static FileUploadManager getInstance() {
@@ -61,8 +62,7 @@ public class FileUploadManager implements UploadCallBack {
             if (manager != null) {
                 switch (msg.what) {
                     case MSG_ERROR:
-                        UtilDialog.showNormalToast(msg.obj + "");
-                        manager.mDialog.dismiss();
+                        manager.mTv_DialogStatus.setText(msg.obj + "");
                         break;
                     case MSG_UPDATE_PROGRESS:
                         manager.mPb_DialogProgress.setIndeterminate(false);
@@ -121,6 +121,7 @@ public class FileUploadManager implements UploadCallBack {
 
     @Override
     public void onSuccess(long l) {
+        isSuccess = true;
         mHandler.sendEmptyMessage(MSG_SUCCESS);
     }
 
@@ -140,5 +141,13 @@ public class FileUploadManager implements UploadCallBack {
         message.arg1 = (int) (percent * 100);
         mHandler.sendMessage(message);
 
+    }
+
+    public void resetSuccessStatus() {
+        isSuccess = false;
+    }
+
+    public boolean isSuccess() {
+        return isSuccess;
     }
 }

@@ -260,6 +260,10 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
 
     }
 
+    /**
+     * 在list 高亮显示
+     * @param list
+     */
     private void redirectAndHighLight(ArrayList<FileData> list) {
         for (int i = 0; i < list.size(); i++) {
             FileData fileData = list.get(i);
@@ -401,7 +405,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
                         break;
                 }
 
-                mContext.startActivity(intent);
+                ((BaseActivity) mContext).startActivityForResult(intent, Constants.REQUEST_CODE_UPLOAD_SUCCESS);
 
             }
         }).show();
@@ -467,11 +471,23 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
         return mOption;
     }
 
-    public void setRedirectPath(String redirectPath) {
+    /**
+     * 设置定位路径
+     * @param redirectPath
+     */
+    private void setRedirectPath(String redirectPath) {
         mRedirectPath = redirectPath;
     }
+
 
     public void setOption(Option option) {
         mOption = option;
     }
+
+    public void redirectToFile(String fullPath){
+        setRedirectPath(fullPath);
+        refresh();
+    }
+
+
 }

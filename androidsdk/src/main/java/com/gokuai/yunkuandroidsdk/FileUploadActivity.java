@@ -1,5 +1,6 @@
 package com.gokuai.yunkuandroidsdk;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -199,8 +200,7 @@ public class FileUploadActivity extends BaseActivity {
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-
-            finish();
+            onFinish();
             return true;
         }
         return super.onKeyUp(keyCode, event);
@@ -236,7 +236,7 @@ public class FileUploadActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            finish();
+            onFinish();
         } else if (item.getItemId() == R.id.btn_menu_ok) {
             if (mLocalFileDataList == null) {
                 UtilDialog.showNormalToast(R.string.tip_upload_selected_file_list_error);
@@ -277,6 +277,18 @@ public class FileUploadActivity extends BaseActivity {
 
 
         return false;
+    }
+
+    public void onFinish() {
+        if (FileUploadManager.getInstance().isSuccess()) {
+            Intent intent = new Intent();
+            intent.putExtra(Constants.EXTRA_ACTION_ID, Constants.ACTION_ID_REFRESH);
+            intent.putExtra(Constants.EXTRA_REDIRECT_FULLPATH, mUploadingPath);
+            setResult(RESULT_OK, intent);
+
+            FileUploadManager.getInstance().resetSuccessStatus();
+        }
+        finish();
     }
 
     /**
@@ -401,8 +413,8 @@ public class FileUploadActivity extends BaseActivity {
                     }
                     if (!f.isDirectory()) {
                         if (f.getName().endsWith(".doc") || f.getName().endsWith(".txt")
-                                || f.getName().endsWith(".docx") || f.getName().endsWith(".rtf") || f.getName().endsWith("xls")
-                                || f.getName().endsWith("xlsx")) {
+                                || f.getName().endsWith(".docx") || f.getName().endsWith(".rtf") || f.getName().endsWith(".xls")
+                                || f.getName().endsWith(".xlsx")) {
                             File file = new File(f.getAbsolutePath());
                             mFileList.add(new LocalFileData(file.getName(), file.length(), file.getPath(), file.isDirectory(), file.lastModified()));
                             mHandler.removeMessages(MSG_UPDATE_FIND_FILE_COUNT);
@@ -442,12 +454,14 @@ public class FileUploadActivity extends BaseActivity {
         }
     }
 
+    private String mUploadingPath = "";
 
     /**
      * 上传选中的文件
      */
     private void uploadSelectedFileList() {
         FileUploadManager.getInstance().upload(this, mPath, mSelectedData);
+        mUploadingPath = mPath + mSelectedData.getFilename();
     }
 
 
