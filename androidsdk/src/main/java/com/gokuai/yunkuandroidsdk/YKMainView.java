@@ -342,6 +342,11 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
     }
 
     @Override
+    public void onHookError(HookCallback.HookType type) {
+
+    }
+
+    @Override
     public void onNetUnable() {
         ((AppCompatActivity) mContext).runOnUiThread(new Runnable() {
             @Override

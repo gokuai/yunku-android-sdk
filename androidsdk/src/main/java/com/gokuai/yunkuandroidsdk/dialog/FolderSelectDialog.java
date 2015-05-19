@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.gokuai.yunkuandroidsdk.Config;
 import com.gokuai.yunkuandroidsdk.Constants;
 import com.gokuai.yunkuandroidsdk.FileDataManager;
+import com.gokuai.yunkuandroidsdk.HookCallback;
 import com.gokuai.yunkuandroidsdk.R;
 import com.gokuai.yunkuandroidsdk.adapter.FolderListAdapter;
 import com.gokuai.yunkuandroidsdk.data.FileData;
@@ -255,6 +256,11 @@ public class FolderSelectDialog extends DialogFragment implements View.OnClickLi
                 mTV_CloudEmpty.setText(errorMsg);
             }
         });
+    }
+
+    @Override
+    public void onHookError(HookCallback.HookType type) {
+
     }
 
     @Override

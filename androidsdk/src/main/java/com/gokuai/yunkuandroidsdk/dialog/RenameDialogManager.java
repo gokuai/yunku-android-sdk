@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.gokuai.yunkuandroidsdk.FileDataManager;
+import com.gokuai.yunkuandroidsdk.HookCallback;
 import com.gokuai.yunkuandroidsdk.R;
 import com.gokuai.yunkuandroidsdk.util.Util;
 
@@ -105,6 +106,12 @@ public class RenameDialogManager extends DialogManger {
                                     public void onError(String errorMsg) {
                                         mOKBtn.setEnabled(true);
                                         doingTextView.setText(errorMsg);
+                                    }
+
+                                    @Override
+                                    public void onHookError(HookCallback.HookType type) {
+                                        dialog.dismiss();
+
                                     }
 
                                     @Override

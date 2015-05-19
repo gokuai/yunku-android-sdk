@@ -12,7 +12,8 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
             <RelativeLayout
                 android:id="@+id/empty_rl"
@@ -24,12 +25,10 @@
 
                 <TextView
                     android:id="@+id/empty"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="214dp"
-                    android:gravity="center"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
                     android:text="@string/file_list_empty"
+                    android:gravity="center"
                     android:textColor="@color/color_c"
                     android:textSize="@dimen/text_big" />
 

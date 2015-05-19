@@ -41,17 +41,17 @@
                 android:layout_marginRight="@dimen/dropdown_btn_size"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/file_item_lastmembername"
-                    style="@style/gray_small_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/thin_margin"
-                    android:ellipsize="middle"
-                    android:singleLine="true"
-                    android:text="me"
+                <!--<TextView-->
+                    <!--android:id="@+id/file_item_lastmembername"-->
+                    <!--style="@style/gray_small_text"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginBottom="@dimen/thin_margin"-->
+                    <!--android:ellipsize="middle"-->
+                    <!--android:singleLine="true"-->
+                    <!--android:text="me"-->
 
-                    />
+                    <!--/>-->
 
                 <TextView
                     android:id="@+id/file_item_size"
@@ -60,9 +60,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/thin_margin"
                     android:ellipsize="middle"
-                    android:paddingLeft="@dimen/thick_margin"
                     android:singleLine="true"
-                    android:text="Tuesday" />
+                    android:text="20k" />
 
                 <TextView
                     android:id="@+id/file_item_dateline"

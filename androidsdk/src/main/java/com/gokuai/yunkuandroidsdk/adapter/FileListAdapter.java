@@ -117,7 +117,7 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
             holder = new ViewHolder();
             holder.name = (TextView) convertView.findViewById(R.id.file_item_name);
             holder.dateline = (TextView) convertView.findViewById(R.id.file_item_dateline);
-            holder.lastmembername = (TextView) convertView.findViewById(R.id.file_item_lastmembername);
+//            holder.lastmembername = (TextView) convertView.findViewById(R.id.file_item_lastmembername);
             holder.filesize = (TextView) convertView.findViewById(R.id.file_item_size);
             holder.img = (ImageView) convertView.findViewById(R.id.file_item_pic);
             holder.dropdownbtn = (Button) convertView.findViewById(R.id.file_item_dropdown_btn);
@@ -133,7 +133,7 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
         FileData data = mList.get(position);
         holder.name.setText(data.getFilename());
         holder.dateline.setText(Util.formateTime(data.getDateline()));
-        holder.lastmembername.setText(data.getLastMemberName());
+//        holder.lastmembername.setText(data.getLastMemberName());
         holder.dropdownbtn.setTag(position);
         holder.itemll.setTag(position);
         holder.img.setBackgroundDrawable(null);
@@ -279,7 +279,7 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
     private class ViewHolder {
         private TextView name;
         private TextView dateline;
-        private TextView lastmembername;
+//        private TextView lastmembername;
         private TextView filesize;
         private View descriptionll;
         private ImageView img;

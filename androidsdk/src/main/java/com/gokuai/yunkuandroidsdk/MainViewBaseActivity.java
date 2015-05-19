@@ -1,10 +1,9 @@
 package com.gokuai.yunkuandroidsdk;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,11 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.gokuai.yunkuandroidsdk.data.LocalFileData;
-import com.gokuai.yunkuandroidsdk.imageutils.ImageFetcher;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Created by Brandon on 15/4/20.
@@ -158,5 +152,14 @@ public class MainViewBaseActivity extends BaseActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT
+                || newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            //TODO
+        }
     }
 }

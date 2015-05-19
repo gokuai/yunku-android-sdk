@@ -80,7 +80,8 @@ public class FileDataManager {
         }
 
 
-        if (isHookRegisted() && !mCallback.hookInvoke(HookCallback.HookType.HOOK_TYPE_MOVE, fullPath)) {
+        if (isHookRegisted() && !mCallback.hookInvoke(HookCallback.HookType.HOOK_TYPE_RENAME, fullPath)) {
+            listener.onHookError(HookCallback.HookType.HOOK_TYPE_RENAME);
             return null;
         }
 
@@ -120,39 +121,41 @@ public class FileDataManager {
     }
 
     public AsyncTask move(final String fullPath, final String targetPath, final DataListener listener) {
-        if (!Util.isNetworkAvailableEx()) {
-            listener.onNetUnable();
-            return null;
-        }
-
-
-        if (isHookRegisted() && !mCallback.hookInvoke(HookCallback.HookType.HOOK_TYPE_MOVE, fullPath)) {
-            return null;
-        }
-
-
-        return new AsyncTask<Void, Void, Object>() {
-
-            @Override
-            protected Object doInBackground(Void... params) {
-                return mEntFileManager.move((int) Util.getUnixDateline(), fullPath, targetPath, "");
-            }
-
-            @Override
-            protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
-                BaseData baseData = BaseData.create(o.toString());
-                if (baseData != null) {
-                    if (baseData.getCode() == HttpStatus.SC_OK) {
-                        listener.onReceiveHttpResponse(ACTION_ID_MOVE);
-                    } else {
-                        listener.onError(baseData.getErrorMsg());
-                    }
-                } else {
-                    listener.onError(GKApplication.getInstance().getString(R.string.tip_connect_server_failed));
-                }
-            }
-        }.execute();
+//        if (!Util.isNetworkAvailableEx()) {
+//            listener.onNetUnable();
+//            return null;
+//        }
+//
+//
+//        if (isHookRegisted() && !mCallback.hookInvoke(HookCallback.HookType.HOOK_TYPE_MOVE, fullPath)) {
+//            return null;
+//        }
+//
+//
+//        return new AsyncTask<Void, Void, Object>() {
+//
+//            @Override
+//            protected Object doInBackground(Void... params) {
+//                return mEntFileManager.move((int) Util.getUnixDateline(), fullPath, targetPath, "");
+//            }
+//
+//            @Override
+//            protected void onPostExecute(Object o) {
+//                super.onPostExecute(o);
+//                BaseData baseData = BaseData.create(o.toString());
+//                if (baseData != null) {
+//                    if (baseData.getCode() == HttpStatus.SC_OK) {
+//                        listener.onReceiveHttpResponse(ACTION_ID_MOVE);
+//                    } else {
+//                        listener.onError(baseData.getErrorMsg());
+//                    }
+//                } else {
+//                    listener.onError(GKApplication.getInstance().getString(R.string.tip_connect_server_failed));
+//                }
+//            }
+//        }.execute();
+        //TODO
+        return null;
 
     }
 
@@ -161,6 +164,14 @@ public class FileDataManager {
     }
 
     public Thread addFile(String fullPath, String localPath, UploadCallBack callBack) {
+        if (!Util.isNetworkAvailableEx()) {
+            return null;
+        }
+
+        if (isHookRegisted() && !mCallback.hookInvoke(HookCallback.HookType.HOOK_TYPE_UPLOAD, fullPath)) {
+            callBack.onFail(0, "");
+            return null;
+        }
         return mEntFileManager.uploadByBlock((int) Util.getUnixDateline(), fullPath, Config.ORG_OPT_NAME, 0, localPath, true, callBack);
     }
 
@@ -179,6 +190,7 @@ public class FileDataManager {
 
 
         if (isHookRegisted() && !mCallback.hookInvoke(HookCallback.HookType.HOOK_TYPE_CREATE_DIR, fullPath)) {
+            listener.onHookError(HookCallback.HookType.HOOK_TYPE_CREATE_DIR);
             return null;
         }
 
@@ -222,6 +234,7 @@ public class FileDataManager {
 
 
         if (isHookRegisted() && !mCallback.hookInvoke(HookCallback.HookType.HOOK_TYPE_DELETE, fullPath)) {
+            listener.onHookError(HookCallback.HookType.HOOK_TYPE_DELETE);
             return null;
         }
 
@@ -252,7 +265,10 @@ public class FileDataManager {
     }
 
     public boolean fileExistInCache(String fullPath) {
-        ArrayList<FileData> list = getFilesFromMemory(Util.getParentPath(fullPath));
+        String parentPath = Util.getParentPath(fullPath);
+        parentPath += (TextUtils.isEmpty(parentPath) ? "" : "/");
+
+        ArrayList<FileData> list = getFilesFromMemory(parentPath);
         if (list != null) {
             for (FileData data : list) {
                 if (data.getFullpath().equals(fullPath)) {
@@ -267,6 +283,8 @@ public class FileDataManager {
         void onReceiveHttpResponse(int actionId);
 
         void onError(String errorMsg);
+
+        void onHookError(HookCallback.HookType type);
 
         void onNetUnable();
     }
@@ -287,7 +305,9 @@ public class FileDataManager {
      */
     public void getFileList(final String fullPath, final FileDataListener listener, final int dir) {
 
+
         if (isHookRegisted() && !mCallback.hookInvoke(HookCallback.HookType.HOOK_TYPE_FILE_LIST, fullPath)) {
+            listener.onHookError(HookCallback.HookType.HOOK_TYPE_FILE_LIST);
             return;
         }
 
