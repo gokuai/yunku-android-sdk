@@ -10,19 +10,9 @@ public class UtilOffline {
 
     private static final String CACHEPATH_TEMP = ".temp/";
     private static final String CACHEPATH_ZIP_TEMP = "zips/";
-    private static final String CACHE_FILENAME_USERINFO = "userinfo";
     public static final String CACHE_THUMNAIL = ".thumbnail/";
     public static final String CACHE_OPEN_TEMP_PATH = "open_temp_path/";
     public static final String CACHE_FILE = "file";
-
-    /**
-     * 获取缓存路径
-     *
-     * @return
-     */
-    public static String getCachePath() {
-        return Config.getRootPath();
-    }
 
     /**
      * 获取临时缓存文件路径
@@ -39,27 +29,6 @@ public class UtilOffline {
 
     public static String getZipCachePath() {
         return getCacheTempPath() + CACHEPATH_ZIP_TEMP;
-    }
-
-    /**
-     * 删除缓存
-     *
-     * @return
-     */
-    public static void delCache() {
-        Util.deleteFile(getCachePath());
-    }
-
-    public static void delUserInfo() {
-        Util.deleteFile(Config.getRootPath() + File.separator + CACHE_FILENAME_USERINFO);
-    }
-
-    /**
-     *
-     */
-    //FIXME
-    public static void delUserAppPath() {
-        Util.deleteFile(Config.getUserPath());
     }
 
     /**
