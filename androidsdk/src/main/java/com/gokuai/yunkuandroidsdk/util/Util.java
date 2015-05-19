@@ -787,44 +787,6 @@ public class Util {
         return getNameFromPath(folderPath);
     }
 
-//    /**
-//     * 格式化空间
-//     *
-//     * @param context
-//     * @param used
-//     * @param total
-//     * @param orgId
-//     * @param orgSize
-//     * @return
-//     */
-//    public static String formatSpace(Context context, long used, long total,
-//                                     long orgSize, int orgId) {
-//        String space = "";
-//        if (orgId == 0) {
-//            space = String.format(
-//                    context.getResources().getString(
-//                            R.string.space_formate_no_org),
-//                    formatFileSize(context, used),
-//                    formatFileSize(context, total));
-//        } else {
-//            if (total == 0) {
-//                space = String.format(
-//                        context.getResources().getString(
-//                                R.string.space_formate_have_org),
-//                        formatFileSize(context, used),
-//                        formatFileSize(context, orgSize));
-//            } else {
-//                space = String.format(
-//                        context.getResources().getString(
-//                                R.string.space_formate_have_org_without_pay),
-//                        formatFileSize(context, used),
-//                        formatFileSize(context, orgSize),
-//                        formatFileSize(context, total));
-//            }
-//        }
-//        // test
-//        return space;
-//    }
 
     /**
      * 获取IP地址

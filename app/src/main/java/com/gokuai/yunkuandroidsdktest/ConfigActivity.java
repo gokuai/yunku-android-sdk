@@ -9,7 +9,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 /**
- * Created by Brandon on 15/5/18.
+ * 调整配置Activity
  */
 public class ConfigActivity extends AppCompatActivity {
 

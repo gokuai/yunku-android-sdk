@@ -34,10 +34,7 @@ public class Config {
     public static final String DCIM_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getPath();
     public static final String SD_CARD_PATH = Environment.getExternalStorageDirectory().getPath();
 
-    private static final String CUSTOMER_DB_PATH = "App_DB/";
-
-    public static String URL_SOCKET_PREVIEW;//getPreviewSite
-    public static String HTTPREFERER = "www.gokuai.com";
+    public final static String HTTPREFERER = "www.gokuai.com";
 
     public final static String WEBVIEW_USERAGENT = "GK_ANDROID;%s;Android";
 
@@ -50,12 +47,8 @@ public class Config {
     public static final String SP_FILE_LIST_SORT = "ListSort";
 
     public static final String SP_CACHE_ROOT_DATA = "CacheRootData";
-    public static final String SP_CACHE_ROOT_DATA_ORGID = "OrgId";
     public static final String SP_CACHE_ROOT_DATA_FULLPATH = "FullPath";
 
-
-    public static final String SP_CACHE_FOR_SERVER = "server";
-    public static final String SP_CACHE_FOR_SERVER_PERVIEW_SITE = "preview_site";
 
     public static void setCachePath(Context context) {
         String path = "";
@@ -67,13 +60,6 @@ public class Config {
             path = Environment.getExternalStorageDirectory().getPath();
         }
         Config.CACHE_PATH = path;
-    }
-
-    public static void setRootOrgId(Context context, int orgId) {
-        SharedPreferences.Editor editor = context.getSharedPreferences(
-                SP_CACHE_ROOT_DATA, Context.MODE_PRIVATE).edit();
-        editor.putInt(SP_CACHE_ROOT_DATA_ORGID, orgId);
-        editor.apply();
     }
 
     public static String getRootFullPath(Context context) {
@@ -104,47 +90,6 @@ public class Config {
     }
 
 
-    public static String getApplicationPath(Context context) {
-        PackageManager m = context.getPackageManager();
-        String s = context.getPackageName();
-        try {
-            PackageInfo p = m.getPackageInfo(s, 0);
-            s = p.applicationInfo.dataDir;
-        } catch (PackageManager.NameNotFoundException e) {
-        }
-        return s;
-    }
-
-    /**
-     * 自定义数据库路径
-     *
-     * @return
-     */
-    public static String getCustomerDbPath() {
-
-        String path = getApplicationPath(GKApplication.getInstance()) + "/" + CUSTOMER_DB_PATH;
-        File file = new File(path);
-        if (!file.isDirectory()) {
-            file.mkdirs();
-        }
-        return path;
-    }
-
-    /**
-     * 用户路径
-     *
-     * @return
-     */
-    public static String getUserPath() {
-        String path = getCustomerDbPath();
-        File file = new File(path);
-        if (!file.isDirectory()) {
-            file.mkdirs();
-        }
-        return path;
-    }
-
-
     /**
      * 获得本地文件跟目录
      *
@@ -159,10 +104,6 @@ public class Config {
         return Config.getOfflineFilePath() + filehash;
     }
 
-    public static String getPdfFilePath(String filehash) {
-        return getLocalFilePath(filehash) + "_pdf";
-    }
-
     public static String getBigThumbPath(String filehash) {
         return getLocalFilePath(filehash) + "_thumbnail";
     }
@@ -171,20 +112,6 @@ public class Config {
         return Config.getRootPath()
                 + File.separator
                 + UtilOffline.CACHE_FILE + File.separator;
-    }
-
-
-    public static String getPreviewSite(Context context) {
-        SharedPreferences debugPreference = context.getSharedPreferences(
-                SP_CACHE_FOR_SERVER, Context.MODE_PRIVATE);
-        return debugPreference.getString(SP_CACHE_FOR_SERVER_PERVIEW_SITE, "");
-    }
-
-    public static void setPreviewSite(Context context, String site) {
-        SharedPreferences.Editor editor = context.getSharedPreferences(
-                SP_CACHE_FOR_SERVER, Context.MODE_PRIVATE).edit();
-        editor.putString(SP_CACHE_FOR_SERVER_PERVIEW_SITE, site);
-        editor.apply();
     }
 
 
