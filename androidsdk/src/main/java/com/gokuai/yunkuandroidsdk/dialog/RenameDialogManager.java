@@ -9,7 +9,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -32,7 +31,7 @@ public class RenameDialogManager extends DialogManger {
     @Override
     public void showDialog(final String beChangeName, final DialogActionListener listener) {
         final String parentFullPath = Util.getParentPath(beChangeName) + "/";
-        final String fileName=Util.getNameFromPath(beChangeName);
+        final String fileName = Util.getNameFromPath(beChangeName).replace("/", "");
 
         final View editView = LayoutInflater.from(mContext).inflate(R.layout.alert_dialog_edit_with_check, null);
         final EditText editText = (EditText) editView.findViewById(R.id.dialog_edit);

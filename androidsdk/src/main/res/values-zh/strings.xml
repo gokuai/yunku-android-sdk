@@ -40,7 +40,7 @@
     <string name="file_list_header">返回上一层</string>
     <string name="menu_add">添加</string>
     <string name="menu_folders">文件夹</string>
-    <string name="menu_files">Files</string>
+    <string name="menu_files">文件</string>
     <string name="menu_take_photos">拍照</string>
     <string name="menu_notes">够快笔记</string>
     <string name="menu_records">录音</string>
@@ -78,7 +78,7 @@
     <string name="tip_upload_selected_file_list_error">请选择一个文件</string>
     <string name="tip_cant_copy_to_son_folder">无法复制到子文件夹</string>
     <string name="tip_cant_move_to_son_folder">无法移动到子文件夹</string>
-    <string name="dialog_rename_hint">重命名</string>
+    <string name="dialog_rename_hint">输入重命名名称</string>
     <string name="tip_is_renaming">重命名…</string>
     <string name="opening">正在打开…</string>
     <string name="downloading">正在下载…</string>
