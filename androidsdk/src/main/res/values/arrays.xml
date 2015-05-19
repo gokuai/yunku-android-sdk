@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="upload_file_type">
-        <item>Picture</item>
-        <item>Video</item>
+        <item>Pictures</item>
+        <item>Videos</item>
         <item>Music</item>
-        <item>Document</item>
-        <item>Other</item>
+        <item>Documents</item>
+        <item>Others…</item>
     </string-array>
 </resources>

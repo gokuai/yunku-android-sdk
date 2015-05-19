@@ -353,7 +353,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
             public void run() {
                 UtilDialog.dismissLoadingDialog(mContext);
                 onRefreshComplete();
-                UtilDialog.showNormalToast(R.string.network_not_available);
+                UtilDialog.showNormalToast(R.string.tip_net_is_not_available);
             }
         });
     }

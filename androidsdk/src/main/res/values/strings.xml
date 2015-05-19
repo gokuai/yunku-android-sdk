@@ -1,15 +1,6 @@
 <resources>
     <string name="app_name">YunkuAndroidSDK</string>
-    <string name="okay">Okay</string>
-    <string name="fill_out_text_field">Fill out text field</string>
-    <string name="cannot_open_file_Path">Cannot open file: %1$s</string>
-    <string name="cannot_open_document">Cannot open document</string>
-    <string name="choose_value">Choose value</string>
-    <string name="cannot_open_buffer">Cannot open buffer</string>
     <string name="tip_is_loading">Loading…</string>
-    <string name="tip_open_image_failed">Open image failed</string>
-    <string name="tip_is_copied_to_clipboard">Copy to clipboard</string>
-    <string name="tip_is_preparing_for_data">Loading data…</string>
     <string name="cancel">Cancel</string>
     <string name="file_list_empty">Empty Folder</string>
 
@@ -42,19 +33,12 @@
     <string name="date_saturday">Saturday</string>
     <string name="date_sunday">Sunday</string>
 
-    <string name="text_not_found">Text not found</string>
-    <string name="searching_">Searching&#8230;</string>
-    <string name="no_further_occurrences_found">No further occurrences found</string>
-    <string name="dismiss">Dismiss</string>
-
     <string name="tip_open_file_with_excepiton">Occur a exception with opening file！</string>
     <string name="tip_content_has_change">Do you want to exit without saving?</string>
     <string name="tip_content_must_not_be_empty">Content must not be empty!</string>
 
     <string name="tip_upload_exception">Exception when uploading file,please try again!</string>
-    <string name="not_supported">Not supported</string>
     <string name="file_list_header">Return</string>
-    <string name="network_not_available">Network is not available</string>
     <string name="menu_add">Add</string>
     <string name="menu_folders">Folders</string>
     <string name="menu_files">Files</string>
@@ -105,13 +89,12 @@
     <string name="upload_type">Upload Type</string>
     <string name="uploading">Uploading…</string>
     <string name="upload_success">Upload complete</string>
-    <string name="tip_is_handling">Handling...</string>
+    <string name="tip_is_handling">Handling…</string>
     <string name="notes_upload">Gknote</string>
     <string name="tip_no_available_device_to_take_audio">No available device to record audio！</string>
     <string name="image_file_name_format">\'IMG\'_yyyyMMdd_HHmmss</string>
     <string name="tip_no_available_device_to_take_camera">No available device to take photos！</string>
     <string name="gknote_name_format">note_%1$s.gknote</string>
-    <string name="name_a_file">Name a file</string>
     <string name="save">Save</string>
 
 </resources>

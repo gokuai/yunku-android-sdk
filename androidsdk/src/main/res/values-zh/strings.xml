@@ -1,0 +1,99 @@
+<resources>
+    <string name="tip_is_loading">正在加载…</string>
+    <string name="cancel">取消</string>
+    <string name="file_list_empty">空文件夹</string>
+
+    <!-- userd in openning file -->
+    <string name="title_open_image">图片打开方式</string>
+    <string name="no_way_to_open_image">没有可用于打开图片的应用程序</string>
+    <string name="title_open_audio">音乐打开方式</string>
+    <string name="no_way_to_open_audio">没有可用于打开音乐的应用程序</string>
+    <string name="title_open_video">没有可用于打开音乐的应用程序</string>
+    <string name="no_way_to_open_video">没有可用于打开音乐的应用程序</string>
+    <string name="title_send_file">发送方式</string>
+    <string name="no_way_to_send_file">没有可用于发送的应用程序</string>
+    <string name="no_way_to_send_email">没有可用于发送邮件的应用程序</string>
+    <string name="no_way_to_send_message">没有可用于发送短信的应用程序</string>
+    <string name="title_open_file">文件打开方式</string>
+    <string name="no_way_to_open_file">没有可用于打开该文件的应用程序</string>
+    <string name="tip_file_not_exist">文件不存在或已被删除！</string>
+    <string name="web_browser_not_find">未发现打开的浏览器</string>
+
+    <!-- used in compress image -->
+    <string name="out_of_memory">内存溢出</string>
+
+    <!--date-->
+    <string name="date_yesterday">昨天</string>
+    <string name="date_monday">星期一</string>
+    <string name="date_tuesday">星期二</string>
+    <string name="date_wednesday">星期三</string>
+    <string name="date_thursday">星期四</string>
+    <string name="date_friday">星期五</string>
+    <string name="date_saturday">星期六</string>
+    <string name="date_sunday">星期日</string>
+
+    <string name="tip_open_file_with_excepiton">文件打开时发生错误！</string>
+    <string name="tip_content_has_change">有未保存的改动内容，你确定要退出吗?</string>
+    <string name="tip_content_must_not_be_empty">内容不能为空!</string>
+
+    <string name="tip_upload_exception">上传中发生错误请重试</string>
+    <string name="file_list_header">返回上一层</string>
+    <string name="menu_add">添加</string>
+    <string name="menu_folders">文件夹</string>
+    <string name="menu_files">Files</string>
+    <string name="menu_take_photos">拍照</string>
+    <string name="menu_notes">够快笔记</string>
+    <string name="menu_records">录音</string>
+    <string name="move">移动</string>
+    <string name="copy">复制</string>
+    <string name="delete">删除</string>
+    <string name="more">更多</string>
+    <string name="dialog_new_folder_hint">输入文件夹名称</string>
+    <string name="new_folder">新建文件夹</string>
+    <string name="ok">确定</string>
+    <string name="tip_is_creating">创建中…</string>
+    <string name="tip_name_contain_special_char">包含有特殊符号</string>
+    <string name="tip_name_invalid_folder_name">非法文件夹名</string>
+    <string name="tip_net_is_not_available">网络不可用</string>
+    <string name="tip_connect_server_failed">链接服务器失败</string>
+    <string name="tip_same_file_name_exist">文件名已存在</string>
+    <string name="confirm_to_delete">确定要删除这个文件吗?</string>
+    <string name="deleting">正在删除…</string>
+    <string name="copy_to">复制到</string>
+    <string name="move_to">移动到</string>
+    <string name="tip_target_path_is_same_with_orginpath">目标路径与原路径相同</string>
+    <string name="tip_is_copying">正在复制…</string>
+    <string name="tip_is_moving">在正移动…</string>
+    <string name="rename">重命名</string>
+    <string name="tip_audio_empty">未找到音频文件</string>
+    <string name="tip_img_empty">未找到图片文件</string>
+    <string name="tip_video_empty">未找到视频文件</string>
+    <string name="tip_doc_empty">未找到文档文件</string>
+    <string name="format_find_many_in_total">找到 %1$s files</string>
+    <string name="all_select">全选</string>
+    <string name="finish">完成</string>
+    <string name="tip">提示</string>
+    <string name="tip_replace_for_same_file">已有相同文件存在，确定要替换吗 ?</string>
+    <string name="replace">替换</string>
+    <string name="tip_upload_selected_file_list_error">请选择一个文件</string>
+    <string name="tip_cant_copy_to_son_folder">无法复制到子文件夹</string>
+    <string name="tip_cant_move_to_son_folder">无法移动到子文件夹</string>
+    <string name="dialog_rename_hint">重命名</string>
+    <string name="tip_is_renaming">重命名…</string>
+    <string name="opening">正在打开…</string>
+    <string name="downloading">正在下载…</string>
+    <string name="connecting">正在链接…</string>
+    <string name="download_failed">下载失败</string>
+    <string name="get_file_info_failed">获取信息失败</string>
+    <string name="upload_type">上传类型</string>
+    <string name="uploading">上传中…</string>
+    <string name="upload_success">上传完毕</string>
+    <string name="tip_is_handling">正在处理…</string>
+    <string name="notes_upload">够快笔记</string>
+    <string name="tip_no_available_device_to_take_audio">没有可用的录音程序！</string>
+    <string name="image_file_name_format">\'IMG\'_yyyyMMdd_HHmmss</string>
+    <string name="tip_no_available_device_to_take_camera">没有可用的拍照程序！</string>
+    <string name="gknote_name_format">note_%1$s.gknote</string>
+    <string name="save">保存</string>
+
+</resources>
