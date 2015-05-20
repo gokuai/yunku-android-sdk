@@ -6,15 +6,40 @@ android {
 
     defaultConfig {
         applicationId "com.gokuai.yunkuandroidsdktest"
-        minSdkVersion 19
+        minSdkVersion 14
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }
+    lintOptions {
+        checkReleaseBuilds true
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+
+    signingConfigs {
+
+        debug {
+            storeFile file('test')
+            storePassword 'gokuai'
+            keyAlias 'gokuai'
+            keyPassword 'gokuai'
+        }
+
+        release {
+            storeFile file('test')
+            storePassword 'gokuai'
+            keyAlias 'gokuai'
+            keyPassword 'gokuai'
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }

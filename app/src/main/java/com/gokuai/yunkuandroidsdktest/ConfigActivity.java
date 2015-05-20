@@ -62,7 +62,7 @@ public class ConfigActivity extends AppCompatActivity {
                 paramData.hookUpload = mCB_hookUpload.isChecked();
                 paramData.hookCreateDir = mCB_hookCreateDir.isChecked();
                 paramData.hookRename = mCB_hookRename.isChecked();
-                paramData.hookDelete = mCB_hookDelete.isChecked();
+                paramData.hookList = mCB_hookFilelist.isChecked();
                 intent.putExtra("params",paramData);
                 startActivity(intent);
             }
