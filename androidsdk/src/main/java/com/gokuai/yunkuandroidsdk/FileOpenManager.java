@@ -71,22 +71,22 @@ public class FileOpenManager {
             final FileOpenManager manager = mManager.get();
             if (manager != null) {
                 switch (msg.what) {
-                    case MSG_CONNECTING:
+                    case MSG_CONNECTING://正在链接
                         manager.mTv_DialogStatus.setText(R.string.connecting);
                         break;
-                    case MSG_START_TO_DOWNLOAD:
+                    case MSG_START_TO_DOWNLOAD://开始下载
                         manager.mTv_DialogStatus.setText(R.string.downloading);
                         break;
-                    case MSG_ERROR:
+                    case MSG_ERROR://返回错误
                         UtilDialog.showNormalToast(msg.obj + "");
                         manager.mDialog.dismiss();
                         break;
-                    case MSG_UPDATE_PROGRESS:
+                    case MSG_UPDATE_PROGRESS://显示进度
                         manager.mPb_DialogProgress.setIndeterminate(false);
                         manager.mPb_DialogProgress.setProgress(msg.arg1);
                         manager.mTv_DialogCount.setText(msg.arg1 + "%");
                         break;
-                    case MSG_DOWNLOAD_COMPLETE:
+                    case MSG_DOWNLOAD_COMPLETE://郑子啊打开
                         manager.mTv_DialogStatus.setText(R.string.opening);
                         break;
                 }
@@ -150,6 +150,11 @@ public class FileOpenManager {
         }
     }
 
+    /**
+     * 下载文件
+     * @param data
+     * @throws IOException
+     */
     private void downloadFile(final FileData data) throws IOException {
         mHandler.sendEmptyMessage(MSG_CONNECTING);
 
@@ -213,6 +218,11 @@ public class FileOpenManager {
         }
     }
 
+    /**
+     * 打开文件
+     * @param context
+     * @param data
+     */
     private void openFile(Context context, FileData data) {
         mPb_DialogProgress.setIndeterminate(true);
         mOpenTask = Util.handleLocalFile(context, data.getFilehash(), data.getFilename(), data.getFilesize(), new Util.FileOpenListener() {

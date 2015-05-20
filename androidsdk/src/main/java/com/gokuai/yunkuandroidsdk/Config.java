@@ -50,6 +50,10 @@ public class Config {
     public static final String SP_CACHE_ROOT_DATA_FULLPATH = "FullPath";
 
 
+    /**
+     * 设置缓存路径 lib中使用
+     * @param context
+     */
     public static void setCachePath(Context context) {
         String path = "";
         File file = context.getExternalCacheDir();

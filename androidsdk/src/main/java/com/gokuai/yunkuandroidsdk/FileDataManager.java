@@ -43,6 +43,7 @@ public class FileDataManager {
 
     private HookCallback mCallback;
 
+
     public void registerHook(HookCallback calback) {
         mCallback = calback;
     }
@@ -264,6 +265,11 @@ public class FileDataManager {
         }.execute();
     }
 
+    /**
+     * 是否存在列表缓存中
+     * @param fullPath
+     * @return
+     */
     public boolean fileExistInCache(String fullPath) {
         String parentPath = Util.getParentPath(fullPath);
         parentPath += (TextUtils.isEmpty(parentPath) ? "" : "/");

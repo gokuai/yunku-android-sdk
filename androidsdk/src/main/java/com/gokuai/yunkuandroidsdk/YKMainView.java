@@ -398,6 +398,9 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
 
     }
 
+    /**
+     * 文件选择
+     */
     public void filesChooseDialog() {
         new AlertDialog.Builder(mContext).setTitle(R.string.upload_type).setItems(R.array.upload_file_type, new DialogInterface.OnClickListener() {
             @Override
@@ -467,6 +470,9 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
         refresh();
     }
 
+    /**
+     * 下载刷新完毕
+     */
     private void onRefreshComplete() {
         if (mSwipeRefreshLayout != null && mSwipeRefreshLayout.isRefreshing()) {
             mSwipeRefreshLayout.setRefreshing(false);

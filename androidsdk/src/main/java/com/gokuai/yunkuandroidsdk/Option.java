@@ -1,7 +1,7 @@
 package com.gokuai.yunkuandroidsdk;
 
 /**
- * Created by Brandon on 15/3/31.
+ * 功能属性类
  */
 public class Option {
 
