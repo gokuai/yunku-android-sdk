@@ -359,10 +359,8 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
     }
 
     public void onCreateOptionsMenu(MenuInflater menuInflater, Menu menu) {
-        if (mOption != null) {
-            if (!mOption.canUpload) {
-                return;
-            }
+        if (mOption == null || !mOption.canUpload) {
+            return;
         }
         menuInflater.inflate(R.menu.main_view_menu, menu);
     }

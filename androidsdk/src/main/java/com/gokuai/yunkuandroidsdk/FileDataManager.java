@@ -33,10 +33,6 @@ public class FileDataManager {
 
 
     private String mRootPath = Config.ORG_ROOT_PATH;
-
-    private String mOrgClientId = Config.ORG_CLIENT_ID;
-    private String mOrgClientSecret = Config.ORG_CLIENT_SECRET;
-
     private EntFileManager mEntFileManager;
 
     private static FileDataManager mInstance;
@@ -68,10 +64,10 @@ public class FileDataManager {
     }
 
     public FileDataManager() throws GKException {
-        if (TextUtils.isEmpty(mOrgClientId) && TextUtils.isEmpty(mOrgClientSecret)) {
+        if (TextUtils.isEmpty(Config.ORG_CLIENT_ID) && TextUtils.isEmpty(Config.ORG_CLIENT_SECRET)) {
             throw new GKException("You need set ORG_CLIENT_ID ORG_CLIENT_SECRET first ");
         }
-        mEntFileManager = new EntFileManager(mOrgClientId, mOrgClientSecret);
+        mEntFileManager = new EntFileManager(Config.ORG_CLIENT_ID, Config.ORG_CLIENT_SECRET);
     }
 
     public AsyncTask rename(final String fullPath, final String newName, final DataListener listener) {
@@ -118,7 +114,7 @@ public class FileDataManager {
 
     public AsyncTask copy(String fullPath, String targetPath, DataListener callBack) {
         //todo
-        return null;
+         throw new UnsupportedOperationException();
     }
 
     public AsyncTask move(final String fullPath, final String targetPath, final DataListener listener) {
@@ -156,7 +152,7 @@ public class FileDataManager {
 //            }
 //        }.execute();
         //TODO
-        return null;
+        throw new UnsupportedOperationException();
 
     }
 

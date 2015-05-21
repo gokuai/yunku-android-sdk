@@ -27,11 +27,11 @@ public class DemoActivity extends MainViewBaseActivity implements HookCallback {
         YKMainView view = new YKMainView(this);
 
         //设置提供的操作参数
-        Option option = new Option();
-        option.canDel = mParamData.funcDelete;
-        option.canRename = mParamData.funcRename;
-        option.canUpload = mParamData.funcUpload;
-        view.setOption(option);
+//        Option option = new Option();
+//        option.canDel = mParamData.funcDelete;
+//        option.canRename = mParamData.funcRename;
+//        option.canUpload = mParamData.funcUpload;
+//        view.setOption(option);
 
         setContentView(view);
 
