@@ -179,12 +179,12 @@ context需要为MainViewBaseActivity 继承的Activity的实例
 ###HookType枚举
 | 枚举类型 | 说明 |
 | --- | --- |
-| HOOK_TYPE_FILE_LIST | 是否开启删除 | 
-| HOOK_TYPE_DOWNLOAD | 是否开启重命名 | 
-| HOOK_TYPE_UPLOAD | 是否可上传 | 
-| HOOK_TYPE_CREATE_DIR | 是否可上传 |
-| HOOK_TYPE_RENAME | 是否可上传 |
-| HOOK_TYPE_DELETE | 是否可上传 |
+| HOOK_TYPE_FILE_LIST | 文件列表显示 | 
+| HOOK_TYPE_DOWNLOAD | 文件下载 | 
+| HOOK_TYPE_UPLOAD | 文件上传 | 
+| HOOK_TYPE_CREATE_DIR |创建文件夹 |
+| HOOK_TYPE_RENAME | 重命名 |
+| HOOK_TYPE_DELETE | 文件删除 |
     
 ##相关SDK
 https://github.com/gokuai/yunku-sdk-java
