@@ -67,8 +67,8 @@ File>New Module>More Modules>Import .JAR or .AAR Package ,引用androidsdk.aar�
    		 //======================== 这部分需要预先设置==========================
    		 static {
 
-       		 Config.ORG_CLIENT_ID = "294925cc5b65f075677a3227141b9467";
-       		 Config.ORG_CLIENT_SECRET = "e195dbb3f9c263890a269010f18bea50";
+       		 Config.ORG_CLIENT_ID = "[预先申请的CLIENT_ID]";
+       		 Config.ORG_CLIENT_SECRET = "[预先申请的CLIENT_SECRET]";
 
         	 Config.ORG_ROOT_PATH = "";//访问文件的根目录
        		 Config.ORG_ROOT_TITLE = "MyTitle";//根目录
