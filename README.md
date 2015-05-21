@@ -45,7 +45,9 @@ File>New Module>More Modules>Import .JAR or .AAR Package ,引用androidsdk.aar�
 
 ###IntelliJ IDEA
 
-File>New >Module...>Empty Module
+1.File>New >Module...>Empty Module任意填写包名和名称［例如 androidsdk］,然后将Eclipse和Source Code文件夹下文件复制替换到项目中	
+2.将Source Code/assets复制到App运行项目中	
+3.导入项目appcompat
 
 ##项目必需设置
 **[YourActivity].class**
