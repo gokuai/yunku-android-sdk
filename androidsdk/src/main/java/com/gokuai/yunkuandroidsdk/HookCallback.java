@@ -5,7 +5,7 @@ package com.gokuai.yunkuandroidsdk;
  */
 public interface HookCallback {
 
-    public enum HookType {
+    enum HookType {
         HOOK_TYPE_FILE_LIST,//列表显示
         HOOK_TYPE_DOWNLOAD,//文件下载
         HOOK_TYPE_UPLOAD,//文件上传

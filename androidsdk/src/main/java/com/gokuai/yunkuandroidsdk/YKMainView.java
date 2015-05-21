@@ -76,7 +76,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
         if (mContext instanceof MainViewBaseActivity) {
             return true;
         }
-        DebugFlag.log("need extend BaseActivity in this Activity");
+        DebugFlag.log("need extend MainViewBaseActivity in this Activity");
 
         return false;
     }

@@ -13,12 +13,16 @@ Robots: noindex,nofollow
 ##兼容性声明
 
 	minSdkVersion 14
-    targetSdkVersion 22
+    
+##授权申请
+登录https://www.gokuai.com/login网址，点击后台管理tab，输入后台帐号密码，设置＝》库开发授权 开启，然后返回 云库＝》授权管理＝》（点击进行开发的库）＝》授权管理＝》点击获取ClientID和ClientSecret，记下这个两个参数，在使用SDK的时候，会使用这两个参数
 
-##项目引用及设置
+##项目引用
+Android Studio 可直接引用master 中 androidsdk Module，Eclispe 、IntelliJ 或者Android Studio 需要使用aar方式引用，需要先在https://github.com/gokuai/yunku-sdk-android/releases/下载最新的zip包，步骤如下：
+
 ###Android Studio
 
-File>Import Module,引用androidsdk项目
+File>Import Module>，找到对应androidsdk所在的文件夹
 
 *gradle 1.8+ 建议*
 
@@ -34,8 +38,48 @@ File>New Module>More Modules>Import .JAR or .AAR Package ,引用androidsdk.aar�
 
 ###Eclipse + ADT
 
+1.New>Project>Android>Android Application Project>任意填写包名和名称［例如 androidsdk］,然后将Eclipse和Source Code文件夹下文件复制替换到项目中	
+2.将Source Code/assets复制到App运行项目中	
+3.导入项目appcompat
+
+
 ###IntelliJ IDEA
 
+File>New >Module...>Empty Module
+
+##项目必需设置
+**[YourActivity].class**
+	
+ 使用控件的view需要继承MainViewBaseActivity
+
+	public class DemoActivity extends MainViewBaseActivity{
+		……
+	}
+
+**[YourApplication].class**
+	
+需要创建一个自定义的application 需要继承GKApplication
+
+	public class YourApplication extends GKApplication {
+
+   		 //======================== 这部分需要预先设置==========================
+   		 static {
+
+       		 Config.ORG_CLIENT_ID = "294925cc5b65f075677a3227141b9467";
+       		 Config.ORG_CLIENT_SECRET = "e195dbb3f9c263890a269010f18bea50";
+
+        	 Config.ORG_ROOT_PATH = "";//访问文件的根目录
+       		 Config.ORG_ROOT_TITLE = "MyTitle";//根目录
+       		 Config.ORG_OPT_NAME = "Brandon";//操作人，例如文件上传、改名、删除等
+    	}
+
+    	//===================================================================
+
+
+
+    	//在这里添加自己要执行的代码
+
+	}
 
 
 **AndroidManifest.xml**
@@ -83,17 +127,66 @@ File>New Module>More Modules>Import .JAR or .AAR Package ,引用androidsdk.aar�
         <!-- Customize your theme here. -->
     </style>
     
-    or
+    OR
     
     <style name="YourTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
     </style>
     
-    or
+    OR
     
     <style name="YourTheme" parent="Theme.AppCompat.Light.DarkActionBar"">
         <!-- Customize your theme here. -->
     </style>
 
+##类的使用说明
+###YKMainView类
 
-##初始化
+#### 构造
+new YKMainView(Context context)		
+context需要为MainViewBaseActivity 继承的Activity的实例
+
+####setOption（Option option）
+设置开启的功能（文件重命名、文件删除、文件上传）
+
+
+####initData（）
+数据初始化，在所有参数设置完毕之后，最后进行初始化
+
+###Option类
+| 属性 | 说明 |
+| --- | --- |
+| canDel | 是否开启删除 | 
+| canRename | 是否开启重命名 | 
+| canUpload | 是否可上传 | 
+
+###FileDataManager类
+
+####registerHook(HookCallback callback)
+注册hook,可以控制指定路径的文件创建、列表显示、文件上传、文件重命名、文件删除是否可以被允许执行
+
+###HookCallback接口
+	boolean hookInvoke(HookType type, String fullPath);
+	
+| 参数 | 类型 |说明 |
+| --- | --- | --- |
+| type | HookType |  hook回调的类型 |
+| fullPath | string |  执行操作的路径 |
+
+
+###HookType枚举
+| 枚举类型 | 说明 |
+| --- | --- |
+| HOOK_TYPE_FILE_LIST | 是否开启删除 | 
+| HOOK_TYPE_DOWNLOAD | 是否开启重命名 | 
+| HOOK_TYPE_UPLOAD | 是否可上传 | 
+| HOOK_TYPE_CREATE_DIR | 是否可上传 |
+| HOOK_TYPE_RENAME | 是否可上传 |
+| HOOK_TYPE_DELETE | 是否可上传 |
+    
+##相关SDK
+	https://github.com/gokuai/yunku-sdk-java
+
+
+
+
