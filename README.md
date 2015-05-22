@@ -15,16 +15,16 @@ Robots: noindex,nofollow
 	minSdkVersion 14
     
 ##授权申请
-登录https://www.gokuai.com/login 网址，点击后台管理tab，输入后台帐号密码，设置＝》库开发授权 开启，然后返回 云库＝》授权管理＝》（点击进行开发的库）＝》授权管理＝》点击获取ClientID和ClientSecret，记下这个两个参数，在使用SDK的时候，会使用这两个参数
+登录https://www.gokuai.com/login 网址，点击后台管理tab，输入后台帐号密码，设置 -> 库开发授权 开启，然后返回 云库 -> 授权管理 ->（点击进行开发的库）-> 授权管理 -> 点击获取ClientID和ClientSecret，记下这个两个参数，在使用SDK的时候，会使用这两个参数
 
 ##项目引用
 Android Studio 可直接引用master 中 androidsdk Module，Eclispe 、IntelliJ 或者Android Studio 需要使用aar方式引用，需要先在https://github.com/gokuai/yunku-sdk-android/releases/ 下载最新的zip包，步骤如下：
 
 ###Android Studio
 
-File>Import Module>，找到对应androidsdk所在的文件夹
+File>Import Module>，找到对应androidsdk所在的文件夹,并导入到项目
 
-*gradle 1.8+ 建议*
+*gradle 1.8+ 建议引用 aar*
 
 File>New Module>More Modules>Import .JAR or .AAR Package ,引用androidsdk.aar文件
 
@@ -52,15 +52,15 @@ File>New Module>More Modules>Import .JAR or .AAR Package ,引用androidsdk.aar�
 ##项目必需设置
 **[YourActivity].class**
 	
- 使用控件的view需要继承MainViewBaseActivity
+ 使用控件的Activity需要继承MainViewBaseActivity
 
-	public class DemoActivity extends MainViewBaseActivity{
+	public class YourActivity extends MainViewBaseActivity{
 		……
 	}
 
 **[YourApplication].class**
 	
-需要创建一个自定义的application 需要继承GKApplication
+需要创建一个自定义的application 继承GKApplication
 
 	public class YourApplication extends GKApplication {
 
