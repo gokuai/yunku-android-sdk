@@ -2,9 +2,11 @@ package com.gokuai.yunkuandroidsdktest;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.gokuai.yunkuandroidsdk.Config;
 import com.gokuai.yunkuandroidsdk.FileDataManager;
 import com.gokuai.yunkuandroidsdk.HookCallback;
 import com.gokuai.yunkuandroidsdk.MainViewBaseActivity;
@@ -24,6 +26,8 @@ public class DemoActivity extends MainViewBaseActivity implements HookCallback {
 
         Intent intent = getIntent();
         mParamData = (ParamData) intent.getSerializableExtra("params");
+        setConfigForDebug();
+
         YKMainView view = new YKMainView(this);
 
         //设置提供的操作参数
@@ -34,6 +38,7 @@ public class DemoActivity extends MainViewBaseActivity implements HookCallback {
         view.setOption(option);
 
         setContentView(view);
+
 
         //初始化界面数据
         view.initData();
@@ -70,12 +75,35 @@ public class DemoActivity extends MainViewBaseActivity implements HookCallback {
             }
 
             if (!access) {
-                Toast.makeText(DemoActivity.this,"Hook：此操作不被允许",Toast.LENGTH_LONG).show();
+                Toast.makeText(DemoActivity.this, "Hook：此操作不被允许", Toast.LENGTH_LONG).show();
             }
 
             return access;
         }
         Log.i(DemoActivity.class.getSimpleName(), type.toString() + ":" + fullPath);
         return true;
+    }
+
+
+    /**
+     * 以下只是做调试用，不建议在这里赋值
+     */
+    private void setConfigForDebug() {
+        if (!TextUtils.isEmpty(mParamData.clientId)) {
+            Config.ORG_CLIENT_ID = mParamData.clientId.trim();
+        }
+
+        if (!TextUtils.isEmpty(mParamData.clientSecret)) {
+            Config.ORG_CLIENT_SECRET = mParamData.clientSecret.trim();
+        }
+
+        if (!TextUtils.isEmpty(mParamData.rootPath)) {
+            Config.ORG_ROOT_PATH = mParamData.rootPath.trim();
+        }
+
+        if (!TextUtils.isEmpty(mParamData.rootTitle)) {
+            Config.ORG_ROOT_TITLE = mParamData.rootTitle.trim();
+        }
+
     }
 }

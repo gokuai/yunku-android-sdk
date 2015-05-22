@@ -19,5 +19,11 @@ public class ParamData implements Serializable {
     public boolean hookRename;
     public boolean hookDelete;
 
+    public String clientId;
+    public String clientSecret;
+    public String rootPath;
+    public String rootTitle;
+
+
 
 }

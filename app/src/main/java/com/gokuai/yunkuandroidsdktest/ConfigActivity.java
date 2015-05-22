@@ -1,12 +1,15 @@
 package com.gokuai.yunkuandroidsdktest;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 /**
  * 调整配置Activity
@@ -26,12 +29,22 @@ public class ConfigActivity extends AppCompatActivity {
     public CheckBox mCB_hookRename;
     public CheckBox mCB_hookDelete;
 
-    public Button mCB_startBtn;
+    public TextView mTv_clientId;
+    public TextView mTv_clientSecret;
+    public TextView mTv_rootPath;
+    public TextView mTv_rootTitle;
+
+    public Button mBtn_startBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.config);
+
+        mTv_clientId = (TextView) findViewById(R.id.config_client_id_et);
+        mTv_clientSecret = (TextView) findViewById(R.id.config_client_secret_et);
+        mTv_rootPath = (TextView) findViewById(R.id.config_root_path_et);
+        mTv_rootTitle = (TextView) findViewById(R.id.config_root_title_et);
 
         mCB_funcDelete = (CheckBox) findViewById(R.id.config_function_delete_cb);
         mCB_funcRename = (CheckBox) findViewById(R.id.config_function_rename_cb);
@@ -45,9 +58,11 @@ public class ConfigActivity extends AppCompatActivity {
         mCB_hookCreateDir = (CheckBox) findViewById(R.id.config_hook_create_dir_cb);
         mCB_hookRename = (CheckBox) findViewById(R.id.config_hook_rename_cb);
         mCB_hookDelete = (CheckBox) findViewById(R.id.config_hook_delete_cb);
-        mCB_startBtn = (Button) findViewById(R.id.config_start_demo_btn);
+        mBtn_startBtn = (Button) findViewById(R.id.config_start_demo_btn);
 
-        mCB_startBtn.setOnClickListener(new View.OnClickListener() {
+        getAllCache();
+
+        mBtn_startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ConfigActivity.this, DemoActivity.class);
@@ -63,11 +78,53 @@ public class ConfigActivity extends AppCompatActivity {
                 paramData.hookCreateDir = mCB_hookCreateDir.isChecked();
                 paramData.hookRename = mCB_hookRename.isChecked();
                 paramData.hookList = mCB_hookFilelist.isChecked();
-                intent.putExtra("params",paramData);
+
+                paramData.clientId = mTv_clientId.getText().toString();
+                paramData.clientSecret = mTv_clientSecret.getText().toString();
+                paramData.rootPath = mTv_rootPath.getText().toString();
+                paramData.rootTitle = mTv_rootTitle.getText().toString();
+                intent.putExtra("params", paramData);
                 startActivity(intent);
+
+                setAllCache();
             }
         });
 
+    }
+
+
+    private static final String SP_CACHE_ROOT_DATA = "Cache";
+    private static final String SP_CACHE_CLIENTID = "clientId";
+    private static final String SP_CACHE_CLIENTSECRET = "clientSecret";
+    private static final String SP_CACHE_ROOTPATH = "rootPath";
+    private static final String SP_CACHE_ROOTTITLE = "rootTitle";
+
+    private void getAllCache() {
+        mTv_clientId.setText(getCache(this, SP_CACHE_CLIENTID));
+        mTv_clientSecret.setText(getCache(this, SP_CACHE_CLIENTSECRET));
+        mTv_rootPath.setText(getCache(this, SP_CACHE_ROOTPATH));
+        mTv_rootTitle.setText(getCache(this, SP_CACHE_ROOTTITLE));
+    }
+
+    private void setAllCache() {
+        setCache(this, SP_CACHE_CLIENTID, mTv_clientId.getText().toString());
+        setCache(this, SP_CACHE_CLIENTSECRET, mTv_clientSecret.getText().toString());
+        setCache(this, SP_CACHE_ROOTPATH, mTv_rootPath.getText().toString());
+        setCache(this, SP_CACHE_ROOTTITLE, mTv_rootTitle.getText().toString());
+    }
+
+
+    private static String getCache(Context context, String key) {
+        SharedPreferences debugPreference = context.getSharedPreferences(
+                SP_CACHE_ROOT_DATA, Context.MODE_PRIVATE);
+        return debugPreference.getString(key, "");
+    }
+
+    private static void setCache(Context context, String key, String mountId) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(
+                SP_CACHE_ROOT_DATA, Context.MODE_PRIVATE).edit();
+        editor.putString(key, mountId);
+        editor.apply();
     }
 
 

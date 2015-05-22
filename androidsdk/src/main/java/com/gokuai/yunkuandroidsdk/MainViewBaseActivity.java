@@ -119,6 +119,7 @@ public class MainViewBaseActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         FileDataManager.getInstance().cancelFileTask();
+        FileDataManager.release();
     }
 
     @Override

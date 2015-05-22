@@ -114,7 +114,7 @@ public class FileDataManager {
 
     public AsyncTask copy(String fullPath, String targetPath, DataListener callBack) {
         //todo
-         throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     public AsyncTask move(final String fullPath, final String targetPath, final DataListener listener) {
@@ -263,6 +263,7 @@ public class FileDataManager {
 
     /**
      * 是否存在列表缓存中
+     *
      * @param fullPath
      * @return
      */
@@ -392,6 +393,10 @@ public class FileDataManager {
 
     public boolean isRootPath(String fullPath) {
         return fullPath.equals(mRootPath);
+    }
+
+    protected static void release() {
+        mInstance = null;
     }
 
 }

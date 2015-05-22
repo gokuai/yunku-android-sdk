@@ -10,35 +10,42 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="非必要参数:"
+            android:layout_marginTop="16dp"
+            android:textSize="20dp"
+            android:textColor="#ff40464c" />
 
-        <!--<EditText-->
-            <!--android:id="@+id/config_client_id_et"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:hint="CLIENT_ID"/>-->
+        <EditText
+            android:id="@+id/config_client_id_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="CLIENT_ID"/>
 
-        <!--<EditText-->
-            <!--android:id="@+id/config_client_secret_et"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center_horizontal"-->
-            <!--android:hint="CLIENT_SECRET"/>-->
+        <EditText
+            android:id="@+id/config_client_secret_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:hint="CLIENT_SECRET"/>
 
-        <!--<EditText-->
-            <!--android:id="@+id/config_root_path_et"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center_horizontal"-->
-            <!--android:hint="根目录路径，文件夹后带“/“"-->
-            <!--/>-->
+        <EditText
+            android:id="@+id/config_root_path_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:hint="根目录路径，文件夹后带“/“"
+            />
 
-        <!--<EditText-->
-            <!--android:id="@+id/config_root_title_et"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center_horizontal"-->
-            <!--android:hint="根目录标题"-->
-            <!--/>-->
+        <EditText
+            android:id="@+id/config_root_title_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:hint="根目录标题"
+            />
 
         <!--<EditText-->
             <!--android:id="@+id/config_operating_personnel_et"-->
