@@ -432,6 +432,9 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
 
     private AsyncTask mDeleteTask;
 
+    /**
+     * 删除文件
+     */
     private void deleteFileAtPopPosition() {
         FileData fileData = (FileData) mFileListAdapter.getItem(mShowPopMenuPosition);
         final String fullPath = fileData.getFullpath();
@@ -449,6 +452,9 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
 
     }
 
+    /**
+     * 重命名
+     */
     private void renameFileAtPopPosition() {
         FileData fileData = (FileData) mFileListAdapter.getItem(mShowPopMenuPosition);
         final String fullPath = fileData.getFullpath();
@@ -506,6 +512,10 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
         mOption = option;
     }
 
+    /**
+     * 文件定位（高亮显示）
+     * @param fullPath
+     */
     public void redirectToFile(String fullPath) {
         setRedirectPath(fullPath);
         refresh();

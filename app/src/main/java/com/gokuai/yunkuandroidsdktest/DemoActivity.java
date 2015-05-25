@@ -40,11 +40,13 @@ public class DemoActivity extends MainViewBaseActivity implements HookCallback {
         setContentView(view);
 
 
+        //注册hook控制文件的操作是否可以执行，这个方法需要写在initData()前面
+        // ，否则HOOK_TYPE_FILE_LIST对根目录Config.ORG_ROOT_PATH的控制第一次初始化无效
+        FileDataManager.getInstance().registerHook(this);
+
         //初始化界面数据
         view.initData();
 
-        //注册hook控制文件的操作是否可以执行
-        FileDataManager.getInstance().registerHook(this);
     }
 
     @Override

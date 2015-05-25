@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.gokuai.yunkuandroidsdk.data.LocalFileData;
 import com.gokuai.yunkuandroidsdk.util.Util;
 import com.gokuai.yunkuandroidsdk.util.UtilDialog;
+import com.yunkuent.sdk.UploadRunnable;
 import com.yunkuent.sdk.upload.UploadCallBack;
 
 import java.io.File;
@@ -91,7 +92,7 @@ public class FileUploadManager implements UploadCallBack {
     private TextView mTv_DialogStatus;
     private ProgressBar mPb_DialogProgress;
 
-    private Thread mUploadThread;
+    private UploadRunnable mUploadRunnable;
     private AlertDialog mDialog;
 
     private String mUploadingPath;
@@ -117,8 +118,8 @@ public class FileUploadManager implements UploadCallBack {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        if (mUploadThread != null) {
-                            mUploadThread.interrupt();
+                        if (mUploadRunnable != null) {
+                            mUploadRunnable.stop();
                         }
                     }
                 });
@@ -129,7 +130,7 @@ public class FileUploadManager implements UploadCallBack {
         mTv_DialogStatus.setText(R.string.uploading);
         mUploadingPath = fullPath + localPath.getFilename();
         mLocalFilePath = localPath.getFullpath();
-        mUploadThread = FileDataManager.getInstance().addFile(mUploadingPath, mLocalFilePath, this);
+        mUploadRunnable = FileDataManager.getInstance().addFile(mUploadingPath, mLocalFilePath, this);
     }
 
     public String getUploadingPath() {

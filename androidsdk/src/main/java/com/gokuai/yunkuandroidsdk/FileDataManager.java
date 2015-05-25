@@ -11,6 +11,7 @@ import com.gokuai.yunkuandroidsdk.data.FileListData;
 import com.gokuai.yunkuandroidsdk.exception.GKException;
 import com.gokuai.yunkuandroidsdk.util.Util;
 import com.yunkuent.sdk.EntFileManager;
+import com.yunkuent.sdk.UploadRunnable;
 import com.yunkuent.sdk.upload.UploadCallBack;
 
 import org.apache.http.HttpStatus;
@@ -160,7 +161,7 @@ public class FileDataManager {
         return FileData.create(mEntFileManager.getFileInfo((int) Util.getUnixDateline(), fullPath));
     }
 
-    public Thread addFile(String fullPath, String localPath, UploadCallBack callBack) {
+    public UploadRunnable addFile(String fullPath, String localPath, UploadCallBack callBack) {
         if (!Util.isNetworkAvailableEx()) {
             return null;
         }

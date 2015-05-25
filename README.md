@@ -15,7 +15,7 @@ Robots: noindex,nofollow
 	minSdkVersion 14
     
 ##授权申请
-登录https://www.gokuai.com/login 网址，点击后台管理tab，输入后台帐号密码，设置 -> 库开发授权 开启，然后返回 云库 -> 授权管理 ->（点击进行开发的库）-> 授权管理 -> 点击获取ClientID和ClientSecret，记下这个两个参数，在使用SDK的时候，会使用这两个参数
+登录https://www.gokuai.com/login 网址，点击后台管理tab，输入后台帐号密码，设置 -> 库开发授权 开启，然后返回 云库 -> (选择要申请开发的库) -> 授权管理 ->（点击进行开发的库）-> 授权管理 -> 点击获取ClientID和ClientSecret，记下这个两个参数，在使用SDK的时候，会使用这两个参数
 
 ##项目引用
 Android Studio 可直接引用master 中 androidsdk Module，Eclispe 、IntelliJ 或者Android Studio 需要使用aar方式引用，需要先在https://github.com/gokuai/yunku-sdk-android/releases/ 下载最新的zip包，步骤如下：

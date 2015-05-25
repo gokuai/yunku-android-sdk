@@ -1,10 +1,7 @@
 package com.gokuai.yunkuandroidsdk;
 
-import com.gokuai.yunkuandroidsdk.util.Util;
 import com.gokuai.yunkuandroidsdk.util.UtilFile;
 import com.google.gson.Gson;
-
-import java.io.File;
 
 public class UtilOffline {
 
