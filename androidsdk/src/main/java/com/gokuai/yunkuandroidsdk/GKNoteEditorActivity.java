@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,7 +32,7 @@ import java.io.IOException;
 public class GKNoteEditorActivity extends BaseActivity implements WebAppInterface.JsReceiver {
 
     private WebView mWebView;
-    private String mNoteContent = "";
+    private String mRemoteContent = "";//当前内容
     private String mFullPath;
     private Uri mUri;
     private boolean isEditNote;//true 编辑note，false 新建note
@@ -74,7 +73,7 @@ public class GKNoteEditorActivity extends BaseActivity implements WebAppInterfac
                 protected void onPostExecute(String content) {
                     super.onPostExecute(content);
                     if (content != null) {
-                        mNoteContent = content;
+                        mRemoteContent = content;
                         setEditableWebView();
                     } else {
                         UtilDialog.showNormalToast(R.string.tip_open_file_with_excepiton);
@@ -118,26 +117,16 @@ public class GKNoteEditorActivity extends BaseActivity implements WebAppInterfac
         mWebView.loadUrl("file:///android_asset/ueditor/index.html");
     }
 
-    private void setViewWebview() {
-        View contentView = WebViewCreater.getGetGknoteEditorView(this, this);
-        mWebView = (WebView) contentView.findViewWithTag("webview");
-        setContentView(contentView);
-        mWebView.loadDataWithBaseURL("file:///android_asset/ueditor/", mNoteContent, "text/html", "utf-8", null);
-        mWebView.getSettings().setSupportZoom(true);
-        mWebView.getSettings().setDisplayZoomControls(true);
-        mWebView.getSettings().setBuiltInZoomControls(true);
-    }
-
 
     @Override
-    public void send(String s) {
+    public void send(final String s) {
         if (s.equals("ready")) {
 
             runOnUiThread(new Runnable() {
 
                 public void run() {
                     //Code that interact with UI
-                    mWebView.loadUrl("javascript:setContent('" + mNoteContent + "');");
+                    mWebView.loadUrl("javascript:setContent('" + mRemoteContent + "');");
                 }
             });
 
@@ -150,16 +139,16 @@ public class GKNoteEditorActivity extends BaseActivity implements WebAppInterfac
                 } else {
                     //保存的数据
 
-                    mNoteContent = s;
+//                    mRemoteContent = s;
 
                     if (isEditNote) {
-                        saveGkNote();
+                        saveGkNote(s);
                     } else {
                         new GknoteNameDialogManager(this).showDialog(mFullPath, new DialogManger.DialogActionListener() {
                             @Override
                             public void onDone(String fullPath) {
                                 mUri = Uri.fromFile(new File(UtilOffline.getZipCachePath() + Util.getNameFromPath(fullPath)));
-                                saveGkNote();
+                                saveGkNote(s);
                             }
                         });
 
@@ -167,7 +156,7 @@ public class GKNoteEditorActivity extends BaseActivity implements WebAppInterfac
 
                 }
             } else {
-                boolean contentChanged = !s.equals(mNoteContent);
+                boolean contentChanged = !s.equals(mRemoteContent);
                 if (contentChanged) {
                     new AlertDialog.Builder(this).setTitle(R.string.tip).setMessage(R.string.tip_content_has_change)
                             .setNegativeButton(R.string.cancel, null)
@@ -188,9 +177,8 @@ public class GKNoteEditorActivity extends BaseActivity implements WebAppInterfac
         }
     }
 
-    private void saveGkNote() {
+    private void saveGkNote(final String content) {
         UtilDialog.showDialogLoading(this, getString(R.string.tip_is_handling), mZipTask);
-
 
         mZipTask = new AsyncTask<Void, Void, Boolean>() {
             @Override
@@ -200,7 +188,7 @@ public class GKNoteEditorActivity extends BaseActivity implements WebAppInterfac
                 String resourceFolder = zipPath + "resource";
 
                 //写回到index.html
-                boolean success = UtilFile.writeFileData(indexFile, mNoteContent, UtilFile.DEFAUT_CHARSET_ENCODING_FOR_SAVE_DATA);
+                boolean success = UtilFile.writeFileData(indexFile, content, UtilFile.DEFAUT_CHARSET_ENCODING_FOR_SAVE_DATA);
                 if (success) {
                     try {
                         //压缩原来的openpath
@@ -209,6 +197,8 @@ public class GKNoteEditorActivity extends BaseActivity implements WebAppInterfac
                         e.printStackTrace();
                         success = false;
                     }
+
+                    mRemoteContent = content;
 
                 }
                 return success;
