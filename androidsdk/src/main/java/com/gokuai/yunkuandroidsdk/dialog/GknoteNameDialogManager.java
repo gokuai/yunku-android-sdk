@@ -58,7 +58,6 @@ public class GknoteNameDialogManager extends DialogManger {
             @Override
             public void onShow(final DialogInterface dialog) {
                 mOKBtn = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                mOKBtn.setEnabled(false);
                 mOKBtn.setOnClickListener(new View.OnClickListener() {
 
                     @Override

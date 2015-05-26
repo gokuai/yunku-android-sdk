@@ -71,6 +71,13 @@ public class FileDataManager {
         mEntFileManager = new EntFileManager(Config.ORG_CLIENT_ID, Config.ORG_CLIENT_SECRET);
     }
 
+    /**
+     * 重命名
+     * @param fullPath
+     * @param newName
+     * @param listener
+     * @return
+     */
     public AsyncTask rename(final String fullPath, final String newName, final DataListener listener) {
         if (!Util.isNetworkAvailableEx()) {
             listener.onNetUnable();
@@ -161,6 +168,13 @@ public class FileDataManager {
         return FileData.create(mEntFileManager.getFileInfo((int) Util.getUnixDateline(), fullPath));
     }
 
+    /**
+     * 添加文件
+     * @param fullPath
+     * @param localPath
+     * @param callBack
+     * @return
+     */
     public UploadRunnable addFile(String fullPath, String localPath, UploadCallBack callBack) {
         if (!Util.isNetworkAvailableEx()) {
             return null;

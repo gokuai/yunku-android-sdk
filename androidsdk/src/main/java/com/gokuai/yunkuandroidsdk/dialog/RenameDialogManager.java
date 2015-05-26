@@ -30,7 +30,8 @@ public class RenameDialogManager extends DialogManger {
 
     @Override
     public void showDialog(final String beChangeName, final DialogActionListener listener) {
-        final String parentFullPath = Util.getParentPath(beChangeName) + "/";
+        final boolean isDir = beChangeName.endsWith("/");
+        final String parentFullPath = Util.getParentPath(beChangeName);
         final String fileName = Util.getNameFromPath(beChangeName).replace("/", "");
 
         final View editView = LayoutInflater.from(mContext).inflate(R.layout.alert_dialog_edit_with_check, null);
@@ -81,7 +82,7 @@ public class RenameDialogManager extends DialogManger {
                         doingTextView.setText(R.string.tip_is_renaming);
                         doingTextView.setVisibility(View.VISIBLE);
                         final String newName = editText.getText().toString();
-                        final String newfullPath = parentFullPath + newName;
+                        final String newfullPath = parentFullPath + (TextUtils.isEmpty(parentFullPath) ? "" : "/") + newName + (isDir?"/" : "");
 
                         boolean hasSame = FileDataManager.getInstance().fileExistInCache(newfullPath);
                         if (hasSame) {

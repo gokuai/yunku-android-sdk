@@ -30,7 +30,7 @@ import java.io.IOException;
 /**
  * Gnote 笔记显示和编辑
  */
-public class GKNoteEditorActivity extends AppCompatActivity implements WebAppInterface.JsReceiver {
+public class GKNoteEditorActivity extends BaseActivity implements WebAppInterface.JsReceiver {
 
     private WebView mWebView;
     private String mNoteContent = "";
@@ -43,8 +43,9 @@ public class GKNoteEditorActivity extends AppCompatActivity implements WebAppInt
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        getSupportActionBar().show();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         initView();
         initData();
@@ -168,7 +169,7 @@ public class GKNoteEditorActivity extends AppCompatActivity implements WebAppInt
             } else {
                 boolean contentChanged = !s.equals(mNoteContent);
                 if (contentChanged) {
-                    new AlertDialog.Builder(this).setMessage(R.string.tip_content_has_change)
+                    new AlertDialog.Builder(this).setTitle(R.string.tip).setMessage(R.string.tip_content_has_change)
                             .setNegativeButton(R.string.cancel, null)
                             .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
@@ -176,7 +177,7 @@ public class GKNoteEditorActivity extends AppCompatActivity implements WebAppInt
                                     finish();
                                 }
                             })
-                            .create().setTitle(R.string.tip);
+                            .create().show();
 
                 } else {
                     finish();
