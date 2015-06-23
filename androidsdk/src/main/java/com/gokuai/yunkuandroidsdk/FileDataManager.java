@@ -99,7 +99,7 @@ public class FileDataManager {
                 String parentPath = Util.getParentPath(fullPath);
                 String newPath = parentPath + (TextUtils.isEmpty(parentPath) ? "" : "/") + newName;
 
-                return mEntFileManager.move((int) Util.getUnixDateline(), fullPath,
+                return mEntFileManager.move( fullPath,
                         newPath, "");
             }
 
@@ -165,7 +165,7 @@ public class FileDataManager {
     }
 
     public FileData getFileInfoSync(String fullPath) {
-        return FileData.create(mEntFileManager.getFileInfo((int) Util.getUnixDateline(), fullPath));
+        return FileData.create(mEntFileManager.getFileInfo( fullPath));
     }
 
     /**
@@ -184,7 +184,7 @@ public class FileDataManager {
             callBack.onFail(0, "");
             return null;
         }
-        return mEntFileManager.uploadByBlock((int) Util.getUnixDateline(), fullPath, Config.ORG_OPT_NAME, 0, localPath, true, callBack);
+        return mEntFileManager.uploadByBlock( fullPath, Config.ORG_OPT_NAME, 0, localPath, true, callBack);
     }
 
     /**
@@ -210,7 +210,7 @@ public class FileDataManager {
 
             @Override
             protected Object doInBackground(Void... params) {
-                return mEntFileManager.createFolder((int) Util.getUnixDateline(), fullPath, Config.ORG_OPT_NAME);
+                return mEntFileManager.createFolder( fullPath, Config.ORG_OPT_NAME);
             }
 
             @Override
@@ -254,7 +254,7 @@ public class FileDataManager {
 
             @Override
             protected Object doInBackground(Void... params) {
-                return mEntFileManager.del((int) Util.getUnixDateline(), fullPath, Config.ORG_OPT_NAME);
+                return mEntFileManager.del( fullPath, Config.ORG_OPT_NAME);
             }
 
             @Override
@@ -342,7 +342,7 @@ public class FileDataManager {
                 if (!Util.isNetworkAvailableEx()) {
                     listener.onNetUnable();
                 } else {
-                    String result = mEntFileManager.getFileList((int) Util.getUnixDateline(), 0, fullPath);
+                    String result = mEntFileManager.getFileList( 0, fullPath);
                     FileListData fileListData = FileListData.create(result);
                     if (fileListData.getCode() == HttpStatus.SC_OK) {
                         ArrayList<FileData> httpList = (ArrayList<FileData>) fileListData.getList().clone();
