@@ -18,4 +18,11 @@
     <dimen name="text_big">19sp</dimen>
     <dimen name="text_large">24sp</dimen>
     <dimen name="divider_height">1px</dimen>
+
+    <dimen name="gallery_percent_tv_padding_top">120dp</dimen>
+    <dimen name="gallery_percent_tv_padding_left">10dp</dimen>
+    <dimen name="gallery_percent_tv_padding_right">10dp</dimen>
+    <dimen name="gallery_percent_tv_padding_bottom">10dp</dimen>
+    <dimen name="gallery_desc_height">60dp</dimen>
+    <dimen name="view_pager_margin">80dp</dimen>
 </resources>

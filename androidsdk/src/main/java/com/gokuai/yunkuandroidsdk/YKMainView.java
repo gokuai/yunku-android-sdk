@@ -31,6 +31,7 @@ import com.gokuai.yunkuandroidsdk.imageutils.ImageFetcher;
 import com.gokuai.yunkuandroidsdk.imageutils.Utils;
 import com.gokuai.yunkuandroidsdk.util.Util;
 import com.gokuai.yunkuandroidsdk.util.UtilDialog;
+import com.gokuai.yunkuandroidsdk.util.UtilFile;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,6 +56,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
 
     private final ArrayList<Integer> mPositionPopStack = new ArrayList<>();
     private String mRedirectPath;
+
 
     public YKMainView(Context context) {
         super(context);
@@ -129,7 +131,21 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
                 openFolder(data.getFullpath());
 
             } else {
-                FileOpenManager.getInstance().handle(mContext, data);
+                if (UtilFile.isImageFile(data.getFilename())) {
+                    Intent intent = new Intent(mContext, GalleryUrlActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra(GalleryUrlActivity.EXTRA_LOCAL_FILE_PATH, data.getFullpath());
+                    intent.putExtra(Constants.EXTRA_GALLERY_MODE, Constants.EXTRA_GALLERY_MODE_LIST);
+                    //intent.putExtra(Constants.EXTRA_KEY_MOUNT_PROPERTY_DATA, mMountPropertyData);
+                    intent.putExtra(Constants.EXTRA_MOUNT_ID, data.getMountId());
+                    //intent.putExtra(Constants.EXTRA_ENT_ID, mEntId);
+                    GKApplication.getInstance().startActivity(intent);
+                } else if (UtilFile.isPreviewFile(data.getFilename())) {
+
+                } else {
+                    FileOpenManager.getInstance().handle(mContext, data);
+                }
+
             }
         } else if (view.getId() == R.id.file_item_dropdown_btn) {
             //文件列表单项下啦
@@ -195,8 +211,8 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
             case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
             case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
                 if (Utils.hasHoneycomb()) {
-                    mImageFetcher.setPauseWork(true);
-                }
+                mImageFetcher.setPauseWork(true);
+            }
                 break;
             case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
                 mImageFetcher.setPauseWork(false);
@@ -234,7 +250,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
         });
     }
 
-    private void refresh() {
+    public void refresh() {
         if (mFileListAdapter != null) {
             isRefreshAction = true;
             openFolder(mPath);

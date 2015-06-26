@@ -97,4 +97,9 @@
     <string name="gknote_name_format">note_%1$s.gknote</string>
     <string name="save">Save</string>
 
+    <string name="send_to_another_app">Use another app to open</string>
+    <string name="tip_is_preparing_for_data">Loading data…</string>
+    <string name="tip_open_image_failed">Open image failed</string>
+    <string name="format_the_lasttime_fixed_desc">%1$s Modify %2$s</string>
+
 </resources>
