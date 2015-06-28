@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_0">
+
+    <com.gokuai.yunkuandroidsdk.gallery.touchwedgit.GalleryViewPager
+        android:id="@+id/viewer"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+    <TextView
+        android:id="@+id/gallery_lasttime_desc_tv"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:layout_height="@dimen/gallery_desc_height"
+        android:background="#88ffffff"
+        android:textSize="@dimen/text_medium"
+        android:textColor="@color/gallery_desc_text_color" />
+
+</RelativeLayout>

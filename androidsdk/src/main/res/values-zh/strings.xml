@@ -97,4 +97,10 @@
     <string name="save">保存</string>
     <string name="load_more">加载更多</string>
 
+
+    <string name="send_to_another_app">使用其他应用打开</string>
+    <string name="tip_is_preparing_for_data">正在加载数据…</string>
+    <string name="tip_open_image_failed">图片打开失败</string>
+    <string name="format_the_lasttime_fixed_desc">%1$s 修改于%2$s</string>
+
 </resources>

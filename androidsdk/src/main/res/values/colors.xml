@@ -19,4 +19,6 @@
     <color name="divider_color">#d1d1d1</color>
     <color name="list_selected">#efeef2</color>
     <color name="color_disable_text">#ccc</color>
+
+    <color name="gallery_desc_text_color">#3f4754</color>
 </resources>
