@@ -29,7 +29,7 @@ import com.yunkuent.sdk.utils.Util;
 import java.util.ArrayList;
 
 /**
- * Created by Brandon on 15/5/8.
+ * No used now
  */
 public class FolderSelectDialog extends DialogFragment implements View.OnClickListener, FileDataManager.FileDataListener, AdapterView.OnItemClickListener {
 
@@ -110,7 +110,8 @@ public class FolderSelectDialog extends DialogFragment implements View.OnClickLi
         //先从本地获取数据
 
         FileDataManager.getInstance().cancelFileTask();
-        FileDataManager.getInstance().getFileList(fullPath, this, FileData.DIRIS);
+        //FIXME 选择文件夹需要一个新的方式
+//        FileDataManager.getInstance().getFileList(fullPath, this, 0);
 
     }
 
@@ -186,7 +187,7 @@ public class FolderSelectDialog extends DialogFragment implements View.OnClickLi
     }
 
     @Override
-    public void onReceiveCacheData(final ArrayList<FileData> list) {
+    public void onReceiveCacheData(int start, final ArrayList<FileData> list) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -222,7 +223,7 @@ public class FolderSelectDialog extends DialogFragment implements View.OnClickLi
     }
 
     @Override
-    public void onReceiveHttpData(final ArrayList<FileData> list, final String parentPath) {
+    public void onReceiveHttpData(final ArrayList<FileData> list, int start, final String parentPath) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {

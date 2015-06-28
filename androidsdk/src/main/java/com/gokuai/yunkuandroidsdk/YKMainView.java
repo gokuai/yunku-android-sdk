@@ -123,6 +123,11 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
             return;
         }
 
+        if(data.isFooter()){
+            onLoadMoreData();
+            return;
+        }
+
         if (view.getId() == R.id.file_item_view_ll) {
             if (data.getDir() == FileData.DIRIS) {
                 mPositionPopStack.add(mFirstPosition);
@@ -161,6 +166,11 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
 
         setRedirectPath(fullPath);
         openFolder(parentPath);
+    }
+
+    private void onLoadMoreData() {
+        mFileListAdapter.setIsLoadingMore(true);
+        FileDataManager.getInstance().getListMore(this);
     }
 
     private void openFolder(final String fullPath) {
@@ -218,15 +228,17 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
     public void onClick(View v) {
         if (v.getId() == R.id.file_list_return) {
             onBackEvent();
+        } else if (v.getId() == R.id.file_list_load_more_ll) {
+            onLoadMoreData();
         }
     }
 
     @Override
-    public void onReceiveCacheData(final ArrayList<FileData> list) {
+    public void onReceiveCacheData(final int start, final ArrayList<FileData> list) {
         ((AppCompatActivity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                bindListView(list);
+                bindListView(start, list);
                 if (!TextUtils.isEmpty(mRedirectPath)) {
                     redirectAndHighLight(list);
                 }
@@ -249,12 +261,15 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
 
 
     @Override
-    public void onReceiveHttpData(final ArrayList<FileData> list, final String parentPath) {
+    public void onReceiveHttpData(final ArrayList<FileData> list, final int start, final String parentPath) {
         ((AppCompatActivity) mContext).runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (parentPath.equals(mPath)) {
-                    bindListView(list);
+
+                    mFileListAdapter.setIsLoadingMore(false);
+
+                    bindListView(start, list);
 
                     if (!TextUtils.isEmpty(mRedirectPath)) {
                         redirectAndHighLight(list);
@@ -297,10 +312,22 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
     }
 
     //绑定filelist的数据
-    private void bindListView(ArrayList<FileData> list) {
-        if (!isRoot()) {
+    private void bindListView(int start, ArrayList<FileData> list) {
+        if (!isRoot() && start == 0) {
             if (list.size() > 0) {
                 list.add(0, FileData.createHeadData());
+            }
+
+            //要计算返回数据这一列，所以要加一
+            if (list.size() >= FileDataManager.PAGE_SIZE + 1) {
+                list.add(FileData.createFootData());
+            }
+        } else {
+            if (isRoot()) {
+                if (list.size() >= FileDataManager.PAGE_SIZE ) {
+                    list.add(FileData.createFootData());
+                }
+
             }
         }
 
@@ -308,9 +335,14 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
             mFileListAdapter = new FileListAdapter(mContext, list, mImageFetcher, this);
             mLV_FileList.setAdapter(mFileListAdapter);
         } else {
-            mFileListAdapter.setList(list);
+            if (start == 0) {
+                mFileListAdapter.setList(list);
+            } else {
+                mFileListAdapter.addList(list);
+            }
             mFileListAdapter.notifyDataSetChanged();
         }
+
     }
 
     @Override

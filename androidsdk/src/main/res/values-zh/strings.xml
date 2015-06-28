@@ -95,5 +95,6 @@
     <string name="tip_no_available_device_to_take_camera">没有可用的拍照程序！</string>
     <string name="gknote_name_format">note_%1$s.gknote</string>
     <string name="save">保存</string>
+    <string name="load_more">加载更多</string>
 
 </resources>

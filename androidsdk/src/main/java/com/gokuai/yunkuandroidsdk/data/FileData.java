@@ -59,6 +59,7 @@ public class FileData extends BaseData implements Parcelable {
     private long dateline = 0;// 文件上传的时间
     private int lastMemberId;
     private boolean isHeader = false;// 在listview中是否为第一个view
+    private boolean isFooter = false;
     private boolean selected = false;
     private String thumbSmall = "";
     private String thumbBig = "";
@@ -95,6 +96,13 @@ public class FileData extends BaseData implements Parcelable {
         data.isHeader = true;
         return data;
     }
+
+    public static FileData createFootData() {
+        FileData data = new FileData();
+        data.isFooter = true;
+        return data;
+    }
+
 
 
     @Override
@@ -516,5 +524,9 @@ public class FileData extends BaseData implements Parcelable {
 
     public void setPreview(String preview) {
         this.preview = preview;
+    }
+
+    public boolean isFooter() {
+        return isFooter;
     }
 }

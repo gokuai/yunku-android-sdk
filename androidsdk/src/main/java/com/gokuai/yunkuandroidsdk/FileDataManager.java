@@ -7,6 +7,7 @@ import android.util.LruCache;
 
 import com.gokuai.yunkuandroidsdk.data.BaseData;
 import com.gokuai.yunkuandroidsdk.data.FileData;
+import com.gokuai.yunkuandroidsdk.data.FileDataKey;
 import com.gokuai.yunkuandroidsdk.data.FileListData;
 import com.gokuai.yunkuandroidsdk.exception.GKException;
 import com.gokuai.yunkuandroidsdk.util.Util;
@@ -17,7 +18,6 @@ import com.yunkuent.sdk.upload.UploadCallBack;
 import org.apache.http.HttpStatus;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * Created by Brandon on 15/4/10.
@@ -73,6 +73,7 @@ public class FileDataManager {
 
     /**
      * 重命名
+     *
      * @param fullPath
      * @param newName
      * @param listener
@@ -99,7 +100,7 @@ public class FileDataManager {
                 String parentPath = Util.getParentPath(fullPath);
                 String newPath = parentPath + (TextUtils.isEmpty(parentPath) ? "" : "/") + newName;
 
-                return mEntFileManager.move( fullPath,
+                return mEntFileManager.move(fullPath,
                         newPath, "");
             }
 
@@ -165,11 +166,12 @@ public class FileDataManager {
     }
 
     public FileData getFileInfoSync(String fullPath) {
-        return FileData.create(mEntFileManager.getFileInfo( fullPath));
+        return FileData.create(mEntFileManager.getFileInfo(fullPath));
     }
 
     /**
      * 添加文件
+     *
      * @param fullPath
      * @param localPath
      * @param callBack
@@ -184,7 +186,7 @@ public class FileDataManager {
             callBack.onFail(0, "");
             return null;
         }
-        return mEntFileManager.uploadByBlock( fullPath, Config.ORG_OPT_NAME, 0, localPath, true, callBack);
+        return mEntFileManager.uploadByBlock(fullPath, Config.ORG_OPT_NAME, 0, localPath, true, callBack);
     }
 
     /**
@@ -210,7 +212,7 @@ public class FileDataManager {
 
             @Override
             protected Object doInBackground(Void... params) {
-                return mEntFileManager.createFolder( fullPath, Config.ORG_OPT_NAME);
+                return mEntFileManager.createFolder(fullPath, Config.ORG_OPT_NAME);
             }
 
             @Override
@@ -254,7 +256,7 @@ public class FileDataManager {
 
             @Override
             protected Object doInBackground(Void... params) {
-                return mEntFileManager.del( fullPath, Config.ORG_OPT_NAME);
+                return mEntFileManager.del(fullPath, Config.ORG_OPT_NAME);
             }
 
             @Override
@@ -286,12 +288,19 @@ public class FileDataManager {
         String parentPath = Util.getParentPath(fullPath);
         parentPath += (TextUtils.isEmpty(parentPath) ? "" : "/");
 
-        ArrayList<FileData> list = getFilesFromMemory(parentPath);
-        if (list != null) {
-            for (FileData data : list) {
-                if (data.getFullpath().equals(fullPath)) {
-                    return true;
+        int start = 0;
+
+        while (true) {
+            ArrayList<FileData> list = getFilesFromMemory(start, parentPath);
+            if (list != null) {
+                for (FileData data : list) {
+                    if (data.getFullpath().equals(fullPath)) {
+                        return true;
+                    }
                 }
+                start += PAGE_SIZE;
+            } else {
+                break;
             }
         }
         return false;
@@ -308,20 +317,21 @@ public class FileDataManager {
     }
 
     public interface FileDataListener extends DataListener {
-        void onReceiveCacheData(ArrayList<FileData> list);
+        void onReceiveCacheData(int start, ArrayList<FileData> list);
 
-        void onReceiveHttpData(ArrayList<FileData> list, String parentPath);
+        void onReceiveHttpData(ArrayList<FileData> list, int start, String parentPath);
 
     }
+
 
     /**
      * 获取文件列表
      *
      * @param fullPath
      * @param listener
-     * @param dir
+     * @param start
      */
-    public void getFileList(final String fullPath, final FileDataListener listener, final int dir) {
+    public void getFileList(final String fullPath, final FileDataListener listener, final int start) {
 
 
         if (isHookRegisted() && !mCallback.hookInvoke(HookCallback.HookType.HOOK_TYPE_FILE_LIST, fullPath)) {
@@ -333,27 +343,27 @@ public class FileDataManager {
 
             @Override
             public void run() {
-                ArrayList<FileData> cacheList = getFilesFromPath(fullPath);
-                if (dir == FileData.DIRIS) {
-                    filterFiles(cacheList);
-                }
-                listener.onReceiveCacheData(cacheList);
+                ArrayList<FileData> cacheList = getFilesFromPath(start, fullPath);
+                listener.onReceiveCacheData(start, cacheList);
 
                 if (!Util.isNetworkAvailableEx()) {
                     listener.onNetUnable();
                 } else {
-                    String result = mEntFileManager.getFileList( 0, fullPath);
+                    String result = mEntFileManager.getFileList(start, fullPath);
                     FileListData fileListData = FileListData.create(result);
                     if (fileListData.getCode() == HttpStatus.SC_OK) {
-                        ArrayList<FileData> httpList = (ArrayList<FileData>) fileListData.getList().clone();
 
-                        if (dir == FileData.DIRIS) {
-                            filterFiles(httpList);
+                        ArrayList<FileData> list = fileListData.getList();
+
+                        listener.onReceiveHttpData(list, start, fullPath);
+
+                        //FIXME 暂时只支持100条内的数据缓存，如果要对100条外缓存，要考虑到100条外缓存数据和网络获取数据的更替
+                        if (start == 0) {
+                            mFilesMap.put(new FileDataKey(start, fullPath), list);
                         }
 
-                        listener.onReceiveHttpData(fileListData.getList(), fullPath);
-                        mFilesMap.put(fullPath, fileListData.getList());
-
+                        mFullPath = fullPath;
+                        mStart = start;
                     } else {
                         listener.onError(fileListData.getErrorMsg());
                     }
@@ -364,6 +374,20 @@ public class FileDataManager {
         mFileTask.start();
     }
 
+    public static final int PAGE_SIZE = 100;//默认列表文件数量
+
+    //文件列表开始位置
+    private int mStart = 0;
+    private String mFullPath = "";
+
+
+    public void getListMore(FileDataListener listener) {
+        mStart += PAGE_SIZE;
+        getFileList(mFullPath, listener, mStart);
+
+    }
+
+
     private Thread mFileTask;
 
     public void cancelFileTask() {
@@ -373,37 +397,44 @@ public class FileDataManager {
         }
     }
 
-    public ArrayList<FileData> getFilesFromPath(String fullPath) {
+    public ArrayList<FileData> getFilesFromPath(int start, String fullPath) {
         //get cache from memory
-        ArrayList<FileData> list = getFilesFromMemory(fullPath);
+        ArrayList<FileData> list = getFilesFromMemory(start, fullPath);
         if (list != null) {
             DebugFlag.log(LOG_TAG, "return from memory cache");
             if (list.size() > 0) {
                 if (list.get(0).isHeader()) {
                     list.remove(0);
                 }
+
+                int index = list.size() - 1;
+                if (list.get(index).isFooter()) {
+                    list.remove(index);
+                }
             }
+
+
             return list;
         }
         return new ArrayList<>();
     }
 
-    private void filterFiles(ArrayList<FileData> list) {
-        Iterator<FileData> iterator = list.iterator();
-        while (iterator.hasNext()) {
-            FileData fileData = iterator.next();
-            if (fileData.getDir() != FileData.DIRIS && !fileData.isHeader()) {
-                iterator.remove();
-            }
-        }
-    }
+//    private void filterFiles(ArrayList<FileData> list) {
+//        Iterator<FileData> iterator = list.iterator();
+//        while (iterator.hasNext()) {
+//            FileData fileData = iterator.next();
+//            if (fileData.getDir() != FileData.DIRIS && !fileData.isHeader()) {
+//                iterator.remove();
+//            }
+//        }
+//    }
 
 
     private static final int CACHE_CAPACITY = 64;
-    private final LruCache<String, ArrayList<FileData>> mFilesMap = new LruCache<>(CACHE_CAPACITY);
+    private final LruCache<FileDataKey, ArrayList<FileData>> mFilesMap = new LruCache<>(CACHE_CAPACITY);
 
-    private ArrayList<FileData> getFilesFromMemory(String fullPath) {
-        return mFilesMap.get(fullPath);
+    private ArrayList<FileData> getFilesFromMemory(int start, String fullPath) {
+        return mFilesMap.get(new FileDataKey(start, fullPath));
     }
 
     public boolean isRootPath(String fullPath) {

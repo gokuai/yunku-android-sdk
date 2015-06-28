@@ -37,17 +37,26 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
     private boolean isOperationEnable;
     private String mHighlightItemStr;
     private Handler mHandler;
+    private boolean isLoadingMore;
 
     @Override
     public void onClick(View v) {
         if (mListener != null) {
             int position = (int) v.getTag();
+            if (isLoadingMore && ((FileData) getItem(position)).isFooter()) {
+                //正在加载的状态不予以处理
+                return;
+            }
             mListener.onItemClick(this, position, v);
         }
     }
 
     public void setHighlightItemString(String highlightItemString) {
         mHighlightItemStr = highlightItemString;
+    }
+
+    public void setIsLoadingMore(boolean isLoadingMore) {
+        this.isLoadingMore = isLoadingMore;
     }
 
     public interface FileItemClickListener {
@@ -98,6 +107,12 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
         sortList(mSortType);
     }
 
+    public void addList(ArrayList<FileData> list) {
+        removeFooter();
+        mList.addAll(list);
+        sortList(mSortType);
+    }
+
     public void setSortType(int sortType) {
         mSortType = sortType;
         sortList(sortType);
@@ -124,6 +139,7 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
             holder.dropdownbtn.setOnClickListener(this);
             holder.itemll = convertView.findViewById(R.id.file_item_view_ll);
             holder.itemll.setOnClickListener(this);
+            holder.loadingMoreText = (TextView)convertView.findViewById(R.id.file_item_loading_more_tv);
             holder.descriptionll = convertView.findViewById(R.id.file_item_description_ll);
             convertView.setTag(holder);
         } else {
@@ -136,13 +152,24 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
 //        holder.lastmembername.setText(data.getLastMemberName());
         holder.dropdownbtn.setTag(position);
         holder.itemll.setTag(position);
+
         holder.img.setBackgroundDrawable(null);
         if (data.isHeader()) {
             holder.name.setText(R.string.file_list_header);
+            holder.img.setVisibility(View.VISIBLE);
             holder.img.setImageResource(R.drawable.ic_back);
             holder.dropdownbtn.setVisibility(View.GONE);
             holder.descriptionll.setVisibility(View.GONE);
+            holder.loadingMoreText.setVisibility(View.GONE);
+        } else if (data.isFooter()) {
+            holder.img.setVisibility(View.GONE);
+            holder.name.setText("");
+            holder.dropdownbtn.setVisibility(View.GONE);
+            holder.descriptionll.setVisibility(View.GONE);
+            holder.loadingMoreText.setVisibility(View.VISIBLE);
         } else {
+            holder.img.setVisibility(View.VISIBLE);
+            holder.loadingMoreText.setVisibility(View.GONE);
             holder.dropdownbtn.setVisibility(isOperationEnable ? View.VISIBLE : View.GONE);
             holder.descriptionll.setVisibility(View.VISIBLE);
             if (data.getDir() == FileData.DIRIS) {
@@ -249,11 +276,16 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
     private void sortList(int sortType) {
         Config.saveListSortType(mContext, sortType);
         if (mList != null && mList.size() > 0) {
-            boolean hasRemoved = false;
+            boolean hasHeader = false;
+            boolean hasFooter = false;
             if (mList.get(0).isHeader()) {
-                hasRemoved = true;
+                hasHeader = true;
                 mList.remove(0);
             }
+
+            hasFooter = removeFooter();
+
+
             switch (sortType) {
                 case Constants.FILE_SORT_TYPE_FILENAME:
                     FileNameComparator fileNameComparator = new FileNameComparator();
@@ -268,8 +300,12 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
                     Collections.sort(mList, fileSizeComparator);
                     break;
             }
-            if (hasRemoved) {
+            if (hasHeader) {
                 mList.add(0, FileData.createHeadData());
+            }
+
+            if (hasFooter) {
+                mList.add(FileData.createFootData());
             }
 
         }
@@ -279,12 +315,13 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
     private class ViewHolder {
         private TextView name;
         private TextView dateline;
-//        private TextView lastmembername;
+        //        private TextView lastmembername;
         private TextView filesize;
         private View descriptionll;
         private ImageView img;
         private Button dropdownbtn;
         private View itemll;
+        private TextView loadingMoreText;
     }
 
     private void startAnimation(final View counterView) {
@@ -296,6 +333,19 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
                 counterView.setBackgroundResource(R.drawable.listview_selector);
             }
         }, 500);
+    }
+
+    private boolean removeFooter() {
+
+        boolean hasFooter = false;
+        int index = mList.size() - 1;
+
+        if (mList.get(index).isFooter()) {
+            hasFooter = true;
+            mList.remove(index);
+
+        }
+        return hasFooter;
     }
 
 
