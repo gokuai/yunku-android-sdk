@@ -244,8 +244,6 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
     public void onClick(View v) {
         if (v.getId() == R.id.file_list_return) {
             onBackEvent();
-        } else if (v.getId() == R.id.file_list_load_more_ll) {
-            onLoadMoreData();
         }
     }
 
