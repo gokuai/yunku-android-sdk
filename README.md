@@ -24,7 +24,7 @@ Android Studio 可直接引用master 中 androidsdk Module，Eclispe 、IntelliJ
 
 File>Import Module>，找到对应androidsdk所在的文件夹,并导入到项目
 
-*gradle 1.8+ 建议引用 aar*
+*gradle 1.8+ , Android Studio 1.2+ 建议引用 aar*
 
 File>New Module>More Modules>Import .JAR or .AAR Package ,引用androidsdk.aar文件
 
