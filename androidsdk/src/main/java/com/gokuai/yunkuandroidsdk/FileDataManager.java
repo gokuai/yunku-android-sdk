@@ -344,6 +344,7 @@ public class FileDataManager {
             @Override
             public void run() {
                 ArrayList<FileData> cacheList = getFilesFromPath(start, fullPath);
+                //超过100条的文件只有当网络不可用的时候，才会加载
                 listener.onReceiveCacheData(start, cacheList);
 
                 if (!Util.isNetworkAvailableEx()) {
@@ -357,10 +358,7 @@ public class FileDataManager {
 
                         listener.onReceiveHttpData(list, start, fullPath);
 
-                        //FIXME 暂时只支持100条内的数据缓存，如果要对100条外缓存，要考虑到100条外缓存数据和网络获取数据的更替
-                        if (start == 0) {
-                            mFilesMap.put(new FileDataKey(start, fullPath), list);
-                        }
+                        mFilesMap.put(new FileDataKey(start, fullPath), list);
 
                         mFullPath = fullPath;
                         mStart = start;
