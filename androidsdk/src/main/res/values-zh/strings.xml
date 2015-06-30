@@ -103,4 +103,11 @@
     <string name="tip_open_image_failed">图片打开失败</string>
     <string name="format_the_lasttime_fixed_desc">%1$s 修改于%2$s</string>
 
+    <string name="retry">重试</string>
+    <string name="preview_file_too_large">100M以上的文件不允许预览</string>
+    <string name="tip_no_preview_server_available">没有可用的预览服务器</string>
+    <string name="convert_error">转化失败</string>
+    <string name="tip_preview_file_download_failed">预览文件下载失败</string>
+    <string name="tip_connect_out_time">链接超时</string>
+
 </resources>

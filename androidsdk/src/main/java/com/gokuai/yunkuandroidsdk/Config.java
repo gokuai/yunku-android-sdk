@@ -49,6 +49,14 @@ public class Config {
     public static final String SP_CACHE_ROOT_DATA = "CacheRootData";
     public static final String SP_CACHE_ROOT_DATA_FULLPATH = "FullPath";
 
+    public static final String SP_CACHE_FOR_SERVER = "server";
+    public static final String SP_CACHE_FOR_SERVER_PERVIEW_SITE = "preview_site";
+    public static String URL_SOCKET_PREVIEW;//getPreviewSite
+
+    public final static boolean DEBUG_MODE = false;
+    public static String CLIENT_SECRET = DEBUG_MODE ? "WTPS0AXco78WWV1IYWvlyrn4P8" : "b99c26032ce5c00cebe74d2cb804db0f";
+
+
 
     /**
      * 设置缓存路径 lib中使用
@@ -93,6 +101,18 @@ public class Config {
         return debugPreference.getInt(SP_FILE_LIST_SORT, 0);
     }
 
+    public static String getPreviewSite(Context context) {
+        SharedPreferences debugPreference = context.getSharedPreferences(
+                SP_CACHE_FOR_SERVER, Context.MODE_PRIVATE);
+        return debugPreference.getString(SP_CACHE_FOR_SERVER_PERVIEW_SITE, "");
+    }
+
+    public static void setPreviewSite(Context context, String site) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(
+                SP_CACHE_FOR_SERVER, Context.MODE_PRIVATE).edit();
+        editor.putString(SP_CACHE_FOR_SERVER_PERVIEW_SITE, site);
+        editor.apply();
+    }
 
     /**
      * 获得本地文件跟目录
@@ -106,6 +126,10 @@ public class Config {
 
     public static String getLocalFilePath(String filehash) {
         return Config.getOfflineFilePath() + filehash;
+    }
+
+    public static String getPdfFilePath(String filehash) {
+        return getLocalFilePath(filehash) + "_pdf";
     }
 
     public static String getBigThumbPath(String filehash) {

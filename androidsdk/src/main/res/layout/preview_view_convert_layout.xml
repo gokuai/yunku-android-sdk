@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/preview_image_iv"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:src="@drawable/ic_doc" />
+
+    <TextView
+        android:id="@+id/preview_file_name_tv"
+        style="@style/black_big_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:text="file name" />
+
+    <TextView
+        android:id="@+id/preview_file_size_tv"
+        style="@style/gray_medium_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="64dp"
+        android:layout_marginTop="@dimen/thick_margin"
+        android:text="12kb" />
+
+    <ProgressBar
+        android:id="@+id/preview_convert_progress_pb"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:indeterminate="true"
+        android:progressBackgroundTint="@color/color_c" />
+
+
+    <LinearLayout
+        android:id="@+id/preview_error_view"
+        android:layout_width="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/preview_error_description_tv"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="convert error"
+            android:gravity="center"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            style="@style/gray_big_text"/>
+        <Button
+            android:id="@+id/preview_retry_btn"
+            style="@style/WidthButton"
+            android:background="@drawable/corner_round_finish_btn_bg"
+            android:textColor="@color/corner_round_finish_btn_selector"
+            android:text="@string/retry"
+            android:textSize="@dimen/text_big" />
+    </LinearLayout>
+
+
+</LinearLayout>

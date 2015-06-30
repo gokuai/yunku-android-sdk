@@ -9,15 +9,20 @@ import com.gokuai.yunkuandroidsdk.data.BaseData;
 import com.gokuai.yunkuandroidsdk.data.FileData;
 import com.gokuai.yunkuandroidsdk.data.FileDataKey;
 import com.gokuai.yunkuandroidsdk.data.FileListData;
+import com.gokuai.yunkuandroidsdk.data.ServerListData;
 import com.gokuai.yunkuandroidsdk.exception.GKException;
 import com.gokuai.yunkuandroidsdk.util.Util;
 import com.yunkuent.sdk.EntFileManager;
 import com.yunkuent.sdk.UploadRunnable;
 import com.yunkuent.sdk.upload.UploadCallBack;
+import com.yunkuent.sdk.utils.URLEncoder;
 
 import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Created by Brandon on 15/4/10.
@@ -168,6 +173,37 @@ public class FileDataManager {
     public FileData getFileInfoSync(String fullPath) {
         return FileData.create(mEntFileManager.getFileInfo(fullPath));
     }
+
+    /**
+     * API签名,SSO签名
+     *
+     * @param params
+     * @return
+     */
+    protected String generateSignOrderByKey(ArrayList<NameValuePair> params) {
+        return generateSignOrderByKey(params, Config.CLIENT_SECRET, true);
+    }
+
+    public String generateSignOrderByKey(ArrayList<NameValuePair> params, String secret, boolean needEncode) {
+        Collections.sort(params, comparator);
+        int size = params.size();
+        String string_to_sign = "";
+
+        if (size > 0) {
+            for (int i = 0; i < size - 1; i++) {
+                string_to_sign += params.get(i).getValue() + "\n";
+            }
+            string_to_sign += params.get(size - 1).getValue();
+        }
+        return needEncode ? URLEncoder.encodeUTF8(com.yunkuent.sdk.utils.Util.getHmacSha1(string_to_sign, secret)) : com.yunkuent.sdk.utils.Util.getHmacSha1(string_to_sign, secret);
+    }
+
+    private Comparator<NameValuePair> comparator = new Comparator<NameValuePair>() {
+        public int compare(NameValuePair p1, NameValuePair p2) {
+            return p1.getName().compareTo(p2.getName());
+        }
+    };
+
 
     /**
      * 添加文件
@@ -373,6 +409,21 @@ public class FileDataManager {
 
         mFileTask.start();
     }
+
+    /**
+     * 获取预览服务器地址
+     *
+     * @return
+     */
+    public ServerListData getPreviewServerSite() {
+        ServerListData data = ServerListData.create(getServerSite("doc"));
+        return data;
+    }
+
+    private String getServerSite(String type) {
+        return mEntFileManager.getServerSite(type);
+    }
+
 
     public static final int PAGE_SIZE = 100;//默认列表文件数量
 

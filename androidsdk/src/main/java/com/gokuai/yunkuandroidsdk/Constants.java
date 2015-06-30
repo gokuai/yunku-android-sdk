@@ -29,6 +29,7 @@ public class Constants {
     public static final int ACTION_ID_REFRESH = 0;
     public static final String EXTRA_ACTION_ID = "action_id";
 
+    public static final String EXTRA_FILEDATA = "filedata";
     public static final String EXTRA_MOUNT_ID = "mount_id";
     public static final String EXTRA_GALLERY_MODE = "gallery_mode";
     public static final int EXTRA_GALLERY_MODE_LIST = 1;

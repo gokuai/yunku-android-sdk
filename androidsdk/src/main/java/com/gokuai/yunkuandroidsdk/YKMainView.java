@@ -125,7 +125,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
             return;
         }
 
-        if(data.isFooter()){
+        if (data.isFooter()) {
             onLoadMoreData();
             return;
         }
@@ -146,7 +146,11 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
                     //intent.putExtra(Constants.EXTRA_ENT_ID, mEntId);
                     GKApplication.getInstance().startActivity(intent);
                 } else if (UtilFile.isPreviewFile(data.getFilename())) {
-
+                    Intent intent = new Intent(mContext, PreviewActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra(Constants.EXTRA_FILEDATA, data);
+                    //intent.putExtra(Constants.EXTRA_KEY_FILE_READ, access);
+                    GKApplication.getInstance().startActivity(intent);
                 } else {
                     FileOpenManager.getInstance().handle(mContext, data);
                 }
@@ -221,8 +225,8 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
             case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
             case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
                 if (Utils.hasHoneycomb()) {
-                mImageFetcher.setPauseWork(true);
-            }
+                    mImageFetcher.setPauseWork(true);
+                }
                 break;
             case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
                 mImageFetcher.setPauseWork(false);
@@ -338,7 +342,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
             }
         } else {
             if (isRoot()) {
-                if (list.size() >= FileDataManager.PAGE_SIZE ) {
+                if (list.size() >= FileDataManager.PAGE_SIZE) {
                     list.add(FileData.createFootData());
                 }
 
@@ -560,6 +564,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
 
     /**
      * 文件定位（高亮显示）
+     *
      * @param fullPath
      */
     public void redirectToFile(String fullPath) {

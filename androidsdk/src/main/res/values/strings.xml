@@ -103,4 +103,11 @@
     <string name="tip_open_image_failed">Open image failed</string>
     <string name="format_the_lasttime_fixed_desc">%1$s Modify %2$s</string>
 
+    <string name="retry">Retry</string>
+    <string name="preview_file_too_large">100M file is not allowed to preview</string>
+    <string name="tip_no_preview_server_available">No available preview server</string>
+    <string name="convert_error">Convert Error</string>
+    <string name="tip_preview_file_download_failed">Preview file download failed</string>
+    <string name="tip_connect_out_time">Connect out of time</string>
+
 </resources>

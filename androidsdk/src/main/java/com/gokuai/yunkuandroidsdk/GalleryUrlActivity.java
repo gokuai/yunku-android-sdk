@@ -73,7 +73,7 @@ public class GalleryUrlActivity extends BaseActivity implements View.OnClickList
         } else if (i == R.id.btn_send_another_app) {
             FileOpenManager.getInstance().handle(GalleryUrlActivity.this, data);
         } else if (i == android.R.id.home) {
-            finish();;
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -161,7 +161,7 @@ public class GalleryUrlActivity extends BaseActivity implements View.OnClickList
                 parentPath = parentPath + "/";
             }
 
-            ArrayList<FileData> list = FileDataManager.getInstance().getFilesFromPath(parentPath);
+            ArrayList<FileData> list = FileDataManager.getInstance().getFilesFromPath(0,parentPath);
             if (list.size() == 0) {
                 UtilDialog.showNormalToast(R.string.tip_file_not_exist);
                 finish();
@@ -231,15 +231,7 @@ public class GalleryUrlActivity extends BaseActivity implements View.OnClickList
     }
 
 
-    @Override
-    public void onReceiveCacheData(ArrayList<FileData> list) {
 
-    }
-
-    @Override
-    public void onReceiveHttpData(ArrayList<FileData> list, String parentPath) {
-
-    }
 
     @Override
     public void onReceiveHttpResponse(int actionId) {
@@ -283,6 +275,16 @@ public class GalleryUrlActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onNetUnable() {
+
+    }
+
+    @Override
+    public void onReceiveCacheData(int start, ArrayList<FileData> list) {
+
+    }
+
+    @Override
+    public void onReceiveHttpData(ArrayList<FileData> list, int start, String parentPath) {
 
     }
 }

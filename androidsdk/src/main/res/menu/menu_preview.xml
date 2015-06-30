@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:gokuai="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/btn_menu_function"
+        android:icon="@drawable/abc_ic_menu_moreoverflow_mtrl_alpha"
+        android:title="@string/abc_action_menu_overflow_description"
+        gokuai:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/menu_btn_send"
+                android:title="@string/send_to_another_app"
+                gokuai:showAsAction="always|withText" />
+        </menu>
+
+    </item>
+</menu>

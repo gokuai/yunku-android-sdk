@@ -10,6 +10,7 @@
     <color name="color_e">#eeeeee</color>
     <color name="color_f">#ffffff</color>
 
+    <color name="color_blue">#50acf3</color>
     <color name="bottom_slide_menu_btn_color">#f5f1f8</color>
 
     <color name="action_bar_shadow_start_color">#330d0509</color>
@@ -21,4 +22,6 @@
     <color name="color_disable_text">#ccc</color>
 
     <color name="gallery_desc_text_color">#3f4754</color>
+
+    <color name="finish_color">@color/color_blue</color>
 </resources>
