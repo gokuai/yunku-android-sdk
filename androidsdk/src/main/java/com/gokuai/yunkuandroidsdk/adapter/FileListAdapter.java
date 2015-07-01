@@ -2,6 +2,7 @@ package com.gokuai.yunkuandroidsdk.adapter;
 
 import android.content.Context;
 import android.os.Handler;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,6 +86,15 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
 
     private ArrayList<FileData> mList;
 
+    private SparseArray<ArrayList<FileData>> mPareArr;
+
+    private SparseArray<ArrayList<FileData>> getSparseArr() {
+        if (mPareArr == null) {
+            mPareArr = new SparseArray<>();
+        }
+        return mPareArr;
+    }
+
 
     @Override
     public int getCount() {
@@ -104,13 +114,31 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
 
     public void setList(ArrayList<FileData> list) {
         mList = list;
+        mPareArr = null;//每次置空 避免不同路径下的列表
+        getSparseArr().put(0, list); //start == 0
         sortList(mSortType);
     }
 
-    public void addList(ArrayList<FileData> list) {
+    public void addList(ArrayList<FileData> list, int start) {
         removeFooter();
-        mList.addAll(list);
+        getSparseArr().put(start, list);
+        mList = generateList(getSparseArr());
         sortList(mSortType);
+    }
+
+    //FIXME 如果是超长的列表，这里会有内存大开销的隐患
+    private ArrayList<FileData> generateList(SparseArray<ArrayList<FileData>> sparseArray) {
+
+        ArrayList<FileData> list = new ArrayList<>();
+        for (int i = 0; i < sparseArray.size(); i++) {
+            int key = sparseArray.keyAt(i);
+            ArrayList<FileData> tempList = sparseArray.get(key);
+            if (tempList != null) {
+                list.addAll(sparseArray.get(key));
+            }
+        }
+
+        return list;
     }
 
     public void setSortType(int sortType) {
@@ -139,7 +167,7 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
             holder.dropdownbtn.setOnClickListener(this);
             holder.itemll = convertView.findViewById(R.id.file_item_view_ll);
             holder.itemll.setOnClickListener(this);
-            holder.loadingMoreText = (TextView)convertView.findViewById(R.id.file_item_loading_more_tv);
+            holder.loadingMoreText = (TextView) convertView.findViewById(R.id.file_item_loading_more_tv);
             holder.descriptionll = convertView.findViewById(R.id.file_item_description_ll);
             convertView.setTag(holder);
         } else {
@@ -277,13 +305,12 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
         Config.saveListSortType(mContext, sortType);
         if (mList != null && mList.size() > 0) {
             boolean hasHeader = false;
-            boolean hasFooter = false;
             if (mList.get(0).isHeader()) {
                 hasHeader = true;
                 mList.remove(0);
             }
 
-            hasFooter = removeFooter();
+            boolean hasFooter = removeFooter();
 
 
             switch (sortType) {
