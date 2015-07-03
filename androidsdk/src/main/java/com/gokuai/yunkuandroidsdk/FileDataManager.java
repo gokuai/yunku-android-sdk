@@ -394,7 +394,7 @@ public class FileDataManager {
 
                         listener.onReceiveHttpData(list, start, fullPath);
 
-                        mFilesMap.put(new FileDataKey(start, fullPath), list);
+                        mFilesMap.put(new FileDataKey(start, fullPath), fileListData);
 
                         mFullPath = fullPath;
                         mStart = start;
@@ -468,6 +468,22 @@ public class FileDataManager {
         return new ArrayList<>();
     }
 
+    /**
+     * 获取当前路径列表的总数
+     *
+     * 方法能正确获取数量的前提是当前列表从 start ＝ 0 的位置开始加载
+     *
+     * @param fullPath
+     * @return
+     */
+    public int getCountOfList(String fullPath){
+        FileListData fileListData = mFilesMap.get(new FileDataKey(0, fullPath));
+        if(fileListData!=null){
+            return  fileListData.getCount();
+        }
+        return 0;
+    }
+
 //    private void filterFiles(ArrayList<FileData> list) {
 //        Iterator<FileData> iterator = list.iterator();
 //        while (iterator.hasNext()) {
@@ -480,11 +496,17 @@ public class FileDataManager {
 
 
     private static final int CACHE_CAPACITY = 64;
-    private final LruCache<FileDataKey, ArrayList<FileData>> mFilesMap = new LruCache<>(CACHE_CAPACITY);
+    private final LruCache<FileDataKey, FileListData> mFilesMap = new LruCache<>(CACHE_CAPACITY);
 
     private ArrayList<FileData> getFilesFromMemory(int start, String fullPath) {
-        return mFilesMap.get(new FileDataKey(start, fullPath));
+        FileListData fileListData = mFilesMap.get(new FileDataKey(start, fullPath));
+        if (fileListData != null) {
+            return fileListData.getList();
+        }
+        return null;
     }
+
+
 
     public boolean isRootPath(String fullPath) {
         return fullPath.equals(mRootPath);
