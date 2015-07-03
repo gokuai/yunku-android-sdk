@@ -15,7 +15,10 @@ import java.util.ArrayList;
 public class FileListData extends BaseData {
 
     private final static String KEY_LIST = "list";
+    private final static String KEY_COUNT = "count";
+
     private ArrayList<FileData> list;
+    private int count;
 
     public static FileListData create(String result) {
 
@@ -32,6 +35,7 @@ public class FileListData extends BaseData {
         }
 
         if (json != null) {
+            fileListData.count = json.optInt(KEY_COUNT);
             ArrayList<FileData> list = new ArrayList<>();
             if (code == HttpStatus.SC_OK) {
                 JSONArray array = json.optJSONArray(KEY_LIST);
@@ -62,5 +66,13 @@ public class FileListData extends BaseData {
 
     public void setList(ArrayList<FileData> list) {
         this.list = list;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }
