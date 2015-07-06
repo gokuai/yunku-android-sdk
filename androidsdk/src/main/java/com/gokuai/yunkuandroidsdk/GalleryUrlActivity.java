@@ -24,6 +24,7 @@ import com.gokuai.yunkuandroidsdk.util.UtilFile;
 import org.apache.http.HttpStatus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * 图片类型预览
@@ -43,6 +44,11 @@ public class GalleryUrlActivity extends BaseActivity implements View.OnClickList
     private boolean hasDetail = true;
 
     private AsyncTask mDeleteTask;
+
+    private int mPathFileCount;
+
+
+    public static final int GALLERY_PAGE_SIZE = 100;//默认列表文件数量
 
     public void onCreate(Bundle savedInstanceState) {
         supportRequestWindowFeature(WindowCompat.FEATURE_ACTION_BAR_OVERLAY);
@@ -131,6 +137,7 @@ public class GalleryUrlActivity extends BaseActivity implements View.OnClickList
         setContentView(R.layout.gallery_view);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.gallery_title_view);
         getSupportActionBar().show();
@@ -145,7 +152,7 @@ public class GalleryUrlActivity extends BaseActivity implements View.OnClickList
         Intent intent = getIntent();
         mYKMainView = new YKMainView(this);
         String initCurrentFilePath = intent.getStringExtra(EXTRA_LOCAL_FILE_PATH);
-        int mountId = intent.getIntExtra(Constants.EXTRA_MOUNT_ID, -1);
+        //int mountId = intent.getIntExtra(Constants.EXTRA_MOUNT_ID, -1);
 
         mGalleryMode = intent.getIntExtra(Constants.EXTRA_GALLERY_MODE, 0);
         //mMountPropertyData = intent.getParcelableExtra(Constants.EXTRA_KEY_MOUNT_PROPERTY_DATA);
@@ -161,24 +168,42 @@ public class GalleryUrlActivity extends BaseActivity implements View.OnClickList
                 parentPath = parentPath + "/";
             }
 
-            ArrayList<FileData> list = FileDataManager.getInstance().getFilesFromPath(0,parentPath);
-            if (list.size() == 0) {
-                UtilDialog.showNormalToast(R.string.tip_file_not_exist);
-                finish();
-                return;
-            } else {
-                for (FileData fileData : list) {
-                    if (fileData.getDir() != FileData.DIRIS) {
-                        if (UtilFile.isImageFile(fileData.getFilename())) {
-                            imgUrlList.add(fileData.getFullpath());
-                            imgFileList.add(fileData);
+            mPathFileCount = FileDataManager.getInstance().getCountOfList(parentPath);
+            HashMap<Integer, ArrayList<FileData>> mListMap = new HashMap<Integer, ArrayList<FileData>>();
+            //ArrayList<Object> mList = null;
+            for (int i = 0, j = 0; i <= mPathFileCount; i += GALLERY_PAGE_SIZE, j++) {
+                ArrayList<FileData> list = FileDataManager.getInstance().getFilesFromPath(i, parentPath);
+                if (list.size() == 0) {
+                    //UtilDialog.showNormalToast(R.string.tip_file_not_exist);
+                    break;
+                } else {
+                    //mList.add(list);
+                    mListMap.put(j, list);
+                }
+            }
+
+            for (int i = 0; i < mListMap.size(); i++) {
+                ArrayList<FileData> mList;
+                mList = mListMap.get(i);
+                if (mList.size() == 0) {
+                    UtilDialog.showNormalToast(R.string.tip_file_not_exist);
+                    finish();
+                    return;
+                } else {
+                    for (FileData fileData : mList) {
+                        if (fileData.getDir() != FileData.DIRIS) {
+                            if (UtilFile.isImageFile(fileData.getFilename())) {
+                                imgUrlList.add(fileData.getFullpath());
+                                imgFileList.add(fileData);
+                            }
                         }
                     }
-                }
 
-                mLocalIndex = imgUrlList.indexOf(initCurrentFilePath);
-                mImageFileList = imgFileList;
+                    mLocalIndex = imgUrlList.indexOf(initCurrentFilePath);
+                    mImageFileList = imgFileList;
+                }
             }
+
 
         }
 
@@ -231,8 +256,6 @@ public class GalleryUrlActivity extends BaseActivity implements View.OnClickList
     }
 
 
-
-
     @Override
     public void onReceiveHttpResponse(int actionId) {
 
@@ -261,6 +284,14 @@ public class GalleryUrlActivity extends BaseActivity implements View.OnClickList
             mYKMainView.refresh();
         }
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mDeleteTask != null){
+            mDeleteTask.cancel(true);
+        }
     }
 
     @Override

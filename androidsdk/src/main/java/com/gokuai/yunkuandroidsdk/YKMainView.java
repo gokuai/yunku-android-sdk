@@ -142,7 +142,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
                     intent.putExtra(GalleryUrlActivity.EXTRA_LOCAL_FILE_PATH, data.getFullpath());
                     intent.putExtra(Constants.EXTRA_GALLERY_MODE, Constants.EXTRA_GALLERY_MODE_LIST);
                     //intent.putExtra(Constants.EXTRA_KEY_MOUNT_PROPERTY_DATA, mMountPropertyData);
-                    intent.putExtra(Constants.EXTRA_MOUNT_ID, data.getMountId());
+                    //intent.putExtra(Constants.EXTRA_MOUNT_ID, data.getMountId());
                     //intent.putExtra(Constants.EXTRA_ENT_ID, mEntId);
                     GKApplication.getInstance().startActivity(intent);
                 } else if (UtilFile.isPreviewFile(data.getFilename())) {
