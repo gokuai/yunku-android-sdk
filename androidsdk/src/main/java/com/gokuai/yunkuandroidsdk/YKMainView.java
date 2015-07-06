@@ -355,6 +355,7 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
         } else {
             if (start == 0) {
                 mFileListAdapter.setList(list);
+                mLV_FileList.setSelection(0);
             } else {
                 mFileListAdapter.addList(list, start);
             }

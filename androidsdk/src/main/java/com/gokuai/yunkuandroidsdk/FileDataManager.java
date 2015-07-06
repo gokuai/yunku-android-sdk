@@ -451,19 +451,21 @@ public class FileDataManager {
         ArrayList<FileData> list = getFilesFromMemory(start, fullPath);
         if (list != null) {
             DebugFlag.log(LOG_TAG, "return from memory cache");
-            if (list.size() > 0) {
-                if (list.get(0).isHeader()) {
-                    list.remove(0);
+            ArrayList<FileData> cacheList = (ArrayList<FileData>)list.clone();
+
+            if (cacheList.size() > 0) {
+                if (cacheList.get(0).isHeader()) {
+                    cacheList.remove(0);
                 }
 
-                int index = list.size() - 1;
-                if (list.get(index).isFooter()) {
-                    list.remove(index);
+                int index = cacheList.size() - 1;
+                if (cacheList.get(index).isFooter()) {
+                    cacheList.remove(index);
                 }
             }
 
 
-            return list;
+            return cacheList;
         }
         return new ArrayList<>();
     }
