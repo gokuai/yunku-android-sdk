@@ -31,7 +31,6 @@
                 style="@style/black_medium_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/thin_margin"
                 android:layout_marginRight="64dp"
                 android:ellipsize="middle"
                 android:gravity="center"
@@ -42,6 +41,7 @@
                 android:id="@+id/file_item_description_ll"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/thin_margin"
                 android:layout_marginRight="@dimen/dropdown_btn_size"
                 android:orientation="horizontal">
 

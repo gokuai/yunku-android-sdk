@@ -283,7 +283,6 @@ public class ImageFetcher extends ImageResizer {
      */
     public boolean downloadUrlToStream(String urlString, OutputStream outputStream) {
         // 无网络状态就不从网络请求
-        Context context = GKApplication.getInstance();
         if (!Util.isNetworkAvailableEx()) {
             return false;
         }
@@ -297,7 +296,14 @@ public class ImageFetcher extends ImageResizer {
             final URL url = new URL(urlString);
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.addRequestProperty("REFERER", Config.HTTPREFERER);
-            in = new BufferedInputStream(urlConnection.getInputStream(), IO_BUFFER_SIZE);
+
+            urlConnection.connect();
+            int length = urlConnection.getContentLength();
+            if (length > 1048576 || length == -1) {
+                return false;
+            }
+
+            in = new BufferedInputStream(url.openStream(), IO_BUFFER_SIZE);
             out = new BufferedOutputStream(outputStream, IO_BUFFER_SIZE);
 
             int b;
