@@ -259,6 +259,13 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
                 bindListView(start, list);
                 if (!TextUtils.isEmpty(mRedirectPath)) {
                     redirectAndHighLight(list);
+                } else {
+                    //进入一个新的文件夹需要滑动到第一项目，如果是加载更多则不需要，start>0是加载更多
+                    if (!isRefreshAction && start == 0) {
+                        mLV_FileList.setSelection(0);
+                    } else {
+                        isRefreshAction = false;
+                    }
                 }
             }
         });
@@ -270,11 +277,11 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
             openFolder(mPath);
         }
 
-        if (!isRefreshAction) {
-            mLV_FileList.setSelection(0);
-        } else {
-            isRefreshAction = false;
-        }
+//        if (!isRefreshAction) {
+//            mLV_FileList.setSelection(0);
+//        } else {
+//            isRefreshAction = false;
+//        }
     }
 
 
@@ -355,7 +362,6 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
         } else {
             if (start == 0) {
                 mFileListAdapter.setList(list);
-                mLV_FileList.setSelection(0);
             } else {
                 mFileListAdapter.addList(list, start);
             }
