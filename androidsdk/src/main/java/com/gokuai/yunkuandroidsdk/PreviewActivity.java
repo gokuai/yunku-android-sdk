@@ -26,7 +26,6 @@ import com.gokuai.yunkuandroidsdk.data.FileData;
 import com.gokuai.yunkuandroidsdk.data.ServerData;
 import com.gokuai.yunkuandroidsdk.data.ServerListData;
 import com.gokuai.yunkuandroidsdk.util.Util;
-import com.gokuai.yunkuandroidsdk.util.UtilDialog;
 import com.gokuai.yunkuandroidsdk.util.UtilFile;
 import com.yunkuent.sdk.utils.URLEncoder;
 
@@ -50,7 +49,6 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * Created by Slf on 2015/6/25.
@@ -66,6 +64,7 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
 
     private Socket mSocket;
     private String mFileHash;
+    private String mOpenFileUrl;
     private MuPDFCore core;
     private MuPDFReaderView mDocView;
     private FileData mFileData;
@@ -95,17 +94,21 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
         setContentView(R.layout.preview_view_convert_layout);
 
         Intent intent = getIntent();
-        mFileData = intent.getParcelableExtra(Constants.EXTRA_FILEDATA);
-        //isFileRead = intent.getBooleanExtra(Constants.EXTRA_KEY_FILE_READ, false);
-        mFileHash = mFileData.getFilehash();
-//        isFileLink = intent.getBooleanExtra(Constants.EXTRA_KEY_FILE_LINK, false);
+        mOpenFileUrl = intent.getStringExtra(Constants.EXTRA_OPEN_FILE_URL);
 
-        if (mFileData != null) {
-            setTitle(mFileData.getFilename());
-            createConvertViewer();
-            initData();
-            //registerScreenReceiver();
+        if (!TextUtils.isEmpty(mOpenFileUrl)) {
+            openPDFFile(mOpenFileUrl);
+        } else {
+            mFileData = intent.getParcelableExtra(Constants.EXTRA_FILEDATA);
+
+            if (mFileData != null) {
+                mFileHash = mFileData.getFilehash();
+                setTitle(mFileData.getFilename());
+                createConvertViewer();
+                initData();
+            }
         }
+
     }
 
 

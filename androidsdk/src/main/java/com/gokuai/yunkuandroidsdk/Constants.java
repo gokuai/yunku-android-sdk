@@ -30,7 +30,7 @@ public class Constants {
     public static final String EXTRA_ACTION_ID = "action_id";
 
     public static final String EXTRA_FILEDATA = "filedata";
-    public static final String EXTRA_MOUNT_ID = "mount_id";
+    public static final String EXTRA_OPEN_FILE_URL = "open_file_url";
     public static final String EXTRA_GALLERY_MODE = "gallery_mode";
     public static final int EXTRA_GALLERY_MODE_LIST = 1;
     public static final int EXTRA_GALLERY_MODE_LOCAL = 2;

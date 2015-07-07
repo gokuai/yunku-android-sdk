@@ -11,6 +11,9 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.gokuai.yunkuandroidsdk.Constants;
+import com.gokuai.yunkuandroidsdk.PreviewActivity;
+
 /**
  * 调整配置Activity
  */
@@ -35,6 +38,7 @@ public class ConfigActivity extends AppCompatActivity {
     public TextView mTv_rootTitle;
 
     public Button mBtn_startBtn;
+    public Button mBtn_previewBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +63,7 @@ public class ConfigActivity extends AppCompatActivity {
         mCB_hookRename = (CheckBox) findViewById(R.id.config_hook_rename_cb);
         mCB_hookDelete = (CheckBox) findViewById(R.id.config_hook_delete_cb);
         mBtn_startBtn = (Button) findViewById(R.id.config_start_demo_btn);
+        mBtn_previewBtn =(Button)findViewById(R.id.config_go_to_preview_btn);
 
         getAllCache();
 
@@ -87,6 +92,18 @@ public class ConfigActivity extends AppCompatActivity {
                 startActivity(intent);
 
                 setAllCache();
+            }
+        });
+
+        mBtn_previewBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String filePath ="[PDF_file_fullpath]";
+
+                Intent previewIntent = new Intent(ConfigActivity.this, PreviewActivity.class);
+                previewIntent.putExtra(Constants.EXTRA_OPEN_FILE_URL,filePath);
+                startActivity(previewIntent);
             }
         });
 
