@@ -28,7 +28,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
 import com.gokuai.yunkuandroidsdk.Config;
 import com.gokuai.yunkuandroidsdk.R;
 import com.gokuai.yunkuandroidsdk.callback.ParamsCallBack;
@@ -43,17 +42,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
 
 public class UrlTouchImageView extends RelativeLayout {
 
@@ -230,9 +222,6 @@ public class UrlTouchImageView extends RelativeLayout {
         }
 
     }
-
-    private static final int IO_BUFFER_SIZE = 8 * 1024;
-
 
     private Bitmap getFromInternet(FileData data, ParamsCallBack callBack) {
         String urlString = data.getThumbBig();
