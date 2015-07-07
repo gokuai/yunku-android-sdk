@@ -34,18 +34,13 @@ import com.gokuai.yunkuandroidsdk.callback.ParamsCallBack;
 import com.gokuai.yunkuandroidsdk.data.FileData;
 import com.gokuai.yunkuandroidsdk.util.Util;
 
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreProtocolPNames;
-
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class UrlTouchImageView extends RelativeLayout {
 
@@ -223,6 +218,9 @@ public class UrlTouchImageView extends RelativeLayout {
 
     }
 
+    private static final int IO_BUFFER_SIZE = 8 * 1024;
+
+
     private Bitmap getFromInternet(FileData data, ParamsCallBack callBack) {
         String urlString = data.getThumbBig();
         String thumbBigPath = Config.getBigThumbPath(data.getFilehash());
@@ -242,22 +240,26 @@ public class UrlTouchImageView extends RelativeLayout {
         }
 
 
-        HttpClient httpClient = new DefaultHttpClient();
-        httpClient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
-        HttpGet httpGet = new HttpGet(urlString);
+        HttpURLConnection urlConnection = null;
+        BufferedOutputStream out = null;
+        BufferedInputStream in = null;
+
         try {
+
             callBack.callBack(-1);
-            HttpResponse response = httpClient.execute(httpGet);
-            Header header = response.getFirstHeader("Content-Length");
 
-            if(header == null){
-                return null;
-
-            }
-            long totalLength = Long.parseLong(header.getValue());
-
-            InputStream in = response.getEntity().getContent();
             FileOutputStream fos = new FileOutputStream(new File(thumbBigPath));
+
+            final URL url = new URL(urlString);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.connect();
+            int totalLength = urlConnection.getContentLength();
+            if (totalLength == -1) {
+                return null;
+            }
+
+            in = new BufferedInputStream(url.openStream(), IO_BUFFER_SIZE);
+            out = new BufferedOutputStream(fos, IO_BUFFER_SIZE);
 
             byte[] buffer = new byte[4096];
             int length;
@@ -267,10 +269,22 @@ public class UrlTouchImageView extends RelativeLayout {
                 byteNow += length;
                 callBack.callBack((int) (((float) byteNow / (float) totalLength) * (float) 100));
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (in != null) {
+                    in.close();
+                }
+            } catch (final IOException e) {
+            }
         }
-
 
         file = new File(thumbBigPath);
 

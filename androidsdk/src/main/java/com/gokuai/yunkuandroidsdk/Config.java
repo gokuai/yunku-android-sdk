@@ -34,8 +34,6 @@ public class Config {
     public static final String DCIM_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getPath();
     public static final String SD_CARD_PATH = Environment.getExternalStorageDirectory().getPath();
 
-    public final static String HTTPREFERER = "www.gokuai.com";
-
     public final static String WEBVIEW_USERAGENT = "GK_ANDROID;%s;Android";
 
     public final static String URL_HOST = "yunku.gokuai.com";

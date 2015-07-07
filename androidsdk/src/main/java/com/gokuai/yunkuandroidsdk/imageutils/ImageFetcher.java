@@ -295,8 +295,6 @@ public class ImageFetcher extends ImageResizer {
         try {
             final URL url = new URL(urlString);
             urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.addRequestProperty("REFERER", Config.HTTPREFERER);
-
             urlConnection.connect();
             int length = urlConnection.getContentLength();
             if (length > 1048576 || length == -1) {
