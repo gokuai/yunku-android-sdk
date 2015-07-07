@@ -7,7 +7,7 @@ Robots: noindex,nofollow
 */
 # 够快云库Android SDK使用说明
 
-版本：1.0.0
+版本：1.0.2
 
 创建：2015-05-20
 ##兼容性声明
@@ -118,6 +118,18 @@ File>New Module>More Modules>Import .JAR or .AAR Package ,引用androidsdk.aar�
         <activity
             android:name="com.gokuai.yunkuandroidsdk.GKNoteEditorActivity"
             android:windowSoftInputMode="adjustResize" />
+            
+        <!--图片类型预览-->
+        <activity
+            android:name="com.gokuai.yunkuandroidsdk.GalleryUrlActivity"
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTop"
+            android:uiOptions="splitActionBarWhenNarrow" />
+
+        <!--文件类型预览-->
+        <activity
+            android:name="com.gokuai.yunkuandroidsdk.PreviewActivity"
+            android:screenOrientation="portrait" />
         <!--==================================结束======================================-->
     </application>
     ……
