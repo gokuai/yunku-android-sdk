@@ -33,13 +33,14 @@ public class GknoteNameDialogManager extends DialogManger {
         final View editView = LayoutInflater.from(mContext).inflate(R.layout.alert_dialog_edit_with_check, null);
         final EditText editText = (EditText) editView.findViewById(R.id.dialog_edit);
 
-        String hintText = String.format(mContext.getString(R.string.gknote_name_format), System.currentTimeMillis());
+        String hintText = String.format(mContext.getString(R.string.gknote_name_format),
+                Util.formateTime(System.currentTimeMillis(), "yyyyMMdd_hhmmss", mContext));
 
         editText.setHint(hintText);
         final TextView textView = (TextView) editView.findViewById(R.id.dialog_check);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext).setView(editView)
-                .setTitle(R.string.new_folder)
+                .setTitle(R.string.new_gknote_name)
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

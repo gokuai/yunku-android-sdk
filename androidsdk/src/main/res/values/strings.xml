@@ -94,7 +94,7 @@
     <string name="tip_no_available_device_to_take_audio">No available device to record audio！</string>
     <string name="image_file_name_format">\'IMG\'_yyyyMMdd_HHmmss</string>
     <string name="tip_no_available_device_to_take_camera">No available device to take photos！</string>
-    <string name="gknote_name_format">note_%1$s.gknote</string>
+    <string name="gknote_name_format" translatable="false" >Note_%1$s.gknote</string>
     <string name="save">Save</string>
     <string name="load_more">Load More</string>
 
@@ -109,5 +109,6 @@
     <string name="convert_error">Convert Error</string>
     <string name="tip_preview_file_download_failed">Preview file download failed</string>
     <string name="tip_connect_out_time">Connect out of time</string>
+    <string name="new_gknote_name">Note name</string>
 
 </resources>
