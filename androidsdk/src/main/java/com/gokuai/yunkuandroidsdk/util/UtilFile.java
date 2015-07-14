@@ -30,7 +30,7 @@ public class UtilFile {
     static final String LOG_TAG = "UtilFile";
     public static final String DEFAUT_CHARSET_ENCODING_FOR_TXT = "GBK";
     public static final String DEFAUT_CHARSET_ENCODING_FOR_SAVE_DATA = "UTF-8";
-    public static final String IMG[] = {"png", "gif", "jpeg", "jpg", "bmp"};
+    public static final String IMG[] = {"png", "gif", "jpeg", "jpg", "bmp","psd","ai"};
     static final String PROGRAM[] = {"ipa", "exe", "pxl", "apk", "bat", "com"};
     static final String COMPRESSFILE[] = {"iso", "tar", "rar", "gz", "cab",
             "zip"};

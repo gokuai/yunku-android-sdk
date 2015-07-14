@@ -1,10 +1,15 @@
 package com.gokuai.yunkuandroidsdk;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.view.WindowCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +28,7 @@ import com.gokuai.yunkuandroidsdk.util.UtilFile;
 
 import org.apache.http.HttpStatus;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -63,6 +69,7 @@ public class GalleryUrlActivity extends BaseActivity implements View.OnClickList
         setUpView();
         initData();
         menu.findItem(R.id.btn_send_another_app).setVisible(true);
+        menu.findItem(R.id.btn_add_cellphone_photo).setVisible(true);
         menu.findItem(R.id.btn_delete).setVisible(true);
         menu.findItem(R.id.btn_menu_function).setVisible(true);
         return super.onCreateOptionsMenu(menu);
@@ -78,11 +85,90 @@ public class GalleryUrlActivity extends BaseActivity implements View.OnClickList
             mDeleteTask = FileDataManager.getInstance().del(data.getFullpath(), GalleryUrlActivity.this);
         } else if (i == R.id.btn_send_another_app) {
             FileOpenManager.getInstance().handle(GalleryUrlActivity.this, data);
+        } else if (i == R.id.btn_add_cellphone_photo) {
+
+            new AsyncTask<Void, Void, Boolean>() {
+
+                boolean isSaved = true;
+
+                @Override
+                protected Boolean doInBackground(Void... voids) {
+
+                    final String imagePath = Config.getBigThumbPath(data.getFilehash());
+                    File file = new File(imagePath);
+
+                    if (file.exists()) {
+                        Bitmap bitmap = Util.decodeSampledBitmapFromFile(file);
+                        if (bitmap != null) {
+                            isSaved = true;
+                            String savepath = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, data.getFilename(), null);
+                            Uri uri = Uri.parse(savepath);
+                            String bitmappath = getFilePathByContentResolver(GalleryUrlActivity.this, uri);
+
+                            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(bitmappath))));
+
+
+                            return isSaved;
+                        } else {
+                            isSaved = false;
+                            file.delete();
+                            return isSaved;
+                        }
+                    } else {
+                        if (!file.getParentFile().isDirectory()) {
+                            file.getParentFile().mkdirs();
+                            isSaved = false;
+                            return isSaved;
+                        }
+                    }
+                    return isSaved;
+                }
+
+
+                @Override
+                protected void onPostExecute(Boolean save) {
+                    super.onPostExecute(save);
+
+                    if (save) {
+                        UtilDialog.showNormalToast(R.string.toast_add_cellphone_photo_success);
+                    } else {
+                        UtilDialog.showNormalToast(R.string.toast_add_cellphone_photo_fail);
+                    }
+                }
+            }.execute();
+
+
         } else if (i == android.R.id.home) {
             finish();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    /*
+  根据Uri获取加入到手机相册的图片名字，该名字有手机系统自动分配
+   */
+    private String getFilePathByContentResolver(Context context, Uri uri) {
+        if (null == uri) {
+            return null;
+        }
+        Cursor c = context.getContentResolver().query(uri, null, null, null, null);
+        String filePath = null;
+        if (null == c) {
+            throw new IllegalArgumentException(
+                    "Query on " + uri + " returns null result.");
+        }
+        try {
+            if ((c.getCount() != 1) || !c.moveToFirst()) {
+            } else {
+                filePath = c.getString(
+                        c.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA));
+            }
+        } finally {
+            c.close();
+        }
+        return filePath;
     }
 
 
@@ -289,7 +375,7 @@ public class GalleryUrlActivity extends BaseActivity implements View.OnClickList
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(mDeleteTask != null){
+        if (mDeleteTask != null) {
             mDeleteTask.cancel(true);
         }
     }
