@@ -174,6 +174,29 @@ public class FileDataManager {
         return FileData.create(mEntFileManager.getFileInfo(fullPath));
     }
 
+
+    public AsyncTask getFileInfoAsync(final String fullPath, final FileInfoListener listener) {
+
+        if (!Util.isNetworkAvailableEx()) {
+            listener.onNetUnable();
+            return null;
+        }
+
+        return new AsyncTask<Void, Void, Object>() {
+            @Override
+            protected Object doInBackground(Void... params) {
+                return getFileInfoSync(fullPath);
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                listener.onReceiveData(o);
+            }
+        }.execute();
+
+    }
+
     /**
      * API签名,SSO签名
      *
@@ -352,6 +375,10 @@ public class FileDataManager {
         void onNetUnable();
     }
 
+    public interface FileInfoListener extends DataListener{
+        void onReceiveData(Object data);
+    }
+
     public interface FileDataListener extends DataListener {
         void onReceiveCacheData(int start, ArrayList<FileData> list);
 
@@ -451,7 +478,7 @@ public class FileDataManager {
         ArrayList<FileData> list = getFilesFromMemory(start, fullPath);
         if (list != null) {
             DebugFlag.log(LOG_TAG, "return from memory cache");
-            ArrayList<FileData> cacheList = (ArrayList<FileData>)list.clone();
+            ArrayList<FileData> cacheList = (ArrayList<FileData>) list.clone();
 
             if (cacheList.size() > 0) {
                 if (cacheList.get(0).isHeader()) {
@@ -472,16 +499,16 @@ public class FileDataManager {
 
     /**
      * 获取当前路径列表的总数
-     *
+     * <p/>
      * 方法能正确获取数量的前提是当前列表从 start ＝ 0 的位置开始加载
      *
      * @param fullPath
      * @return
      */
-    public int getCountOfList(String fullPath){
+    public int getCountOfList(String fullPath) {
         FileListData fileListData = mFilesMap.get(new FileDataKey(0, fullPath));
-        if(fileListData!=null){
-            return  fileListData.getCount();
+        if (fileListData != null) {
+            return fileListData.getCount();
         }
         return 0;
     }
@@ -507,7 +534,6 @@ public class FileDataManager {
         }
         return null;
     }
-
 
 
     public boolean isRootPath(String fullPath) {

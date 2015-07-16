@@ -193,16 +193,10 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
 
 
     private void initPreview() {
-        mFileDataTask = new AsyncTask<Void, Void, Object>() {
 
+        mFileDataTask = FileDataManager.getInstance().getFileInfoAsync(mFileData.getFullpath(), new FileDataManager.FileInfoListener() {
             @Override
-            protected Object doInBackground(Void... voids) {
-                return FileDataManager.getInstance().getFileInfoSync(mFileData.getFullpath());
-            }
-
-            @Override
-            protected void onPostExecute(Object result) {
-                super.onPostExecute(result);
+            public void onReceiveData(Object result) {
                 if (result != null) {
                     FileData urlData = (FileData) result;
                     if (urlData.getCode() == HttpStatus.SC_OK) {
@@ -242,18 +236,45 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
                                     e.printStackTrace();
                                 }
                             } else {
-                                onError(R.string.tip_connect_server_failed);
+                                PreviewActivity.this.onError(R.string.tip_connect_server_failed);
                             }
 
                         }
                     } else {
-                        onError(urlData.getErrorMsg());
+                        PreviewActivity.this.onError(urlData.getErrorMsg());
                     }
                 } else {
-                    onError(R.string.tip_connect_server_failed);
+                    PreviewActivity.this.onError(R.string.tip_connect_server_failed);
                 }
+
             }
-        }.execute();
+
+            @Override
+            public void onReceiveHttpResponse(int actionId) {
+
+            }
+
+            @Override
+            public void onError(String errorMsg) {
+
+            }
+
+            @Override
+            public void onHookError(HookCallback.HookType type) {
+
+            }
+
+            @Override
+            public void onNetUnable() {
+                String localFilePath = Config.getPdfFilePath(mFileData.getFilehash());
+
+                if (new File(localFilePath).exists()) {
+                    openPDFFile(localFilePath);
+                }
+
+                PreviewActivity.this.onError(R.string.tip_net_is_not_available);
+            }
+        });
 
     }
 
