@@ -180,7 +180,7 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
                         }
                     }.execute();
                 } else {
-                    onError(R.string.tip_net_is_not_available);
+                    initPreview();
                 }
             } else {
                 Config.URL_SOCKET_PREVIEW = url;
@@ -200,7 +200,7 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
                 if (result != null) {
                     FileData urlData = (FileData) result;
                     if (urlData.getCode() == HttpStatus.SC_OK) {
-                        String localFilePath = Config.getPdfFilePath(mFileData.getFilehash());
+                        String localFilePath = Config.getPdfFilePath(urlData.getFilehash());
                         if (new File(localFilePath).exists()) {
                             openPDFFile(localFilePath);
                         } else {
