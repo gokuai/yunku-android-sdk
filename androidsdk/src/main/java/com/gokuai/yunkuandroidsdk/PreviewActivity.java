@@ -200,7 +200,7 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
                 if (result != null) {
                     FileData urlData = (FileData) result;
                     if (urlData.getCode() == HttpStatus.SC_OK) {
-                        String localFilePath = Config.getPdfFilePath(urlData.getFilehash());
+                        String localFilePath = Config.getPdfFilePath(mFileData.getFilehash());
                         if (new File(localFilePath).exists()) {
                             openPDFFile(localFilePath);
                         } else {
