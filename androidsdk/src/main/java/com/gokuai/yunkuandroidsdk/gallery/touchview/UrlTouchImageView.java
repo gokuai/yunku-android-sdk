@@ -23,16 +23,28 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView.ScaleType;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.gokuai.yunkuandroidsdk.Config;
+import com.gokuai.yunkuandroidsdk.DebugFlag;
+import com.gokuai.yunkuandroidsdk.FileDataManager;
 import com.gokuai.yunkuandroidsdk.R;
 import com.gokuai.yunkuandroidsdk.callback.ParamsCallBack;
 import com.gokuai.yunkuandroidsdk.data.FileData;
 import com.gokuai.yunkuandroidsdk.util.Util;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -47,13 +59,23 @@ public class UrlTouchImageView extends RelativeLayout {
     protected ProgressBar mProgressBar;
     protected TouchImageView mImageView;
     protected TextView mTextView;
+    protected Button mButton;
     private ImageLoadTask mImageLoadTask;
     private FileData mFileData;
     private boolean isLocalImage;
 
+    private String errorCode;
+    private String errorMsg;
+
+    private AsyncTask mImageUrlTask;
+
 
     protected Context mContext;
     private OnClickListener mListener;
+
+    private static final String IMAGEVIEW_FORMAT_FAILED = "40017";
+    private static final String IMAGEVIEW_SIZE_FAILED = "400171";
+    private static final String IMAGEVIEW_PREVIEW_FAILED = "50302";
 
     public UrlTouchImageView(Context ctx, OnClickListener listener) {
         super(ctx);
@@ -74,6 +96,10 @@ public class UrlTouchImageView extends RelativeLayout {
 
     public ProgressBar getProgressBar() {
         return mProgressBar;
+    }
+
+    public Button getButton() {
+        return mButton;
     }
 
     @SuppressWarnings("deprecation")
@@ -120,6 +146,83 @@ public class UrlTouchImageView extends RelativeLayout {
         mTextView.setText(R.string.tip_is_preparing_for_data);
         mTextView.setVisibility(View.GONE);
         this.addView(mTextView);
+
+        mButton = new Button(mContext);
+        params = new LayoutParams(
+                android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+                android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+        mButton.setLayoutParams(params);
+        mButton.setGravity(Gravity.CENTER);
+        mButton.setText(R.string.tip_image_button);
+        mButton.setTextColor(Color.WHITE);
+        mButton.setBackgroundResource(R.drawable.btn_check_image);
+        mButton.setVisibility(View.GONE);
+        this.addView(mButton);
+
+        mButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mImageUrlTask = new AsyncTask<Void, Integer, Bitmap>() {
+
+                    @Override
+                    protected Bitmap doInBackground(Void... voids) {
+                        if (mFileData != null) {
+                            FileData fileData = FileDataManager.getInstance().getFileInfoSync(mFileData.getFullpath());
+
+                            return getOriImage(fileData, new ParamsCallBack() {
+                                @Override
+                                public void callBack(Object obj) {
+                                    publishProgress((int) obj);
+                                }
+                            });
+
+                        } else {
+                            return null;
+                        }
+
+                    }
+
+                    @Override
+                    protected void onProgressUpdate(Integer... values) {
+                        super.onProgressUpdate(values);
+                        mButton.setVisibility(GONE);
+                        mTextView.setVisibility(VISIBLE);
+                        mProgressBar.setVisibility(VISIBLE);
+                        if (values[0] == -1) {
+                            mTextView.setText(mContext.getString(R.string.tip_is_loading));
+                        } else {
+                            mTextView.setText(values[0] + " %");
+                        }
+                    }
+
+                    @Override
+                    protected void onPostExecute(Bitmap bitmap) {
+                        super.onPostExecute(bitmap);
+
+                        if (mImageView != null && mProgressBar != null) {
+                            if (bitmap != null) {
+                                mButton.setVisibility(GONE);
+                                mImageView.setScaleType(ScaleType.MATRIX);
+                                mImageView.setImageBitmap(bitmap);
+
+                                mTextView.setVisibility(View.GONE);
+                                mImageView.setVisibility(VISIBLE);
+                                mProgressBar.setVisibility(GONE);
+
+                            } else {
+                                mButton.setVisibility(GONE);
+                                mTextView.setVisibility(VISIBLE);
+                                mTextView.setText(R.string.tip_open_image_failed);
+                                mProgressBar.setVisibility(View.VISIBLE);
+                            }
+                        }
+
+
+                    }
+                }.execute();
+            }
+        });
 
     }
 
@@ -200,9 +303,31 @@ public class UrlTouchImageView extends RelativeLayout {
         protected void onPostExecute(Bitmap bitmap) {
             if (mImageView != null && mProgressBar != null) {
                 if (bitmap == null) {
-                    mTextView.setVisibility(VISIBLE);
-                    mTextView.setText(R.string.tip_open_image_failed);
-                    mProgressBar.setVisibility(View.VISIBLE);
+                    if (errorCode.equals(IMAGEVIEW_FORMAT_FAILED)) {
+                        mTextView.setVisibility(VISIBLE);
+                        mTextView.setText(R.string.tip_image_format_nonsupport);
+                        mProgressBar.setVisibility(View.GONE);
+                        mButton.setVisibility(View.VISIBLE);
+
+                    } else if (errorCode.equals(IMAGEVIEW_SIZE_FAILED)) {
+                        mTextView.setVisibility(VISIBLE);
+                        mTextView.setText(R.string.tip_image_loading_failed);
+                        mProgressBar.setVisibility(View.GONE);
+                        mButton.setVisibility(View.VISIBLE);
+
+                    } else if (errorCode.equals(IMAGEVIEW_PREVIEW_FAILED)) {
+                        mTextView.setVisibility(VISIBLE);
+                        mTextView.setText(R.string.tip_image_loading_failed);
+                        mProgressBar.setVisibility(View.GONE);
+                        mButton.setVisibility(View.VISIBLE);
+
+                    } else {
+                        mTextView.setVisibility(VISIBLE);
+                        mTextView.setText(R.string.tip_open_image_failed);
+                        mProgressBar.setVisibility(View.GONE);
+                        mButton.setVisibility(View.VISIBLE);
+                    }
+
                 } else {
                     mImageView.setScaleType(ScaleType.MATRIX);
                     mImageView.setImageBitmap(bitmap);
@@ -214,11 +339,91 @@ public class UrlTouchImageView extends RelativeLayout {
 
             }
 
+
         }
 
     }
 
     private static final int IO_BUFFER_SIZE = 8 * 1024;
+
+
+    /*
+    预览图片获取失败后，下载原始图片
+     */
+    private Bitmap getOriImage(FileData data, ParamsCallBack callBack) {
+
+        String uri = data.getUri();
+        String thumbBigPath = Config.getBigThumbPath(data.getFilehash());
+        File file = new File(thumbBigPath);
+        if (file.exists()) {
+            Bitmap b = Util.decodeSampledBitmapFromFile(file);
+            if (b != null) {
+                return b;
+            } else {
+                file.delete();
+            }
+        } else {
+            if (!file.getParentFile().isDirectory()) {
+                file.getParentFile().mkdirs();
+            }
+        }
+
+
+        HttpURLConnection urlConnection = null;
+        BufferedOutputStream out = null;
+        BufferedInputStream in = null;
+
+        try {
+
+            callBack.callBack(-1);
+
+            FileOutputStream fos = new FileOutputStream(new File(thumbBigPath));
+
+            final URL url = new URL(uri);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.connect();
+
+            int totalLength = urlConnection.getContentLength();
+            //mResponseCode = urlConnection.getResponseCode();
+            if (totalLength == -1) {
+
+                return null;
+            }
+
+            in = new BufferedInputStream(url.openStream(), IO_BUFFER_SIZE);
+            out = new BufferedOutputStream(fos, IO_BUFFER_SIZE);
+
+            byte[] buffer = new byte[4096];
+            int length;
+            long byteNow = 0;
+            while ((length = in.read(buffer)) > 0) {
+                fos.write(buffer, 0, length);
+                byteNow += length;
+                callBack.callBack((int) (((float) byteNow / (float) totalLength) * (float) 100));
+            }
+        } catch (final IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (in != null) {
+                    in.close();
+                }
+            } catch (final IOException e) {
+            }
+        }
+
+        file = new File(thumbBigPath);
+
+        return !file.exists() ? null : Util.decodeSampledBitmapFromFile(file);
+    }
+
+
 
 
     private Bitmap getFromInternet(FileData data, ParamsCallBack callBack) {
@@ -255,6 +460,18 @@ public class UrlTouchImageView extends RelativeLayout {
             urlConnection.connect();
             int totalLength = urlConnection.getContentLength();
             if (totalLength == -1) {
+
+                HttpClient httpclient = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(urlString);
+                HttpResponse response = httpclient.execute(httpGet);
+                String errorStr = EntityUtils.toString(response.getEntity(), "UTF-8");
+
+                JSONObject jsonObject = new JSONObject(errorStr);
+                errorCode = jsonObject.optString("error_code");
+                errorMsg = jsonObject.optString("error_msg");
+
+                DebugFlag.log("error_msg", errorCode);
+                DebugFlag.log("error_msg", errorMsg);
                 return null;
             }
 
@@ -270,6 +487,8 @@ public class UrlTouchImageView extends RelativeLayout {
                 callBack.callBack((int) (((float) byteNow / (float) totalLength) * (float) 100));
             }
         } catch (final IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
             e.printStackTrace();
         } finally {
             if (urlConnection != null) {

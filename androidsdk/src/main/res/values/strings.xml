@@ -102,6 +102,12 @@
     <string name="tip_is_preparing_for_data">Loading data…</string>
     <string name="tip_open_image_failed">Open image failed</string>
     <string name="format_the_lasttime_fixed_desc">%1$s Modify %2$s</string>
+    <string name="tip_image_button">Check image</string>
+    <string name="tip_image_format_nonsupport">Preview format is not supported</string>
+    <string name="tip_image_loading_failed">Image loading failure</string>
+    <string name="add_cellphone_photo">Add to photo album</string>
+    <string name="toast_add_cellphone_photo_success">Picture has been saved to the phone album</string>
+    <string name="toast_add_cellphone_photo_fail">Picture save failed</string>
 
     <string name="retry">Retry</string>
     <string name="preview_file_too_large">100M file is not allowed to preview</string>

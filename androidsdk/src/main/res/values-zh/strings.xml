@@ -101,6 +101,12 @@
     <string name="tip_is_preparing_for_data">正在加载数据…</string>
     <string name="tip_open_image_failed">图片打开失败</string>
     <string name="format_the_lasttime_fixed_desc">%1$s 修改于%2$s</string>
+    <string name="tip_image_button">查看原图</string>
+    <string name="tip_image_format_nonsupport">预览格式不支持</string>
+    <string name="tip_image_loading_failed">预览图片加载失败</string>
+    <string name="add_cellphone_photo">加入到手机相册</string>
+    <string name="toast_add_cellphone_photo_success">图片已保存至手机相册</string>
+    <string name="toast_add_cellphone_photo_fail">图片保存失败</string>
 
     <string name="retry">重试</string>
     <string name="preview_file_too_large">100M以上的文件不允许预览</string>

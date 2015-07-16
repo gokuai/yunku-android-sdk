@@ -9,6 +9,7 @@
     <color name="color_d">#dddddd</color>
     <color name="color_e">#eeeeee</color>
     <color name="color_f">#ffffff</color>
+    <color name="color_f_transparent_25">#3fffffff</color>
 
     <color name="color_blue">#50acf3</color>
     <color name="bottom_slide_menu_btn_color">#f5f1f8</color>
