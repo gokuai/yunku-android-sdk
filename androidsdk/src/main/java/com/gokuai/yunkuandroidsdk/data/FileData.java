@@ -34,7 +34,6 @@ public class FileData extends BaseData implements Parcelable {
 
 
     // FileUpdateData KEY
-    private final static String KEY_MOUNTID = "mount_id";
     private final static String KEY_VERSION = "version";
     private final static String KEY_URI = "uri";
     private final static String KEY_URIS = "uris";
@@ -42,13 +41,8 @@ public class FileData extends BaseData implements Parcelable {
     private final static String KEY_CREATE_TIME = "create_dateline";
     private final static String KEY_CREATE_NAME = "create_member_name";
     private final static String KEY_LOCK = "lock";
-    private final static String KEY_PROPERTY = "property";
-    private final static String KEY_PERMISSION = "permisson";
+    private final static String KEY_THUMBNAIL = "thumbnail";
 
-    public static final String KEY_COLLECTION_TYPE_PRIVATE = "private";
-    public static final String KEY_COLLECTION_TYPE_PUBLIC = "public";
-
-    private int mountId;
     private String upFullPath;
     private String filename = "";
     private String filehash = "";
@@ -112,7 +106,6 @@ public class FileData extends BaseData implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(mountId);
         dest.writeString(upFullPath);
         dest.writeString(filename);
         dest.writeString(filehash);
@@ -149,7 +142,6 @@ public class FileData extends BaseData implements Parcelable {
         public FileData createFromParcel(Parcel source) {
             // TODO Auto-generated method stub
             FileData cus = new FileData();
-            cus.mountId = source.readInt();
             cus.upFullPath = source.readString();
             cus.filename = source.readString();
             cus.filehash = source.readString();
@@ -193,7 +185,6 @@ public class FileData extends BaseData implements Parcelable {
 
     public static FileData create(JSONObject json) {
         FileData data = new FileData();
-        data.setMountId(json.optInt(KEY_MOUNTID));
         data.setUuidHash(json.optString(KEY_HASH));
         data.setFilehash(json.optString(KEY_FILEHASH));
         data.setFilesize(json.optLong(KEY_FILESIZE));
@@ -210,6 +201,7 @@ public class FileData extends BaseData implements Parcelable {
         data.setCreateMemberName(json.optString(KEY_CREATE_NAME));
         data.setUpFullpath(Util.getParentPath(data.getFullpath()));
         data.setLock(json.optInt(KEY_LOCK));
+        data.thumbSmall=json.optString(KEY_THUMBNAIL);
         return data;
     }
 
@@ -227,7 +219,6 @@ public class FileData extends BaseData implements Parcelable {
         }
 
         if (json != null) {
-            data.setMountId(json.optInt(KEY_MOUNTID));
             data.setUuidHash(json.optString(KEY_HASH));
             data.setFilehash(json.optString(KEY_FILEHASH));
             data.setFilesize(json.optLong(KEY_FILESIZE));
@@ -245,18 +236,11 @@ public class FileData extends BaseData implements Parcelable {
             data.setUpFullpath(Util.getParentPath(data.getFullpath()));
             data.setLock(json.optInt(KEY_LOCK));
             data.setUri(json.optString(KEY_URI));
+            data.thumbSmall=json.optString(KEY_THUMBNAIL);
         }
         return data;
     }
 
-
-    public int getMountId() {
-        return mountId;
-    }
-
-    public void setMountId(int mountId) {
-        this.mountId = mountId;
-    }
 
     public String getFilename() {
         return filename;
@@ -385,16 +369,14 @@ public class FileData extends BaseData implements Parcelable {
         return false;
     }
 
+    //上传的文件，需要刷新列表才能获取到
     public String getThumbSmall() {
-        if (TextUtils.isEmpty(thumbSmall)) {
-            thumbSmall = String.format(Config.FILE_THUMBNAIL_FORMAT, uuidHash, filehash, UtilFile.getExtension(filename));
-        }
         return thumbSmall;
     }
 
     public String getThumbBig() {
         if (TextUtils.isEmpty(thumbBig)) {
-            thumbBig = String.format(Config.FILE_BIG_THUMBNAIL_FORMAT, uuidHash, filehash, UtilFile.getExtension(filename));
+            thumbBig = getThumbSmall()+"&big=1";
         }
         return thumbBig;
     }

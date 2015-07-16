@@ -36,11 +36,6 @@ public class Config {
 
     public final static String WEBVIEW_USERAGENT = "GK_ANDROID;%s;Android";
 
-    public final static String URL_HOST = "yunku.gokuai.com";
-
-    public static final String FILE_THUMBNAIL_FORMAT = "http://" + URL_HOST + "/index/thumb?hash=%s&filehash=%s&type=%s";
-    public static final String FILE_BIG_THUMBNAIL_FORMAT = "http://" + URL_HOST + "/index/thumb?hash=%s&filehash=%s&type=%s&big=1";
-
     public static final String SP_FILE_LIST = "FileList";
     public static final String SP_FILE_LIST_SORT = "ListSort";
 
