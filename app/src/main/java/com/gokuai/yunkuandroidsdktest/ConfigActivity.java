@@ -151,7 +151,7 @@ public class ConfigActivity extends AppCompatActivity {
                                 mTv_previewPath.setText("start to convert pdf");
                                 break;
                             case STATUS_CODE_COMPLETE:
-                                mTv_previewPath.setText("compelete");
+                                mTv_previewPath.setText("complete");
                                 break;
                         }
 
@@ -165,6 +165,18 @@ public class ConfigActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(int errorCode, String fullPath, String message) {
+
+                        switch (errorCode){
+                            case ERROR_CODE_FILE_CONVERT_ERROR:
+                                break;
+                            case ERROR_CODE_GET_FILE_INFO_ERROR:
+                                break;
+                            case ERROR_CODE_INCOMPLETE:
+                                break;
+                            case ERROR_CODE_UNSUPPORTED:
+                                break;
+                        }
+
                         mTv_previewPath.setText(message);
                     }
 

@@ -60,7 +60,7 @@ public class PreviewInfoManager {
         int ERROR_CODE_UNSUPPORTED = 101;
         int ERROR_CODE_GET_FILE_INFO_ERROR = 102;
         int ERROR_CODE_FILE_CONVERT_ERROR = 103;
-        int ERROR_CODE_UNCOMPLETE = 104;
+        int ERROR_CODE_INCOMPLETE = 104;
 
         void onStatus(String fullPath, int status);
 
@@ -135,7 +135,7 @@ public class PreviewInfoManager {
                 }
 
             } else {
-                onError("Is Previewing", PreviewInfoListener.ERROR_CODE_UNCOMPLETE);
+                onError("Is Previewing", PreviewInfoListener.ERROR_CODE_INCOMPLETE);
             }
         } else {
             onError("Unsupported file type", PreviewInfoListener.ERROR_CODE_UNSUPPORTED);
