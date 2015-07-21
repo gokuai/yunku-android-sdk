@@ -164,7 +164,7 @@ public class ConfigActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onError(String fullPath, String message) {
+                    public void onError(int errorCode, String fullPath, String message) {
                         mTv_previewPath.setText(message);
                     }
 

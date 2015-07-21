@@ -57,11 +57,16 @@ public class PreviewInfoManager {
         int STATUS_CODE_START_TO_CONVERT_PDF = 2;
         int STATUS_CODE_COMPLETE = 3;
 
+        int ERROR_CODE_UNSUPPORTED = 101;
+        int ERROR_CODE_GET_FILE_INFO_ERROR = 102;
+        int ERROR_CODE_FILE_CONVERT_ERROR = 103;
+        int ERROR_CODE_UNCOMPLETE = 104;
+
         void onStatus(String fullPath, int status);
 
         void onProgress(int percent);
 
-        void onError(String fullPath, String message);
+        void onError(int errorCode, String fullPath, String message);
 
         void onGetPreviewInfo(String fullPath, String url);
 
@@ -77,59 +82,65 @@ public class PreviewInfoManager {
     private String mFullPath;
 
     public void getPreviewInfo(final Context context, final String fullPath, final PreviewInfoListener listener) {
+        String filename = Util.getNameFromPath(fullPath).replace("/", "");
 
-        if (!gettingPreview) {
-            gettingPreview = true;
+        if (UtilFile.isPreviewFile(filename)) {
+            if (!gettingPreview) {
+                gettingPreview = true;
 
-            mInfoListener = listener;
-            mContext = context;
-            mFullPath = fullPath;
+                mInfoListener = listener;
+                mContext = context;
+                mFullPath = fullPath;
 
-            mHandler.sendEmptyMessage(MSG_GETTING_PREVIEW_SITE);
-            if (TextUtils.isEmpty(Config.URL_SOCKET_PREVIEW)) {
-                String url = Config.getPreviewSite(context);
-                if (TextUtils.isEmpty(url)) {
-                    if (Util.isNetworkAvailableEx()) {
-                        mGetServerTask = new AsyncTask<Void, Void, Object>() {
-                            @Override
-                            protected Object doInBackground(Void... params) {
-                                return FileDataManager.getInstance().getPreviewServerSite();
-                            }
-
-                            @Override
-                            protected void onPostExecute(Object o) {
-                                super.onPostExecute(o);
-                                ServerListData data = (ServerListData) o;
-                                if (data.getCode() == HttpStatus.SC_OK) {
-                                    ArrayList<ServerData> list = data.getServerList();
-                                    if (list.size() > 0) {
-                                        ServerData serverData = list.get(0);
-                                        String serverUrl = "http://" + serverData.getHost() + ":" + serverData.getPort();
-                                        Config.setPreviewSite(context, serverUrl);
-                                        Config.URL_SOCKET_PREVIEW = serverUrl;
-                                        initPreview(fullPath);
-                                    } else {
-                                        onError(R.string.tip_no_preview_server_available);
-                                    }
-                                } else {
-                                    onError(data.getErrorMsg());
+                mHandler.sendEmptyMessage(MSG_GETTING_PREVIEW_SITE);
+                if (TextUtils.isEmpty(Config.URL_SOCKET_PREVIEW)) {
+                    String url = Config.getPreviewSite(context);
+                    if (TextUtils.isEmpty(url)) {
+                        if (Util.isNetworkAvailableEx()) {
+                            mGetServerTask = new AsyncTask<Void, Void, Object>() {
+                                @Override
+                                protected Object doInBackground(Void... params) {
+                                    return FileDataManager.getInstance().getPreviewServerSite();
                                 }
-                            }
-                        }.execute();
+
+                                @Override
+                                protected void onPostExecute(Object o) {
+                                    super.onPostExecute(o);
+                                    ServerListData data = (ServerListData) o;
+                                    if (data.getCode() == HttpStatus.SC_OK) {
+                                        ArrayList<ServerData> list = data.getServerList();
+                                        if (list.size() > 0) {
+                                            ServerData serverData = list.get(0);
+                                            String serverUrl = "http://" + serverData.getHost() + ":" + serverData.getPort();
+                                            Config.setPreviewSite(context, serverUrl);
+                                            Config.URL_SOCKET_PREVIEW = serverUrl;
+                                            initPreview(fullPath);
+                                        } else {
+                                            onError(R.string.tip_no_preview_server_available, PreviewInfoListener.ERROR_CODE_GET_FILE_INFO_ERROR);
+                                        }
+                                    } else {
+                                        onError(data.getErrorMsg(), PreviewInfoListener.ERROR_CODE_GET_FILE_INFO_ERROR);
+                                    }
+                                }
+                            }.execute();
+                        } else {
+                            initPreview(fullPath);
+                        }
                     } else {
+                        Config.URL_SOCKET_PREVIEW = url;
                         initPreview(fullPath);
                     }
                 } else {
-                    Config.URL_SOCKET_PREVIEW = url;
                     initPreview(fullPath);
                 }
-            } else {
-                initPreview(fullPath);
-            }
 
+            } else {
+                onError("Is Previewing", PreviewInfoListener.ERROR_CODE_UNCOMPLETE);
+            }
         } else {
-            onError("Is Previewing");
+            onError("Unsupported file type", PreviewInfoListener.ERROR_CODE_UNSUPPORTED);
         }
+
 
     }
 
@@ -196,14 +207,14 @@ public class PreviewInfoManager {
                                 e.printStackTrace();
                             }
                         } else {
-                            PreviewInfoManager.this.onError(R.string.tip_connect_server_failed);
+                            PreviewInfoManager.this.onError(R.string.tip_connect_server_failed, PreviewInfoListener.ERROR_CODE_FILE_CONVERT_ERROR);
                         }
 
                     } else {
-                        PreviewInfoManager.this.onError(urlData.getErrorMsg());
+                        PreviewInfoManager.this.onError(urlData.getErrorMsg(), PreviewInfoListener.ERROR_CODE_FILE_CONVERT_ERROR);
                     }
                 } else {
-                    PreviewInfoManager.this.onError(R.string.tip_connect_server_failed);
+                    PreviewInfoManager.this.onError(R.string.tip_connect_server_failed, PreviewInfoListener.ERROR_CODE_FILE_CONVERT_ERROR);
                 }
 
             }
@@ -226,18 +237,18 @@ public class PreviewInfoManager {
             @Override
             public void onNetUnable() {
 
-                PreviewInfoManager.this.onError(R.string.tip_net_is_not_available);
+                PreviewInfoManager.this.onError(R.string.tip_net_is_not_available, PreviewInfoListener.ERROR_CODE_GET_FILE_INFO_ERROR);
             }
         });
 
     }
 
-    private void onError(int res) {
-        onError(mContext.getString(res));
+    private void onError(int res, int code) {
+        onError(mContext.getString(res), code);
     }
 
-    private void onError(String message) {
-        mInfoListener.onError(mFullPath, message);
+    private void onError(String message, int code) {
+        mInfoListener.onError(code, mFullPath, message);
         socketRelease();
     }
 
@@ -247,7 +258,6 @@ public class PreviewInfoManager {
     private final static int MSG_CONNECT_ERROR = 3;
     private final static int MSG_UPDATE_PROGRESS = 5;
     private final static int MSG_CLOSE_SOCKET = 6;
-
 
     private static class MyHandler extends Handler {
         private final WeakReference<PreviewInfoManager> mActivity;
@@ -274,13 +284,12 @@ public class PreviewInfoManager {
                         manager.socketRelease();
                         break;
                     case MSG_CONNECT_ERROR:
-                        manager.onError(msg.obj + "");
+                        manager.onError(msg.obj + "", PreviewInfoListener.ERROR_CODE_FILE_CONVERT_ERROR);
                         break;
                     case MSG_UPDATE_PROGRESS:
                         manager.mInfoListener.onProgress(msg.arg1);
                         break;
                     case MSG_CLOSE_SOCKET:
-                        manager.onError(R.string.tip_connect_out_time);
                         manager.socketRelease();
                         break;
                 }
