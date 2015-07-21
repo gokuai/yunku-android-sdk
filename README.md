@@ -7,7 +7,7 @@ Robots: noindex,nofollow
 */
 # 够快云库Android SDK使用说明
 
-版本：1.0.2
+版本：1.0.3
 
 创建：2015-05-20
 ##兼容性声明
@@ -191,12 +191,85 @@ context需要为MainViewBaseActivity 继承的Activity的实例
 ###HookType枚举
 | 枚举类型 | 说明 |
 | --- | --- |
-| HOOK_TYPE_FILE_LIST | 文件列表显示 | 
-| HOOK_TYPE_DOWNLOAD | 文件下载 | 
-| HOOK_TYPE_UPLOAD | 文件上传 | 
-| HOOK_TYPE_CREATE_DIR |创建文件夹 |
-| HOOK_TYPE_RENAME | 重命名 |
-| HOOK_TYPE_DELETE | 文件删除 |
+| HOOK _TYPE _ FILE _LIST | 文件列表显示 | 
+| HOOK _TYPE _DOWNLOAD | 文件下载 | 
+| HOOK _TYPE _UPLOAD | 文件上传 | 
+| HOOK _TYPE _CREATE _DIR |创建文件夹 |
+| HOOK _TYPE _RENAME | 重命名 |
+| HOOK _TYPE _DELETE | 文件删除 |
+
+###PreviewInfoManager类
+
+####获取预览文档转化信息
+转化对应库文件路径文档为pdf，返回下载地址
+	
+	getPreviewInfo(Context context, String fullPath, PreviewInfoListener listener)
+
+
+| 参数 | 类型 |说明 |
+| --- | --- | --- |
+| context | Context |   |
+| fullPath | string |  执行操作的路径 |
+| listener | PreviewInfoListener |  监听转化系列情况的接口 |
+
+####取消请求
+可以在请求发出之后，取消请求
+
+	cancel()
+	
+###PreviewInfoListener接口
+####转化状态
+
+	onStatus(String fullPath, int status)
+	
+
+| 参数 | 类型 |说明 |
+| --- | --- | --- |
+| fullPath | string |  执行操作的路径 |
+| status | int |  转化状态 |
+
+| status | 说明 |
+| --- | --- |
+| STATUS _CODE _ANALYZE _SERVER | 分析服务器地址 | 
+| STATUS _CODE _START _TO _CONVERT _PDF | 开始转化为PDF | 
+| STATUS_CODE_COMPLETE | 转化完毕 | 
+
+####转化进度
+返回文档转化进度
+
+	onProgress(int percent)
+
+| 参数 | 类型 |说明 |
+| --- | --- | --- |
+| percent | int |  转化进度返回 0－100 |
+
+####返回错误信息
+
+	onError(int errorCode, String fullPath, String message)
+	
+| 参数 | 类型 |说明 |
+| --- | --- | --- |
+| errorCode | int |  错误号 |
+| fullPath | string |  执行操作的路径 |
+| message | string |  错误描述 |
+
+| error code | 说明 |
+| --- | --- |
+| ERROR _CODE _UNSUPPORTED| 101:文件类型不支持 | 
+| ERROR _CODE _GET _FILE _INFO _ERROR | 102:获取文件信息错误 | 
+| ERROR _CODE _FILE _CONVERT _ERROR | 103:文件转化失败 | 
+| ERROR _CODE _INCOMPLETE | 104:转化未完成，需要等待转化文档 | 
+	
+####返回转化完毕的PDF文档下载地址
+
+	onGetPDFUrl(String fullPath, String url)
+
+| 参数 | 类型 |说明 |
+| --- | --- | --- |
+| fullPath | string |  执行操作的路径 |
+| url | string |  pdf文件下载地址 |
+
+
     
 ##相关SDK
 https://github.com/gokuai/yunku-sdk-java

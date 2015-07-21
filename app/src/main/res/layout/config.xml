@@ -177,7 +177,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/config_preview_path_et"
+            android:id="@+id/config_doc_path_et"
             android:hint="转化为pdf的文件路径" />
 
         <Button

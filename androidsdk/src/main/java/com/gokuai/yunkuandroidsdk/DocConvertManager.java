@@ -30,9 +30,9 @@ import java.util.ArrayList;
 /**
  * Created by Brandon on 15/7/20.
  */
-public class PreviewInfoManager {
+public class DocConvertManager {
 
-    private final static String LOG_TAG = PreviewInfoManager.class.getSimpleName();
+    private final static String LOG_TAG = DocConvertManager.class.getSimpleName();
     private static final String PREVIEW_SOCKET_SIGN_KEY = "6c01aefe6ff8f26b51139bf8f808dad582a7a864";
 
 
@@ -40,13 +40,13 @@ public class PreviewInfoManager {
     private final static String KEY_ERRORMSG = "error_msg";
 
     private static class SingletonHolder {
-        private static final PreviewInfoManager INSTANCE = new PreviewInfoManager();
+        private static final DocConvertManager INSTANCE = new DocConvertManager();
     }
 
-    private PreviewInfoManager() {
+    private DocConvertManager() {
     }
 
-    public static PreviewInfoManager getInstance() {
+    public static DocConvertManager getInstance() {
         return SingletonHolder.INSTANCE;
     }
 
@@ -68,7 +68,7 @@ public class PreviewInfoManager {
 
         void onError(int errorCode, String fullPath, String message);
 
-        void onGetPreviewInfo(String fullPath, String url);
+        void onGetPDFUrl(String fullPath, String url);
 
     }
 
@@ -81,7 +81,7 @@ public class PreviewInfoManager {
     private boolean gettingPreview = false;
     private String mFullPath;
 
-    public void getPreviewInfo(final Context context, final String fullPath, final PreviewInfoListener listener) {
+    public void convertDocToPDF(final Context context, final String fullPath, final PreviewInfoListener listener) {
         String filename = Util.getNameFromPath(fullPath).replace("/", "");
 
         if (UtilFile.isPreviewFile(filename)) {
@@ -207,14 +207,14 @@ public class PreviewInfoManager {
                                 e.printStackTrace();
                             }
                         } else {
-                            PreviewInfoManager.this.onError(R.string.tip_connect_server_failed, PreviewInfoListener.ERROR_CODE_FILE_CONVERT_ERROR);
+                            DocConvertManager.this.onError(R.string.tip_connect_server_failed, PreviewInfoListener.ERROR_CODE_FILE_CONVERT_ERROR);
                         }
 
                     } else {
-                        PreviewInfoManager.this.onError(urlData.getErrorMsg(), PreviewInfoListener.ERROR_CODE_FILE_CONVERT_ERROR);
+                        DocConvertManager.this.onError(urlData.getErrorMsg(), PreviewInfoListener.ERROR_CODE_FILE_CONVERT_ERROR);
                     }
                 } else {
-                    PreviewInfoManager.this.onError(R.string.tip_connect_server_failed, PreviewInfoListener.ERROR_CODE_FILE_CONVERT_ERROR);
+                    DocConvertManager.this.onError(R.string.tip_connect_server_failed, PreviewInfoListener.ERROR_CODE_FILE_CONVERT_ERROR);
                 }
 
             }
@@ -237,7 +237,7 @@ public class PreviewInfoManager {
             @Override
             public void onNetUnable() {
 
-                PreviewInfoManager.this.onError(R.string.tip_net_is_not_available, PreviewInfoListener.ERROR_CODE_GET_FILE_INFO_ERROR);
+                DocConvertManager.this.onError(R.string.tip_net_is_not_available, PreviewInfoListener.ERROR_CODE_GET_FILE_INFO_ERROR);
             }
         });
 
@@ -260,16 +260,16 @@ public class PreviewInfoManager {
     private final static int MSG_CLOSE_SOCKET = 6;
 
     private static class MyHandler extends Handler {
-        private final WeakReference<PreviewInfoManager> mActivity;
+        private final WeakReference<DocConvertManager> mActivity;
 
-        public MyHandler(PreviewInfoManager application) {
+        public MyHandler(DocConvertManager application) {
             super(Looper.getMainLooper());
             mActivity = new WeakReference<>(application);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            final PreviewInfoManager manager = mActivity.get();
+            final DocConvertManager manager = mActivity.get();
             if (manager != null) {
                 switch (msg.what) {
                     case MSG_GETTING_PREVIEW_SITE:
@@ -280,7 +280,7 @@ public class PreviewInfoManager {
                         break;
                     case MSG_CONVERT_COMPLETE:
                         manager.mInfoListener.onStatus(manager.mFullPath, PreviewInfoListener.STATUS_CODE_COMPLETE);
-                        manager.mInfoListener.onGetPreviewInfo(manager.mFullPath, msg.obj.toString());
+                        manager.mInfoListener.onGetPDFUrl(manager.mFullPath, msg.obj.toString());
                         manager.socketRelease();
                         break;
                     case MSG_CONNECT_ERROR:

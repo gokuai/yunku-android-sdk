@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.gokuai.yunkuandroidsdk.Config;
 import com.gokuai.yunkuandroidsdk.Constants;
 import com.gokuai.yunkuandroidsdk.PreviewActivity;
-import com.gokuai.yunkuandroidsdk.PreviewInfoManager;
+import com.gokuai.yunkuandroidsdk.DocConvertManager;
 
 /**
  * 调整配置Activity
@@ -27,7 +27,7 @@ public class ConfigActivity extends AppCompatActivity {
     public CheckBox mCB_funcUpload;
 
     public EditText mET_hookPath;
-    public EditText mET_previewPath;
+    public EditText mET_docPath;
     public EditText mEt_clientId;
     public EditText mEt_clientSecret;
     public EditText mEt_rootPath;
@@ -62,7 +62,7 @@ public class ConfigActivity extends AppCompatActivity {
         mEt_rootPath = (EditText) findViewById(R.id.config_root_path_et);
         mEt_rootTitle = (EditText) findViewById(R.id.config_root_title_et);
         mET_hookPath = (EditText) findViewById(R.id.config_hook_path_et);
-        mET_previewPath = (EditText) findViewById(R.id.config_preview_path_et);
+        mET_docPath = (EditText) findViewById(R.id.config_doc_path_et);
 
         mCB_hookFilelist = (CheckBox) findViewById(R.id.config_hook_list_cb);
         mCB_hookDownload = (CheckBox) findViewById(R.id.config_hook_download_cb);
@@ -137,13 +137,13 @@ public class ConfigActivity extends AppCompatActivity {
                 //===========================================================
 
 
-                String fullPath = mET_previewPath.getText().toString();
-                PreviewInfoManager.getInstance().getPreviewInfo(ConfigActivity.this, fullPath, new PreviewInfoManager.PreviewInfoListener() {
+                String fullPath = mET_docPath.getText().toString();
+                DocConvertManager.getInstance().convertDocToPDF(ConfigActivity.this, fullPath, new DocConvertManager.PreviewInfoListener() {
 
 
                     @Override
                     public void onStatus(String fullPath, int status) {
-                        switch (status){
+                        switch (status) {
                             case STATUS_CODE_ANALYZE_SERVER:
                                 mTv_previewPath.setText("start get preview server");
                                 break;
@@ -166,7 +166,7 @@ public class ConfigActivity extends AppCompatActivity {
                     @Override
                     public void onError(int errorCode, String fullPath, String message) {
 
-                        switch (errorCode){
+                        switch (errorCode) {
                             case ERROR_CODE_FILE_CONVERT_ERROR:
                                 break;
                             case ERROR_CODE_GET_FILE_INFO_ERROR:
@@ -181,7 +181,7 @@ public class ConfigActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onGetPreviewInfo(String fullPath, String url) {
+                    public void onGetPDFUrl(String fullPath, String url) {
                         mTv_previewPath.setText(url);
                     }
 
