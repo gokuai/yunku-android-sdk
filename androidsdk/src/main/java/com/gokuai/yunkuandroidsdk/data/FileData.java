@@ -5,12 +5,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import com.gokuai.yunkuandroidsdk.Config;
 import com.gokuai.yunkuandroidsdk.util.FirstLetterUtil;
 import com.gokuai.yunkuandroidsdk.util.Util;
 import com.gokuai.yunkuandroidsdk.util.UtilFile;
 import com.yunkuent.sdk.data.ReturnResult;
 
+import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 
 /**
@@ -96,7 +96,6 @@ public class FileData extends BaseData implements Parcelable {
         data.isFooter = true;
         return data;
     }
-
 
 
     @Override
@@ -201,7 +200,8 @@ public class FileData extends BaseData implements Parcelable {
         data.setCreateMemberName(json.optString(KEY_CREATE_NAME));
         data.setUpFullpath(Util.getParentPath(data.getFullpath()));
         data.setLock(json.optInt(KEY_LOCK));
-        data.thumbSmall=json.optString(KEY_THUMBNAIL);
+        data.thumbSmall = json.optString(KEY_THUMBNAIL);
+        data.preview = json.optString(KEY_PREVIEW);
         return data;
     }
 
@@ -218,26 +218,38 @@ public class FileData extends BaseData implements Parcelable {
             json = null;
         }
 
+
         if (json != null) {
-            data.setUuidHash(json.optString(KEY_HASH));
-            data.setFilehash(json.optString(KEY_FILEHASH));
-            data.setFilesize(json.optLong(KEY_FILESIZE));
-            data.setFullpath(json.optString(KEY_FULLPATH));
-            data.setFilename(json.optString(KEY_FILENAME));
-            data.setDir(json.optInt(KEY_DIR));
-            data.setCmd(json.optInt(KEY_CMD));
-            data.setDateline(json.optLong(KEY_LASTDATELINE));
-            data.setLastMemberId(json.optInt(KEY_LASTMEMBERID, -1));
-            data.setLastMemberName(json.optString(KEY_LASTMEMBERNAME));
-            data.setVersion(json.optString(KEY_VERSION));
-            data.setCreateId(json.optInt(KEY_CREATE_ID));
-            data.setCreateTime(json.optInt(KEY_CREATE_TIME));
-            data.setCreateMemberName(json.optString(KEY_CREATE_NAME));
-            data.setUpFullpath(Util.getParentPath(data.getFullpath()));
-            data.setLock(json.optInt(KEY_LOCK));
-            data.setUri(json.optString(KEY_URI));
-            data.thumbSmall=json.optString(KEY_THUMBNAIL);
+            if (code == HttpStatus.SC_OK) {
+                data.setUuidHash(json.optString(KEY_HASH));
+                data.setFilehash(json.optString(KEY_FILEHASH));
+                data.setFilesize(json.optLong(KEY_FILESIZE));
+                data.setFullpath(json.optString(KEY_FULLPATH));
+                data.setFilename(json.optString(KEY_FILENAME));
+                data.setDir(json.optInt(KEY_DIR));
+                data.setCmd(json.optInt(KEY_CMD));
+                data.setDateline(json.optLong(KEY_LASTDATELINE));
+                data.setLastMemberId(json.optInt(KEY_LASTMEMBERID, -1));
+                data.setLastMemberName(json.optString(KEY_LASTMEMBERNAME));
+                data.setVersion(json.optString(KEY_VERSION));
+                data.setCreateId(json.optInt(KEY_CREATE_ID));
+                data.setCreateTime(json.optInt(KEY_CREATE_TIME));
+                data.setCreateMemberName(json.optString(KEY_CREATE_NAME));
+                data.setUpFullpath(Util.getParentPath(data.getFullpath()));
+                data.setLock(json.optInt(KEY_LOCK));
+                data.setUri(json.optString(KEY_URI));
+                data.thumbSmall = json.optString(KEY_THUMBNAIL);
+                data.preview = json.optString(KEY_PREVIEW);
+            } else {
+                String errorMsg = json.optString(KEY_ERRORMSG);
+                int errorCode = json.optInt(KEY_ERRORCODE);
+                data.setErrorMsg(errorMsg);
+                data.setErrorCode(errorCode);
+            }
+
         }
+
+
         return data;
     }
 
@@ -376,7 +388,7 @@ public class FileData extends BaseData implements Parcelable {
 
     public String getThumbBig() {
         if (TextUtils.isEmpty(thumbBig)) {
-            thumbBig = getThumbSmall()+"&big=1";
+            thumbBig = getThumbSmall() + "&big=1";
         }
         return thumbBig;
     }

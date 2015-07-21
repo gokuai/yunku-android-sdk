@@ -1,5 +1,6 @@
 package com.gokuai.yunkuandroidsdk;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
@@ -9,6 +10,7 @@ import com.gokuai.yunkuandroidsdk.data.BaseData;
 import com.gokuai.yunkuandroidsdk.data.FileData;
 import com.gokuai.yunkuandroidsdk.data.FileDataKey;
 import com.gokuai.yunkuandroidsdk.data.FileListData;
+import com.gokuai.yunkuandroidsdk.data.ServerData;
 import com.gokuai.yunkuandroidsdk.data.ServerListData;
 import com.gokuai.yunkuandroidsdk.exception.GKException;
 import com.gokuai.yunkuandroidsdk.util.Util;
@@ -441,8 +443,7 @@ public class FileDataManager {
      * @return
      */
     public ServerListData getPreviewServerSite() {
-        ServerListData data = ServerListData.create(getServerSite("doc"));
-        return data;
+        return ServerListData.create(getServerSite("doc"));
     }
 
     private String getServerSite(String type) {
@@ -543,5 +544,7 @@ public class FileDataManager {
     protected static void release() {
         mInstance = null;
     }
+
+
 
 }
