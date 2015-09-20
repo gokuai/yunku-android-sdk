@@ -198,7 +198,7 @@ context需要为MainViewBaseActivity 继承的Activity的实例
 | HOOK _TYPE _RENAME | 重命名 |
 | HOOK _TYPE _DELETE | 文件删除 |
 
-###PreviewInfoManager类
+###DocConvertManager类
 
 ####获取预览文档转化信息
 转化对应库文件路径文档为pdf，返回下载地址
