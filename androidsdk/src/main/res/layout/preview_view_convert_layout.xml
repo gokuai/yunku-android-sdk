@@ -39,6 +39,7 @@
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
         android:indeterminate="true"
+        android:max="200"
         android:progressBackgroundTint="@color/color_c" />
 
 

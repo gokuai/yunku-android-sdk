@@ -10,7 +10,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Queue;
+import java.util.Stack;
 
 // BEGIN android-note
 // removed link to collections framework docs
@@ -22,25 +26,25 @@ import java.util.NoSuchElementException;
  * usage.  They are not thread-safe; in the absence of external
  * synchronization, they do not support concurrent access by multiple threads.
  * Null elements are prohibited.  This class is likely to be faster than
- * {@link java.util.Stack} when used as a stack, and faster than {@link java.util.LinkedList}
+ * {@link Stack} when used as a stack, and faster than {@link LinkedList}
  * when used as a queue.
- * <p/>
+ *
  * <p>Most <tt>ArrayDeque</tt> operations run in amortized constant time.
  * Exceptions include {@link #remove(Object) remove}, {@link
  * #removeFirstOccurrence removeFirstOccurrence}, {@link #removeLastOccurrence
  * removeLastOccurrence}, {@link #contains contains}, {@link #iterator
  * iterator.remove()}, and the bulk operations, all of which run in linear
  * time.
- * <p/>
+ *
  * <p>The iterators returned by this class's <tt>iterator</tt> method are
  * <i>fail-fast</i>: If the deque is modified at any time after the iterator
  * is created, in any way except through the iterator's own <tt>remove</tt>
  * method, the iterator will generally throw a {@link
- * java.util.ConcurrentModificationException}.  Thus, in the face of concurrent
+ * ConcurrentModificationException}.  Thus, in the face of concurrent
  * modification, the iterator fails quickly and cleanly, rather than risking
  * arbitrary, non-deterministic behavior at an undetermined time in the
  * future.
- * <p/>
+ *
  * <p>Note that the fail-fast behavior of an iterator cannot be guaranteed
  * as it is, generally speaking, impossible to make any hard guarantees in the
  * presence of unsynchronized concurrent modification.  Fail-fast iterators
@@ -48,17 +52,18 @@ import java.util.NoSuchElementException;
  * Therefore, it would be wrong to write a program that depended on this
  * exception for its correctness: <i>the fail-fast behavior of iterators
  * should be used only to detect bugs.</i>
- * <p/>
- * <p>This class and its iterator implement all of the
- * <em>optional</em> methods of the {@link java.util.Collection} and {@link
- * java.util.Iterator} interfaces.
  *
+ * <p>This class and its iterator implement all of the
+ * <em>optional</em> methods of the {@link Collection} and {@link
+ * Iterator} interfaces.
+ *
+ * @author  Josh Bloch and Doug Lea
+ * @since   1.6
  * @param <E> the type of elements held in this collection
- * @author Josh Bloch and Doug Lea
- * @since 1.6
  */
 public class ArrayDeque<E> extends AbstractCollection<E>
-        implements Deque<E>, Cloneable, java.io.Serializable {
+                           implements Deque<E>, Cloneable, java.io.Serializable
+{
     /**
      * The array in which the elements of the deque are stored.
      * The capacity of the deque is the length of this array, which is
@@ -95,7 +100,7 @@ public class ArrayDeque<E> extends AbstractCollection<E>
     /**
      * Allocate empty array to hold the given number of elements.
      *
-     * @param numElements the number of elements to hold
+     * @param numElements  the number of elements to hold
      */
     private void allocateElements(int numElements) {
         int initialCapacity = MIN_INITIAL_CAPACITY;
@@ -103,10 +108,10 @@ public class ArrayDeque<E> extends AbstractCollection<E>
         // Tests "<=" because arrays aren't kept full.
         if (numElements >= initialCapacity) {
             initialCapacity = numElements;
-            initialCapacity |= (initialCapacity >>> 1);
-            initialCapacity |= (initialCapacity >>> 2);
-            initialCapacity |= (initialCapacity >>> 4);
-            initialCapacity |= (initialCapacity >>> 8);
+            initialCapacity |= (initialCapacity >>>  1);
+            initialCapacity |= (initialCapacity >>>  2);
+            initialCapacity |= (initialCapacity >>>  4);
+            initialCapacity |= (initialCapacity >>>  8);
             initialCapacity |= (initialCapacity >>> 16);
             initialCapacity++;
 
@@ -166,7 +171,7 @@ public class ArrayDeque<E> extends AbstractCollection<E>
      * Constructs an empty array deque with an initial capacity
      * sufficient to hold the specified number of elements.
      *
-     * @param numElements lower bound on initial capacity of the deque
+     * @param numElements  lower bound on initial capacity of the deque
      */
     public ArrayDeque(int numElements) {
         allocateElements(numElements);
@@ -207,7 +212,7 @@ public class ArrayDeque<E> extends AbstractCollection<E>
 
     /**
      * Inserts the specified element at the end of this deque.
-     * <p/>
+     *
      * <p>This method is equivalent to {@link #add}.
      *
      * @param e the element to add
@@ -217,7 +222,7 @@ public class ArrayDeque<E> extends AbstractCollection<E>
         if (e == null)
             throw new NullPointerException("e == null");
         elements[tail] = e;
-        if ((tail = (tail + 1) & (elements.length - 1)) == head)
+        if ( (tail = (tail + 1) & (elements.length - 1)) == head)
             doubleCapacity();
     }
 
@@ -246,7 +251,7 @@ public class ArrayDeque<E> extends AbstractCollection<E>
     }
 
     /**
-     * @throws java.util.NoSuchElementException {@inheritDoc}
+     * @throws NoSuchElementException {@inheritDoc}
      */
     public E removeFirst() {
         E x = pollFirst();
@@ -256,7 +261,7 @@ public class ArrayDeque<E> extends AbstractCollection<E>
     }
 
     /**
-     * @throws java.util.NoSuchElementException {@inheritDoc}
+     * @throws NoSuchElementException {@inheritDoc}
      */
     public E removeLast() {
         E x = pollLast();
@@ -287,7 +292,7 @@ public class ArrayDeque<E> extends AbstractCollection<E>
     }
 
     /**
-     * @throws java.util.NoSuchElementException {@inheritDoc}
+     * @throws NoSuchElementException {@inheritDoc}
      */
     public E getFirst() {
         @SuppressWarnings("unchecked") E result = (E) elements[head];
@@ -297,7 +302,7 @@ public class ArrayDeque<E> extends AbstractCollection<E>
     }
 
     /**
-     * @throws java.util.NoSuchElementException {@inheritDoc}
+     * @throws NoSuchElementException {@inheritDoc}
      */
     public E getLast() {
         @SuppressWarnings("unchecked")
@@ -337,7 +342,7 @@ public class ArrayDeque<E> extends AbstractCollection<E>
         int mask = elements.length - 1;
         int i = head;
         Object x;
-        while ((x = elements[i]) != null) {
+        while ( (x = elements[i]) != null) {
             if (o.equals(x)) {
                 delete(i);
                 return true;
@@ -365,7 +370,7 @@ public class ArrayDeque<E> extends AbstractCollection<E>
         int mask = elements.length - 1;
         int i = (tail - 1) & mask;
         Object x;
-        while ((x = elements[i]) != null) {
+        while ( (x = elements[i]) != null) {
             if (o.equals(x)) {
                 delete(i);
                 return true;
@@ -379,11 +384,11 @@ public class ArrayDeque<E> extends AbstractCollection<E>
 
     /**
      * Inserts the specified element at the end of this deque.
-     * <p/>
+     *
      * <p>This method is equivalent to {@link #addLast}.
      *
      * @param e the element to add
-     * @return <tt>true</tt> (as specified by {@link java.util.Collection#add})
+     * @return <tt>true</tt> (as specified by {@link Collection#add})
      * @throws NullPointerException if the specified element is null
      */
     public boolean add(E e) {
@@ -393,11 +398,11 @@ public class ArrayDeque<E> extends AbstractCollection<E>
 
     /**
      * Inserts the specified element at the end of this deque.
-     * <p/>
+     *
      * <p>This method is equivalent to {@link #offerLast}.
      *
      * @param e the element to add
-     * @return <tt>true</tt> (as specified by {@link java.util.Queue#offer})
+     * @return <tt>true</tt> (as specified by {@link Queue#offer})
      * @throws NullPointerException if the specified element is null
      */
     public boolean offer(E e) {
@@ -406,14 +411,14 @@ public class ArrayDeque<E> extends AbstractCollection<E>
 
     /**
      * Retrieves and removes the head of the queue represented by this deque.
-     * <p/>
+     *
      * This method differs from {@link #poll poll} only in that it throws an
      * exception if this deque is empty.
-     * <p/>
+     *
      * <p>This method is equivalent to {@link #removeFirst}.
      *
      * @return the head of the queue represented by this deque
-     * @throws java.util.NoSuchElementException {@inheritDoc}
+     * @throws NoSuchElementException {@inheritDoc}
      */
     public E remove() {
         return removeFirst();
@@ -423,11 +428,11 @@ public class ArrayDeque<E> extends AbstractCollection<E>
      * Retrieves and removes the head of the queue represented by this deque
      * (in other words, the first element of this deque), or returns
      * <tt>null</tt> if this deque is empty.
-     * <p/>
+     *
      * <p>This method is equivalent to {@link #pollFirst}.
      *
      * @return the head of the queue represented by this deque, or
-     * <tt>null</tt> if this deque is empty
+     *         <tt>null</tt> if this deque is empty
      */
     public E poll() {
         return pollFirst();
@@ -437,11 +442,11 @@ public class ArrayDeque<E> extends AbstractCollection<E>
      * Retrieves, but does not remove, the head of the queue represented by
      * this deque.  This method differs from {@link #peek peek} only in
      * that it throws an exception if this deque is empty.
-     * <p/>
+     *
      * <p>This method is equivalent to {@link #getFirst}.
      *
      * @return the head of the queue represented by this deque
-     * @throws java.util.NoSuchElementException {@inheritDoc}
+     * @throws NoSuchElementException {@inheritDoc}
      */
     public E element() {
         return getFirst();
@@ -450,11 +455,11 @@ public class ArrayDeque<E> extends AbstractCollection<E>
     /**
      * Retrieves, but does not remove, the head of the queue represented by
      * this deque, or returns <tt>null</tt> if this deque is empty.
-     * <p/>
+     *
      * <p>This method is equivalent to {@link #peekFirst}.
      *
      * @return the head of the queue represented by this deque, or
-     * <tt>null</tt> if this deque is empty
+     *         <tt>null</tt> if this deque is empty
      */
     public E peek() {
         return peekFirst();
@@ -465,7 +470,7 @@ public class ArrayDeque<E> extends AbstractCollection<E>
     /**
      * Pushes an element onto the stack represented by this deque.  In other
      * words, inserts the element at the front of this deque.
-     * <p/>
+     *
      * <p>This method is equivalent to {@link #addFirst}.
      *
      * @param e the element to push
@@ -478,12 +483,12 @@ public class ArrayDeque<E> extends AbstractCollection<E>
     /**
      * Pops an element from the stack represented by this deque.  In other
      * words, removes and returns the first element of this deque.
-     * <p/>
+     *
      * <p>This method is equivalent to {@link #removeFirst()}.
      *
      * @return the element at the front of this deque (which is the top
-     * of the stack represented by this deque)
-     * @throws java.util.NoSuchElementException {@inheritDoc}
+     *         of the stack represented by this deque)
+     * @throws NoSuchElementException {@inheritDoc}
      */
     public E pop() {
         return removeFirst();
@@ -501,9 +506,9 @@ public class ArrayDeque<E> extends AbstractCollection<E>
      * Removes the element at the specified position in the elements array,
      * adjusting head and tail as necessary.  This can result in motion of
      * elements backwards or forwards in the array.
-     * <p/>
+     *
      * <p>This method is called delete rather than remove to emphasize
-     * that its semantics differ from those of {@link java.util.List#remove(int)}.
+     * that its semantics differ from those of {@link List#remove(int)}.
      *
      * @return true if elements moved backwards
      */
@@ -514,7 +519,7 @@ public class ArrayDeque<E> extends AbstractCollection<E>
         final int h = head;
         final int t = tail;
         final int front = (i - h) & mask;
-        final int back = (t - i) & mask;
+        final int back  = (t - i) & mask;
 
         // Invariant: head <= i < tail mod circularity
         if (front >= ((t - h) & mask))
@@ -678,7 +683,7 @@ public class ArrayDeque<E> extends AbstractCollection<E>
         int mask = elements.length - 1;
         int i = head;
         Object x;
-        while ((x = elements[i]) != null) {
+        while ( (x = elements[i]) != null) {
             if (o.equals(x))
                 return true;
             i = (i + 1) & mask;
@@ -693,7 +698,7 @@ public class ArrayDeque<E> extends AbstractCollection<E>
      * <tt>o.equals(e)</tt> (if such an element exists).
      * Returns <tt>true</tt> if this deque contained the specified element
      * (or equivalently, if this deque changed as a result of the call).
-     * <p/>
+     *
      * <p>This method is equivalent to {@link #removeFirstOccurrence}.
      *
      * @param o element to be removed from this deque, if present
@@ -724,11 +729,11 @@ public class ArrayDeque<E> extends AbstractCollection<E>
     /**
      * Returns an array containing all of the elements in this deque
      * in proper sequence (from first to last element).
-     * <p/>
+     *
      * <p>The returned array will be "safe" in that no references to it are
      * maintained by this deque.  (In other words, this method must allocate
      * a new array).  The caller is thus free to modify the returned array.
-     * <p/>
+     *
      * <p>This method acts as bridge between array-based and collection-based
      * APIs.
      *
@@ -745,23 +750,23 @@ public class ArrayDeque<E> extends AbstractCollection<E>
      * the specified array, it is returned therein.  Otherwise, a new array
      * is allocated with the runtime type of the specified array and the
      * size of this deque.
-     * <p/>
+     *
      * <p>If this deque fits in the specified array with room to spare
      * (i.e., the array has more elements than this deque), the element in
      * the array immediately following the end of the deque is set to
      * <tt>null</tt>.
-     * <p/>
+     *
      * <p>Like the {@link #toArray()} method, this method acts as bridge between
      * array-based and collection-based APIs.  Further, this method allows
      * precise control over the runtime type of the output array, and may,
      * under certain circumstances, be used to save allocation costs.
-     * <p/>
+     *
      * <p>Suppose <tt>x</tt> is a deque known to contain only strings.
      * The following code can be used to dump the deque into a newly
      * allocated array of <tt>String</tt>:
-     * <p/>
-     * <pre> {@code String[] y = x.toArray(new String[0]);}</pre>
-     * <p/>
+     *
+     *  <pre> {@code String[] y = x.toArray(new String[0]);}</pre>
+     *
      * Note that <tt>toArray(new Object[0])</tt> is identical in function to
      * <tt>toArray()</tt>.
      *
@@ -769,16 +774,16 @@ public class ArrayDeque<E> extends AbstractCollection<E>
      *          be stored, if it is big enough; otherwise, a new array of the
      *          same runtime type is allocated for this purpose
      * @return an array containing all of the elements in this deque
-     * @throws ArrayStoreException  if the runtime type of the specified array
-     *                              is not a supertype of the runtime type of every element in
-     *                              this deque
+     * @throws ArrayStoreException if the runtime type of the specified array
+     *         is not a supertype of the runtime type of every element in
+     *         this deque
      * @throws NullPointerException if the specified array is null
      */
     @SuppressWarnings("unchecked")
     public <T> T[] toArray(T[] a) {
         int size = size();
         if (a.length < size)
-            a = (T[]) java.lang.reflect.Array.newInstance(
+            a = (T[])java.lang.reflect.Array.newInstance(
                     a.getClass().getComponentType(), size);
         copyElements(a);
         if (a.length > size)

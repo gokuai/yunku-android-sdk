@@ -49,7 +49,7 @@
         <!--文件类型预览-->
         <activity
             android:name="com.gokuai.yunkuandroidsdk.PreviewActivity"
-            android:screenOrientation="portrait" />
+            />
         <!--==================================结束======================================-->
     </application>
 

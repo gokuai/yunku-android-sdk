@@ -1,6 +1,7 @@
 package com.gokuai.yunkuandroidsdk;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,15 +11,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.artifex.mupdfdemo.MuPDFCore;
-import com.artifex.mupdfdemo.MuPDFPageAdapter;
-import com.artifex.mupdfdemo.MuPDFReaderView;
+import com.artifex.mupdfdemo.FilePicker;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
@@ -41,6 +42,14 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.vudroid.core.AKDecodeService;
+import org.vudroid.core.DecodeService;
+import org.vudroid.core.DocumentView;
+import org.vudroid.core.ExceptionCatcherRunnable;
+import org.vudroid.core.events.PageChangeListener;
+import org.vudroid.core.events.SingleTapListener;
+import org.vudroid.core.models.CurrentPageModel;
+import org.vudroid.pdfdroid.codec.PdfContext;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -53,7 +62,7 @@ import java.util.ArrayList;
 /**
  * Created by Slf on 2015/6/25.
  */
-public class PreviewActivity extends BaseActivity implements View.OnClickListener {
+public class PreviewActivity extends BaseActivity implements View.OnClickListener , FilePicker.FilePickerSupport, SingleTapListener, PageChangeListener{
 
     private String LOG_TAG = PreviewActivity.class.getSimpleName();
 
@@ -65,10 +74,10 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
     private Socket mSocket;
     private String mFileHash;
     private String mOpenFileUrl;
-    private MuPDFCore core;
-    private MuPDFReaderView mDocView;
     private FileData mFileData;
 
+    private DecodeService mDecodeService;
+    private DocumentView mDocumentView;
 
     private TextView mTV_fileName;
     private TextView mTv_fileSize;
@@ -180,7 +189,7 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
                         }
                     }.execute();
                 } else {
-                    initPreview();
+                    onError(R.string.tip_net_is_not_available);
                 }
             } else {
                 Config.URL_SOCKET_PREVIEW = url;
@@ -287,6 +296,27 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
     private final static int MSG_UPDATE_PROGRESS = 5;
     private final static int MSG_CLOSE_SOCKET = 6;
 
+    @Override
+    public void performPickFor(FilePicker picker) {
+
+    }
+
+    @Override
+    public void onMainViewSingleTap() {
+        if (getSupportActionBar().isShowing()) {
+            getSupportActionBar().hide();
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+        } else {
+            getSupportActionBar().show();
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        }
+    }
+
+    @Override
+    public void onPageChanged(int index, int total) {
+//        UtilDialog.showNormalToast(String.format(" %s/%s ",index,total));
+    }
+
 
     private static class MyHandler extends Handler {
         private final WeakReference<PreviewActivity> mActivity;
@@ -360,20 +390,18 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
         @Override
         public void call(Object... args) {
             JSONObject data = (JSONObject) args[0];
-            int progress;
-            String url;
-            try {
-                progress = data.getInt("progress");
-                url = data.getString("url");
-            } catch (JSONException e) {
-                return;
-            }
+            int progress = data.optInt("progress");
 
             if (progress == 100) {
                 mHandler.sendEmptyMessage(MSG_CONVERT_COMPLETE);
+                String url = data.optString("url");
                 onConvertDone(url);
+            }else{
+                Message message = new Message();
+                message.what = MSG_UPDATE_PROGRESS;
+                message.arg1 = progress;
+                mHandler.sendMessage(message);
             }
-            DebugFlag.log(LOG_TAG, "url:" + url + "\n progress" + progress);
         }
     };
 
@@ -412,13 +440,21 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
 
                 Message message = new Message();
                 message.what = MSG_UPDATE_PROGRESS;
-                message.arg1 = (int) (((float) byteNow / (float) totalLength) * (float) 100);
+                message.arg1 = (int) (((float) byteNow / (float) totalLength) * (float) 100) + 100;
                 mHandler.sendMessage(message);
 
+            }
+
+            if(isStop){
+                if(byteNow != totalLength){
+                    Util.deleteFile(localFilePath);
+                }
+                return;
             }
         } catch (IOException e) {
             mHandler.sendEmptyMessage(MSG_DOWNLOAD_ERROR);
             e.printStackTrace();
+            return;
         }
 
         openPDFFile(localFilePath);
@@ -436,44 +472,26 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
                     willShowMenu = true;
                     supportInvalidateOptionsMenu();
 
-                    setContentView(R.layout.preview_view_layout);
+                    mDecodeService = new AKDecodeService(new PdfContext());
+                    CurrentPageModel currentPageModel = new CurrentPageModel();
+                    currentPageModel.addEventListener(PreviewActivity.this);
+                    mDocumentView = new DocumentView(PreviewActivity.this, currentPageModel);
 
+                    mDocumentView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                    mDecodeService.setContentResolver(getContentResolver());
+                    mDecodeService.setContainerView(mDocumentView);
+                    mDocumentView.setDecodeService(mDecodeService);
+                    mDecodeService.open(PreviewActivity.this, Uri.fromFile(new File(filePath)));
 
-                    RelativeLayout mainLayout = (RelativeLayout) findViewById(R.id.pdflayout);
-
-                    core = openFile(filePath);
-
-                    if (core != null && core.countPages() == 0) {
-                        core = null;
-                    }
-                    if (core == null || core.countPages() == 0 || core.countPages() == -1) {
-                        Log.e(LOG_TAG, "Document Not Opening");
-                    }
-                    if (core != null) {
-                        mDocView = new MuPDFReaderView(PreviewActivity.this) {
-                            @Override
-                            protected void onMoveToChild(int i) {
-                                if (core == null)
-                                    return;
-                                super.onMoveToChild(i);
-                            }
-
-                            @Override
-                            protected void onTapMainDocArea() {
-                                if (getSupportActionBar().isShowing()) {
-                                    getSupportActionBar().hide();
-                                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-                                } else {
-                                    getSupportActionBar().show();
-                                    getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-                                }
-                                super.onTapMainDocArea();
-                            }
-                        };
-
-                        mDocView.setAdapter(new MuPDFPageAdapter(PreviewActivity.this, core));
-                        mainLayout.addView(mDocView);
-                    }
+                    setContentView(mDocumentView);
+                    mDocumentView.showDocument(new ExceptionCatcherRunnable.ExceptionListener() {
+                        @Override
+                        public void notifyThatDarnedExceptionHappened(String message) {
+                            createConvertViewer();
+                            onError(R.string.convert_error);
+                            Util.deleteFile(filePath);
+                        }
+                    });
 
                 }
             });
@@ -484,18 +502,6 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
         }
 
     }
-
-
-    private MuPDFCore openFile(String path) {
-        try {
-            core = new MuPDFCore(this, path);
-            // New file: drop the old outline data
-        } catch (Exception e) {
-            return null;
-        }
-        return core;
-    }
-
 
     private void socketRelease() {
         if (mSocket != null) {
@@ -547,6 +553,8 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
     }
 
 
+
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -556,12 +564,34 @@ public class PreviewActivity extends BaseActivity implements View.OnClickListene
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (core != null) {
-            core.onDestroy();
-            core = null;
+    protected void onResume() {
+        super.onResume();
+
+        if (mDocumentView != null) {
+            int height = mDocumentView.getHeight();
+            if (height <= 0) {
+                height = new ViewConfiguration().getScaledTouchSlop() * 2;
+            } else {
+                height = (int) (height * 0.03);
+            }
+            mDocumentView.setScrollMargin(height);
+            mDocumentView.setDecodePage(0);
         }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mDecodeService != null) {
+            mDecodeService.recycle();
+            mDecodeService = null;
+        }
+
+        if (mDocumentView != null) {
+            mDocumentView = null;
+        }
+
+        super.onDestroy();
 
         socketRelease();
 

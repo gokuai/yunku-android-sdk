@@ -2,16 +2,27 @@ package com.artifex.mupdfdemo;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.util.Log;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public class MuPDFCore {
     /* load our native library */
+    private static boolean gs_so_available = false;
+
     static {
         System.loadLibrary("mupdf");
+        if (gprfSupportedInternal()) {
+            try {
+                System.loadLibrary("gs");
+                gs_so_available = true;
+            } catch (UnsatisfiedLinkError e) {
+                gs_so_available = false;
+            }
+        }
     }
 
     /* Readable members */
@@ -21,17 +32,25 @@ public class MuPDFCore {
     private long globals;
     private byte fileBuffer[];
     private String file_format;
+    private boolean isUnencryptedPDF;
+    private final boolean wasOpenedFromBuffer;
 
     /* The native functions */
+    private static native boolean gprfSupportedInternal();
+
     private native long openFile(String filename);
 
-    private native long openBuffer();
+    private native long openBuffer(String magic);
 
     private native String fileFormatInternal();
+
+    private native boolean isUnencryptedPDFInternal();
 
     private native int countPagesInternal();
 
     private native void gotoPageInternal(int localActionPageNum);
+
+    private native void gotoPageInternal2(int localActionPageNum);
 
     private native float getPageWidth();
 
@@ -40,13 +59,34 @@ public class MuPDFCore {
     private native void drawPage(Bitmap bitmap,
                                  int pageW, int pageH,
                                  int patchX, int patchY,
-                                 int patchW, int patchH);
+                                 int patchW, int patchH,
+                                 long cookiePtr);
+
+    public native void drawPage3(Bitmap bitmap,
+                                 int pageW, int pageH,
+                                 int patchX, int patchY,
+                                 int patchW, int patchH,
+                                 long cookiePtr);
+
+    public native void drawPageWithNumber(
+            int page, Bitmap bitmap,
+            int pageW, int pageH,
+            int patchX, int patchY,
+            int patchW, int patchH,
+            long cookiePtr);
+
+    public native void renderPageDirect(ByteBuffer buffer,
+                                        int pageW, int pageH,
+                                        int patchX, int patchY,
+                                        int patchW, int patchH,
+                                        long cookiePtr);
 
     private native void updatePageInternal(Bitmap bitmap,
                                            int page,
                                            int pageW, int pageH,
                                            int patchX, int patchY,
-                                           int patchW, int patchH);
+                                           int patchW, int patchH,
+                                           long cookiePtr);
 
     private native RectF[] searchPage(String text);
 
@@ -67,6 +107,12 @@ public class MuPDFCore {
     private native String[] getFocusedWidgetChoiceSelected();
 
     private native String[] getFocusedWidgetChoiceOptions();
+
+    private native int getFocusedWidgetSignatureState();
+
+    private native String checkFocusedSignatureInternal();
+
+    private native boolean signFocusedSignatureInternal(String keyFile, String password);
 
     private native int setFocusedWidgetTextInternal(String text);
 
@@ -102,7 +148,39 @@ public class MuPDFCore {
 
     private native void saveInternal();
 
-    public static native boolean javascriptSupported();
+    private native long createCookie();
+
+    private native void destroyCookie(long cookie);
+
+    private native void abortCookie(long cookie);
+
+    private native String startProofInternal();
+
+    private native void endProofInternal(String filename);
+
+    public native boolean javascriptSupported();
+
+    public native void freePage(int pageHandle);
+
+    public class Cookie {
+        private final long cookiePtr;
+
+        public Cookie() {
+            cookiePtr = createCookie();
+            if (cookiePtr == 0)
+                throw new OutOfMemoryError();
+        }
+
+        public void abort() {
+            abortCookie(cookiePtr);
+        }
+
+        public void destroy() {
+            // We could do this in finalize, but there's no guarantee that
+            // a finalize will occur before the muPDF context occurs.
+            destroyCookie(cookiePtr);
+        }
+    }
 
     public MuPDFCore(Context context, String filename) throws Exception {
         globals = openFile(filename);
@@ -110,21 +188,24 @@ public class MuPDFCore {
             throw new Exception(String.format(context.getString(R.string.cannot_open_file_Path), filename));
         }
         file_format = fileFormatInternal();
+        isUnencryptedPDF = isUnencryptedPDFInternal();
+        wasOpenedFromBuffer = false;
     }
 
-    public MuPDFCore(Context context, byte buffer[]) throws Exception {
+    public MuPDFCore(Context context, byte buffer[], String magic) throws Exception {
         fileBuffer = buffer;
-        globals = openBuffer();
+        globals = openBuffer(magic != null ? magic : "");
         if (globals == 0) {
             throw new Exception(context.getString(R.string.cannot_open_buffer));
         }
         file_format = fileFormatInternal();
+        isUnencryptedPDF = isUnencryptedPDFInternal();
+        wasOpenedFromBuffer = true;
     }
 
     public int countPages() {
         if (numPages < 0)
             numPages = countPagesSynchronized();
-
         return numPages;
     }
 
@@ -132,24 +213,57 @@ public class MuPDFCore {
         return file_format;
     }
 
+    public boolean isUnencryptedPDF() {
+        return isUnencryptedPDF;
+    }
+
+    public boolean wasOpenedFromBuffer() {
+        return wasOpenedFromBuffer;
+    }
+
     private synchronized int countPagesSynchronized() {
         return countPagesInternal();
     }
 
     /* Shim function */
-    private void gotoPage(int page) {
-        if (page > numPages - 1)
-            page = numPages - 1;
+    public void gotoPage(int page) {
+        int countPage = countPages();
+        if (page > countPage - 1)
+            page = countPage - 1;
         else if (page < 0)
             page = 0;
         gotoPageInternal(page);
         this.pageWidth = getPageWidth();
         this.pageHeight = getPageHeight();
+
     }
 
     public synchronized PointF getPageSize(int page) {
         gotoPage(page);
         return new PointF(pageWidth, pageHeight);
+    }
+
+    public static native void getMediaBox(int handle, float[] mediabox);
+
+    public RectF getMediaBox(int pageHandle) {
+        float[] box = new float[4];
+        getMediaBox(pageHandle, box);
+        return new RectF(box[0], box[1], box[2], box[3]);
+    }
+
+    public synchronized PointF getPageSize2(int page) {
+        int countPage = countPages();
+        if (page > countPage - 1)
+            page = countPage - 1;
+        else if (page < 0)
+            page = 0;
+        gotoPageInternal2(page);
+        this.pageWidth = getPageWidth();
+        this.pageHeight = getPageHeight();
+
+
+        return new PointF(pageWidth, pageHeight);
+
     }
 
     public MuPDFAlert waitForAlert() {
@@ -174,31 +288,50 @@ public class MuPDFCore {
         globals = 0;
     }
 
-    public synchronized Bitmap drawPage(int page,
-                                        int pageW, int pageH,
-                                        int patchX, int patchY,
-                                        int patchW, int patchH) {
+    public synchronized void drawPage(Bitmap bm, int page,
+                                      int pageW, int pageH,
+                                      int patchX, int patchY,
+                                      int patchW, int patchH,
+                                      MuPDFCore.Cookie cookie) {
         gotoPage(page);
-        Bitmap bm = Bitmap.createBitmap(patchW, patchH, Config.ARGB_8888);
-        drawPage(bm, pageW, pageH, patchX, patchY, patchW, patchH);
-        return bm;
+        drawPage(bm, pageW, pageH, patchX, patchY, patchW, patchH, cookie.cookiePtr);
     }
 
-    public synchronized Bitmap updatePage(BitmapHolder h, int page,
-                                          int pageW, int pageH,
-                                          int patchX, int patchY,
-                                          int patchW, int patchH) {
-        Bitmap bm = null;
-        Bitmap old_bm = h.getBm();
+    /**
+     * 渲染页面,传入一个Bitmap对象.使用硬件加速,虽然速度影响不大.
+     * @param bm     需要渲染的位图,配置为ARGB8888
+     * @param page
+     * @param pageW  页面的宽,由缩放级别计算得到的最后宽,由于这个宽诸页面的裁剪大小,如果不正确,得到的Tile页面是不正确的
+     * @param pageH  页面的宽,由缩放级别计算得到的最后宽,由于这个宽诸页面的裁剪大小,如果不正确,得到的Tile页面是不正确的
+     * @param patchX 裁剪的页面的左顶点
+     * @param patchY 裁剪的页面的上顶点
+     * @param patchW 页面的宽,具体渲染的页面实际大小.显示出来的大小.
+     * @param patchH 页面的高,具体渲染的页面实际大小.显示出来的大小.
+     */
+    public synchronized void renderPage(Bitmap bm,
+                                        int page, int pageW, int pageH,
+                                        int patchX, int patchY,
+                                        int patchW, int patchH,
+                                        Cookie cookie) {
+        gotoPage(page);
+        drawPage3(bm, pageW, pageH, patchX, patchY, patchW, patchH, cookie.cookiePtr);
+    }
 
-        if (old_bm == null)
-            return null;
+    public synchronized void renderPageDirect(ByteBuffer buffer, int page,
+                                              int pageW, int pageH,
+                                              int patchX, int patchY,
+                                              int patchW, int patchH,
+                                              MuPDFCore.Cookie cookie) {
+        gotoPage(page);
+        renderPageDirect(buffer, pageW, pageH, patchX, patchY, patchW, patchH, cookie.cookiePtr);
+    }
 
-        bm = old_bm.copy(Config.ARGB_8888, false);
-        old_bm = null;
-
-        updatePageInternal(bm, page, pageW, pageH, patchX, patchY, patchW, patchH);
-        return bm;
+    public synchronized void updatePage(Bitmap bm, int page,
+                                        int pageW, int pageH,
+                                        int patchX, int patchY,
+                                        int patchW, int patchH,
+                                        MuPDFCore.Cookie cookie) {
+        updatePageInternal(bm, page, pageW, pageH, patchX, patchY, patchW, patchH, cookie.cookiePtr);
     }
 
     public synchronized PassClickResult passClickEvent(int page, float x, float y) {
@@ -210,6 +343,8 @@ public class MuPDFCore {
             case LISTBOX:
             case COMBOBOX:
                 return new PassClickResultChoice(changed, getFocusedWidgetChoiceOptions(), getFocusedWidgetChoiceSelected());
+            case SIGNATURE:
+                return new PassClickResultSignature(changed, getFocusedWidgetSignatureState());
             default:
                 return new PassClickResult(changed);
         }
@@ -226,6 +361,14 @@ public class MuPDFCore {
 
     public synchronized void setFocusedWidgetChoiceSelected(String[] selected) {
         setFocusedWidgetChoiceSelectedInternal(selected);
+    }
+
+    public synchronized String checkFocusedSignature() {
+        return checkFocusedSignatureInternal();
+    }
+
+    public synchronized boolean signFocusedSignature(String keyFile, String password) {
+        return signFocusedSignatureInternal(keyFile, password);
     }
 
     public synchronized LinkInfo[] getPageLinks(int page) {
@@ -260,6 +403,8 @@ public class MuPDFCore {
         ArrayList<TextWord[]> lns = new ArrayList<TextWord[]>();
 
         for (TextChar[][][] bl : chars) {
+            if (bl == null)
+                continue;
             for (TextChar[][] ln : bl) {
                 ArrayList<TextWord> wds = new ArrayList<TextWord>();
                 TextWord wd = new TextWord();
@@ -324,4 +469,47 @@ public class MuPDFCore {
     public synchronized void save() {
         saveInternal();
     }
+
+    public synchronized String startProof() {
+        return startProofInternal();
+    }
+
+    public synchronized void endProof(String filename) {
+        endProofInternal(filename);
+    }
+
+    public static boolean gprfSupported() {
+        if (gs_so_available == false)
+            return false;
+        return gprfSupportedInternal();
+    }
+
+    public static class Size implements Cloneable {
+        public int width;
+        public int height;
+
+        public Size() {
+            this.width = 0;
+            this.height = 0;
+        }
+
+        public Size(int width, int height) {
+            this.width = width;
+            this.height = height;
+        }
+
+        public Size clone() {
+            return new Size(this.width, this.height);
+        }
+    }
+
+    //==========================================================================
+    public float getPDFPageWidth() {
+        return pageWidth;
+    }
+
+    public float getPDFPageHeight() {
+        return pageHeight;
+    }
+
 }
