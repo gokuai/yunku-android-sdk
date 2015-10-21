@@ -4,7 +4,6 @@ import com.yunkuent.sdk.data.ReturnResult;
 
 import org.apache.http.HttpStatus;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -41,13 +40,12 @@ public class FileListData extends BaseData {
                 JSONArray array = json.optJSONArray(KEY_LIST);
                 if (array != null) {
                     for (int i = 0; i < array.length(); i++) {
-                        FileData data = null;
-                        try {
-                            data = FileData.create(array.getJSONObject(i));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        FileData data = FileData.create(array.optJSONObject(i));
+
+                        if(data!=null){
+                            list.add(data);
                         }
-                        list.add(data);
+
                     }
                 }
                 fileListData.setList(list);
