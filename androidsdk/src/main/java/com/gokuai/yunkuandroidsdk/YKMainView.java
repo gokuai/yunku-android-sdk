@@ -348,11 +348,8 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
                 list.add(FileData.createFootData());
             }
         } else {
-            if (isRoot()) {
-                if (list.size() >= FileDataManager.PAGE_SIZE) {
-                    list.add(FileData.createFootData());
-                }
-
+            if (list.size() >= FileDataManager.PAGE_SIZE) {
+                list.add(FileData.createFootData());
             }
         }
 

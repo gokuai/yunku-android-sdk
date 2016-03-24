@@ -115,15 +115,23 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
     public void setList(ArrayList<FileData> list) {
         mList = list;
         mPareArr = null;//每次置空 避免不同路径下的列表
+        boolean hasFoot = removeFooter(list);
         getSparseArr().put(0, list); //start == 0
         sortList(mSortType);
+        if (hasFoot) {
+            mList.add(FileData.createFootData());
+        }
     }
 
     public void addList(ArrayList<FileData> list, int start) {
-        removeFooter();
+        removeFooter(mList);//删除之前最后一项footer
+        boolean hasFoot = removeFooter(list);
         getSparseArr().put(start, list);
         mList = generateList(getSparseArr());
         sortList(mSortType);
+        if (hasFoot) {
+            mList.add(FileData.createFootData());
+        }
     }
 
     //FIXME 如果是超长的列表，这里会有内存大开销的隐患
@@ -304,14 +312,7 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
     private void sortList(int sortType) {
         Config.saveListSortType(mContext, sortType);
         if (mList != null && mList.size() > 0) {
-            boolean hasHeader = false;
-            if (mList.get(0).isHeader()) {
-                hasHeader = true;
-                mList.remove(0);
-            }
-
-            boolean hasFooter = removeFooter();
-
+            boolean hasHeader = removeHeader(mList);
 
             switch (sortType) {
                 case Constants.FILE_SORT_TYPE_FILENAME:
@@ -329,10 +330,6 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
             }
             if (hasHeader) {
                 mList.add(0, FileData.createHeadData());
-            }
-
-            if (hasFooter) {
-                mList.add(FileData.createFootData());
             }
 
         }
@@ -362,17 +359,29 @@ public class FileListAdapter extends BaseAdapter implements View.OnClickListener
         }, 500);
     }
 
-    private boolean removeFooter() {
+    private boolean removeFooter(ArrayList<FileData> list) {
 
         boolean hasFooter = false;
-        int index = mList.size() - 1;
+        if (list.size() > 0) {
+            int index = list.size() - 1;
 
-        if (mList.get(index).isFooter()) {
-            hasFooter = true;
-            mList.remove(index);
+            if (list.get(index).isFooter()) {
+                hasFooter = true;
+                list.remove(index);
 
+            }
         }
         return hasFooter;
+    }
+
+    private boolean removeHeader(ArrayList<FileData> list) {
+        boolean hasHeader = false;
+        if (list.get(0).isHeader()) {
+            hasHeader = true;
+            list.remove(0);
+        }
+        return hasHeader;
+
     }
 
 
