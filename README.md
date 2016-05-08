@@ -9,7 +9,18 @@ Robots: noindex,nofollow
 
 版本：1.0.3
 
-创建：2015-05-20
+创建：2016-05-8
+
+##Demo
+![Demo](/Screenshot/1.png)	
+
+![Demo](/Screenshot/2.png)	
+
+![Demo](/Screenshot/3.png)
+
+##场景使用声明
+此SDK包含界面交互，适用客户端快入内嵌使用，包含文件列表、文件下载、预览、上传、文件删除和重命名功能，如果是基于文件管理的接口开发，请查看 https://github.com/gokuai/yunku-sdk-java
+
 ##兼容性声明
 
 	minSdkVersion 14
