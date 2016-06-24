@@ -1,6 +1,5 @@
 package com.gokuai.yunkuandroidsdk;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
@@ -10,7 +9,6 @@ import com.gokuai.yunkuandroidsdk.data.BaseData;
 import com.gokuai.yunkuandroidsdk.data.FileData;
 import com.gokuai.yunkuandroidsdk.data.FileDataKey;
 import com.gokuai.yunkuandroidsdk.data.FileListData;
-import com.gokuai.yunkuandroidsdk.data.ServerData;
 import com.gokuai.yunkuandroidsdk.data.ServerListData;
 import com.gokuai.yunkuandroidsdk.exception.GKException;
 import com.gokuai.yunkuandroidsdk.util.Util;
@@ -173,7 +171,7 @@ public class FileDataManager {
     }
 
     public FileData getFileInfoSync(String fullPath) {
-        return FileData.create(mEntFileManager.getFileInfo(fullPath));
+        return FileData.create(mEntFileManager.getFileInfo(fullPath, EntFileManager.NetType.DEFAULT));
     }
 
 
@@ -377,7 +375,7 @@ public class FileDataManager {
         void onNetUnable();
     }
 
-    public interface FileInfoListener extends DataListener{
+    public interface FileInfoListener extends DataListener {
         void onReceiveData(Object data);
     }
 
@@ -415,7 +413,7 @@ public class FileDataManager {
                 if (!Util.isNetworkAvailableEx()) {
                     listener.onNetUnable();
                 } else {
-                    String result = mEntFileManager.getFileList(start, fullPath);
+                    String result = mEntFileManager.getFileList(fullPath, start, PAGE_SIZE, false);
                     FileListData fileListData = FileListData.create(result);
                     if (fileListData.getCode() == HttpStatus.SC_OK) {
 
@@ -544,7 +542,6 @@ public class FileDataManager {
     protected static void release() {
         mInstance = null;
     }
-
 
 
 }
