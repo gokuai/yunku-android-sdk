@@ -12,11 +12,12 @@ Robots: noindex,nofollow
 创建：2016-05-8
 
 ##Demo
-![Demo](/Screenshot/1.png)	
 
-![Demo](/Screenshot/2.png)	
+<img src="/Screenshot/1.png" alt="文件列表" title="文件列表" width="35%" height="35%" />
 
-![Demo](/Screenshot/3.png)
+<img src="/Screenshot/2.png" alt="重命名、删除" title="重命名、删除" width="35%" height="35%" />	
+
+<img src="/Screenshot/3.png" alt="上传文件" title="上传文件" width="35%" height="35%" />
 
 ##场景使用声明
 此SDK包含界面交互，适用客户端快入内嵌使用，包含文件列表、文件下载、预览、上传、文件删除和重命名功能，如果是基于文件管理的接口开发，请查看 https://github.com/gokuai/yunku-sdk-java
