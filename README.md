@@ -11,7 +11,7 @@ Robots: noindex,nofollow
 
 创建：2016-05-8
 
-##Demo
+## Demo
 
 <img src="/Screenshot/1.png" alt="文件列表" title="文件列表" width="35%" height="35%" />
 
@@ -19,20 +19,20 @@ Robots: noindex,nofollow
 
 <img src="/Screenshot/3.png" alt="上传文件" title="上传文件" width="35%" height="35%" />
 
-##场景使用声明
+## 场景使用声明
 此SDK包含界面交互，适用客户端快入内嵌使用，包含文件列表、文件下载、预览、上传、文件删除和重命名功能，如果是基于文件管理的接口开发，请查看 https://github.com/gokuai/yunku-sdk-java
 
-##兼容性声明
+## 兼容性声明
 
 	minSdkVersion 14
     
-##授权申请
+## 授权申请
 登录https://www.gokuai.com/login 网址，点击后台管理tab，输入后台帐号密码，设置 -> 库开发授权 开启，然后返回 云库 -> (选择要申请开发的库) -> 授权管理 ->（点击进行开发的库）-> 授权管理 -> 点击获取ClientID和ClientSecret，记下这个两个参数，在使用SDK的时候，会使用这两个参数
 
-##项目引用
+## 项目引用
 Android Studio 可直接引用master 中 androidsdk Module，Eclispe 、IntelliJ 或者Android Studio 需要使用aar方式引用，需要先在https://github.com/gokuai/yunku-sdk-android/releases/ 下载最新的zip包，步骤如下：
 
-###Android Studio
+### Android Studio
 
 File>Import Module>，找到对应androidsdk所在的文件夹,并导入到项目
 
@@ -48,20 +48,20 @@ File>New Module>More Modules>Import .JAR or .AAR Package ,引用androidsdk.aar�
 	}
 	  
 
-###Eclipse + ADT
+### Eclipse + ADT
 
 1.New>Project>Android>Android Application Project>任意填写包名和名称［例如 androidsdk］,然后将Eclipse和Source Code文件夹下文件复制替换到项目中	
 2.将Source Code/assets复制到App运行项目中	
 3.导入项目appcompat
 
 
-###IntelliJ IDEA
+### IntelliJ IDEA
 
 1.File>New >Module...>Empty Module任意填写包名和名称［例如 androidsdk］,然后将Eclipse和Source Code文件夹下文件复制替换到项目中	
 2.将Source Code/assets复制到App运行项目中	
 3.导入项目appcompat
 
-##项目必需设置
+## 项目必需设置
 **[YourActivity].class**
 	
  使用控件的Activity需要继承MainViewBaseActivity
@@ -165,30 +165,30 @@ File>New Module>More Modules>Import .JAR or .AAR Package ,引用androidsdk.aar�
         <!-- Customize your theme here. -->
     </style>
 
-##类的使用说明
-###YKMainView类
+## 类的使用说明
+### YKMainView类
 
 #### 构造
 new YKMainView(Context context)		
 context需要为MainViewBaseActivity 继承的Activity的实例
 
-####setOption（Option option）
+#### setOption（Option option）
 设置开启的功能（文件重命名、文件删除、文件上传）
 
 
-####initData（）
+#### initData（）
 数据初始化，在所有参数设置完毕之后，最后进行初始化
 
-###Option类
+### Option类
 | 属性 | 说明 |
 | --- | --- |
 | canDel | 是否开启删除 | 
 | canRename | 是否开启重命名 | 
 | canUpload | 是否可上传 | 
 
-###FileDataManager类
+### FileDataManager类
 
-####registerHook(HookCallback callback)
+#### registerHook(HookCallback callback)
 注册hook,可以控制指定路径的文件创建、列表显示、文件上传、文件重命名、文件删除是否可以被允许执行
 
 ###HookCallback接口
@@ -200,7 +200,7 @@ context需要为MainViewBaseActivity 继承的Activity的实例
 | fullPath | string |  执行操作的路径 |
 
 
-###HookType枚举
+### HookType枚举
 | 枚举类型 | 说明 |
 | --- | --- |
 | HOOK _TYPE _ FILE _LIST | 文件列表显示 | 
@@ -210,9 +210,9 @@ context需要为MainViewBaseActivity 继承的Activity的实例
 | HOOK _TYPE _RENAME | 重命名 |
 | HOOK _TYPE _DELETE | 文件删除 |
 
-###DocConvertManager类
+### DocConvertManager类
 
-####获取预览文档转化信息
+#### 获取预览文档转化信息
 转化对应库文件路径文档为pdf，返回下载地址
 	
 	getPreviewInfo(Context context, String fullPath, PreviewInfoListener listener)
@@ -224,13 +224,13 @@ context需要为MainViewBaseActivity 继承的Activity的实例
 | fullPath | string |  执行操作的路径 |
 | listener | PreviewInfoListener |  监听转化系列情况的接口 |
 
-####取消请求
+#### 取消请求
 可以在请求发出之后，取消请求
 
 	cancel()
 	
-###PreviewInfoListener接口
-####转化状态
+### PreviewInfoListener接口
+#### 转化状态
 
 	onStatus(String fullPath, int status)
 	
@@ -246,7 +246,7 @@ context需要为MainViewBaseActivity 继承的Activity的实例
 | STATUS _CODE _START _TO _CONVERT _PDF | 开始转化为PDF | 
 | STATUS_CODE_COMPLETE | 转化完毕 | 
 
-####转化进度
+#### 转化进度
 返回文档转化进度
 
 	onProgress(int percent)
@@ -255,7 +255,7 @@ context需要为MainViewBaseActivity 继承的Activity的实例
 | --- | --- | --- |
 | percent | int |  转化进度返回 0－100 |
 
-####返回错误信息
+#### 返回错误信息
 
 	onError(int errorCode, String fullPath, String message)
 	
@@ -272,7 +272,7 @@ context需要为MainViewBaseActivity 继承的Activity的实例
 | ERROR _CODE _FILE _CONVERT _ERROR | 103:文件转化失败 | 
 | ERROR _CODE _INCOMPLETE | 104:转化未完成，需要等待转化文档 | 
 	
-####返回转化完毕的PDF文档下载地址
+#### 返回转化完毕的PDF文档下载地址
 
 	onGetPDFUrl(String fullPath, String url)
 
@@ -283,7 +283,7 @@ context需要为MainViewBaseActivity 继承的Activity的实例
 
 
     
-##相关SDK
+## 相关SDK
 https://github.com/gokuai/yunku-sdk-java
 
 
