@@ -17,7 +17,7 @@ public class DebugFlag{
 
         DebugConfig.setListener(new DebugConfig.LogDetector() {
             @Override
-            public void getLog(String s) {
+            public void getLog(String level,String s) {
                 if (DebugFlag.IS_DEBUG) {
                     Log.v("YunkuJavaSDK", s);
                 }
