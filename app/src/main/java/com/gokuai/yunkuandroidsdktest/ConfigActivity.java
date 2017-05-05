@@ -14,8 +14,8 @@ import android.widget.TextView;
 
 import com.gokuai.yunkuandroidsdk.Config;
 import com.gokuai.yunkuandroidsdk.Constants;
-import com.gokuai.yunkuandroidsdk.PreviewActivity;
 import com.gokuai.yunkuandroidsdk.DocConvertManager;
+import com.gokuai.yunkuandroidsdk.PreviewActivity;
 
 /**
  * 调整配置Activity

@@ -1,0 +1,614 @@
+package com.gokuai.yunkuandroidsdk.compat.v2;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import com.artifex.mupdfdemo.FilePicker;
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.IO;
+import com.github.nkzawa.socketio.client.Socket;
+import com.gokuai.yunkuandroidsdk.BaseActivity;
+import com.gokuai.yunkuandroidsdk.Config;
+import com.gokuai.yunkuandroidsdk.Constants;
+import com.gokuai.yunkuandroidsdk.DebugFlag;
+import com.gokuai.yunkuandroidsdk.HookCallback;
+import com.gokuai.yunkuandroidsdk.R;
+import com.gokuai.yunkuandroidsdk.data.FileData;
+import com.gokuai.yunkuandroidsdk.data.ServerData;
+import com.gokuai.yunkuandroidsdk.data.ServerListData;
+import com.gokuai.yunkuandroidsdk.util.Util;
+import com.gokuai.yunkuandroidsdk.util.UtilFile;
+import com.yunkuent.sdk.utils.URLEncoder;
+
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.HttpVersion;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.CoreProtocolPNames;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.vudroid.core.AKDecodeService;
+import org.vudroid.core.DecodeService;
+import org.vudroid.core.DocumentView;
+import org.vudroid.core.ExceptionCatcherRunnable;
+import org.vudroid.core.events.PageChangeListener;
+import org.vudroid.core.events.SingleTapListener;
+import org.vudroid.core.models.CurrentPageModel;
+import org.vudroid.pdfdroid.codec.PdfContext;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.ref.WeakReference;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+
+/**
+ * Created by Slf on 2015/6/25.
+ */
+public class PreviewActivity extends BaseActivity implements View.OnClickListener , FilePicker.FilePickerSupport, SingleTapListener, PageChangeListener {
+
+    private String LOG_TAG = PreviewActivity.class.getSimpleName();
+
+    private final static String KEY_ERRORCODE = "error_code";
+    private final static String KEY_ERRORMSG = "error_msg";
+
+    private static final String PREVIEW_SOCKET_SIGN_KEY = "6c01aefe6ff8f26b51139bf8f808dad582a7a864";
+
+    private Socket mSocket;
+    private String mFileHash;
+    private String mOpenFileUrl;
+    private FileData mFileData;
+
+    private DecodeService mDecodeService;
+    private DocumentView mDocumentView;
+
+    private TextView mTV_fileName;
+    private TextView mTv_fileSize;
+    private ImageView mIv_imageView;
+    private ProgressBar mPB_progress;
+    private View mConvertErrorView;
+    private TextView mTV_ErrorDescription;
+    private Button mBtn_Retry;
+
+    private boolean willShowMenu;
+    private boolean isStop;
+    private boolean isSocketConnecting;
+
+    private AsyncTask mGetServerTask;
+    private AsyncTask mFileDataTask;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().show();
+        setContentView(R.layout.preview_view_convert_layout);
+
+        Intent intent = getIntent();
+        mOpenFileUrl = intent.getStringExtra(Constants.EXTRA_OPEN_FILE_URL);
+
+        if (!TextUtils.isEmpty(mOpenFileUrl)) {
+            openPDFFile(mOpenFileUrl);
+        } else {
+            mFileData = intent.getParcelableExtra(Constants.EXTRA_FILEDATA);
+
+            if (mFileData != null) {
+                mFileHash = mFileData.getFilehash();
+                setTitle(mFileData.getFilename());
+                createConvertViewer();
+                initData();
+            }
+        }
+
+    }
+
+
+    private void createConvertViewer() {
+        setContentView(R.layout.preview_view_convert_layout);
+        mTV_fileName = (TextView) findViewById(R.id.preview_file_name_tv);
+        mTv_fileSize = (TextView) findViewById(R.id.preview_file_size_tv);
+        mIv_imageView = (ImageView) findViewById(R.id.preview_image_iv);
+        mPB_progress = (ProgressBar) findViewById(R.id.preview_convert_progress_pb);
+        mConvertErrorView = findViewById(R.id.preview_error_view);
+        mTV_ErrorDescription = (TextView) findViewById(R.id.preview_error_description_tv);
+        mBtn_Retry = (Button) findViewById(R.id.preview_retry_btn);
+
+        long filesize = mFileData.getFilesize();
+        mTV_fileName.setText(mFileData.getFilename());
+        mTv_fileSize.setText(Util.formatFileSize(this, filesize));
+        mIv_imageView.setImageResource(mFileData.getExt(this));
+        mPB_progress.setIndeterminate(true);
+        mBtn_Retry.setOnClickListener(this);
+
+        if (filesize > 104857600l) {
+            onError(R.string.preview_file_too_large);
+        }
+
+    }
+
+    private void onError(String errorString) {
+        showErrorView(true);
+        willShowMenu = true;
+        mTV_ErrorDescription.setText(errorString);
+        supportInvalidateOptionsMenu();
+    }
+
+    private void onError(int stringRes) {
+        onError(getString(stringRes));
+    }
+
+
+    private void initData() {
+        showErrorView(false);
+        if (TextUtils.isEmpty(Config.URL_SOCKET_PREVIEW)) {
+            String url = Config.getPreviewSite(this);
+            if (TextUtils.isEmpty(url)) {
+                if (Util.isNetworkAvailableEx()) {
+                    mGetServerTask = new AsyncTask<Void, Void, Object>() {
+                        @Override
+                        protected Object doInBackground(Void... params) {
+                            return FileDataManager.getInstance().getPreviewServerSite();
+                        }
+
+                        @Override
+                        protected void onPostExecute(Object o) {
+                            super.onPostExecute(o);
+                            ServerListData data = (ServerListData) o;
+                            if (data.getCode() == HttpStatus.SC_OK) {
+                                ArrayList<ServerData> list = data.getServerList();
+                                if (list.size() > 0) {
+                                    ServerData serverData = list.get(0);
+                                    String serverUrl = "http://" + serverData.getHost() + ":" + serverData.getPort();
+                                    Config.setPreviewSite(PreviewActivity.this, serverUrl);
+                                    Config.URL_SOCKET_PREVIEW = serverUrl;
+                                    initPreview();
+                                } else {
+                                    onError(R.string.tip_no_preview_server_available);
+                                }
+                            } else {
+                                onError(data.getErrorMsg());
+                            }
+                        }
+                    }.execute();
+                } else {
+                    onError(R.string.tip_net_is_not_available);
+                }
+            } else {
+                Config.URL_SOCKET_PREVIEW = url;
+                initPreview();
+            }
+        } else {
+            initPreview();
+        }
+    }
+
+
+    private void initPreview() {
+
+        mFileDataTask = FileDataManager.getInstance().getFileInfoAsync(mFileData.getFullpath(), new FileDataManager.FileInfoListener() {
+            @Override
+            public void onReceiveData(Object result) {
+                if (result != null) {
+                    FileData urlData = (FileData) result;
+                    if (urlData.getCode() == HttpStatus.SC_OK) {
+                        String localFilePath = Config.getPdfFilePath(mFileData.getFilehash());
+                        if (new File(localFilePath).exists()) {
+                            openPDFFile(localFilePath);
+                        } else {
+                            String urls = urlData.getUri();
+                            if (urls != null) {
+
+                                ArrayList<NameValuePair> params = new ArrayList<>();
+                                String url = Config.URL_SOCKET_PREVIEW;
+                                params.add(new BasicNameValuePair("ext", UtilFile.getExtension(mFileData.getFilename())));
+                                params.add(new BasicNameValuePair("filehash", mFileHash));
+                                params.add(new BasicNameValuePair("url", urlData.getUri()));
+                                params.add(new BasicNameValuePair("sign", FileDataManager.getInstance().generateSignOrderByKey(params, PREVIEW_SOCKET_SIGN_KEY, false)));
+
+                                DebugFlag.log(LOG_TAG, "params:" + params);
+
+                                if (params.size() > 0) {
+                                    url += "?";
+                                    for (int i = 0; i < params.size(); i++) {
+                                        url += params.get(i).getName() + "=" + URLEncoder.encodeUTF8(params.get(i).getValue()) + ((i == params.size() - 1) ? "" : "&");
+                                    }
+                                }
+
+                                try {
+                                    DebugFlag.log(LOG_TAG, "connect url:" + url);
+                                    IO.Options options = new IO.Options();
+                                    options.forceNew = true;
+                                    mSocket = IO.socket(url, options);
+                                    mSocket.on("progress", mOnNewMessage);
+                                    mSocket.on("err", mOnErrMessage);
+                                    mSocket.connect();
+                                    mHandler.sendEmptyMessage(MSG_CONVERT_START);
+                                } catch (URISyntaxException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                PreviewActivity.this.onError(R.string.tip_connect_server_failed);
+                            }
+
+                        }
+                    } else {
+                        PreviewActivity.this.onError(urlData.getErrorMsg());
+                    }
+                } else {
+                    PreviewActivity.this.onError(R.string.tip_connect_server_failed);
+                }
+
+            }
+
+            @Override
+            public void onReceiveHttpResponse(int actionId) {
+
+            }
+
+            @Override
+            public void onError(String errorMsg) {
+
+            }
+
+            @Override
+            public void onHookError(HookCallback.HookType type) {
+
+            }
+
+            @Override
+            public void onNetUnable() {
+                String localFilePath = Config.getPdfFilePath(mFileData.getFilehash());
+
+                if (new File(localFilePath).exists()) {
+                    openPDFFile(localFilePath);
+                }
+
+                PreviewActivity.this.onError(R.string.tip_net_is_not_available);
+            }
+        });
+
+    }
+
+
+    private final static int MSG_CONVERT_START = 0;
+    private final static int MSG_CONVERT_COMPLETE = 1;
+    private final static int MSG_UPDATE_DOWNLOAD_TO_LOCAL = 2;
+    private final static int MSG_CONNECT_ERROR = 3;
+    private final static int MSG_DOWNLOAD_ERROR = 4;
+    private final static int MSG_UPDATE_PROGRESS = 5;
+    private final static int MSG_CLOSE_SOCKET = 6;
+
+    @Override
+    public void performPickFor(FilePicker picker) {
+
+    }
+
+    @Override
+    public void onMainViewSingleTap() {
+        if (getSupportActionBar().isShowing()) {
+            getSupportActionBar().hide();
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+        } else {
+            getSupportActionBar().show();
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        }
+    }
+
+    @Override
+    public void onPageChanged(int index, int total) {
+//        UtilDialog.showNormalToast(String.format(" %s/%s ",index,total));
+    }
+
+
+    private static class MyHandler extends Handler {
+        private final WeakReference<PreviewActivity> mActivity;
+
+        public MyHandler(PreviewActivity application) {
+            mActivity = new WeakReference<>(application);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            final PreviewActivity activity = mActivity.get();
+            if (activity != null) {
+                switch (msg.what) {
+                    case MSG_CONVERT_START:
+                        activity.isSocketConnecting = true;
+                        break;
+                    case MSG_CONVERT_COMPLETE:
+                        activity.socketRelease();
+                        break;
+                    case MSG_UPDATE_DOWNLOAD_TO_LOCAL:
+                        break;
+                    case MSG_CONNECT_ERROR:
+                        activity.mTV_ErrorDescription.setText(msg.obj + "");
+                        activity.socketRelease();
+                        activity.showErrorView(true);
+                        break;
+                    case MSG_DOWNLOAD_ERROR:
+                        activity.onError(R.string.tip_preview_file_download_failed);
+                        activity.socketRelease();
+                        break;
+                    case MSG_UPDATE_PROGRESS:
+                        activity.mPB_progress.setIndeterminate(false);
+                        activity.mPB_progress.setProgress(msg.arg1);
+                        break;
+                    case MSG_CLOSE_SOCKET:
+                        activity.onError(R.string.tip_connect_out_time);
+                        activity.socketRelease();
+                        break;
+                }
+            }
+        }
+    }
+
+    private final Handler mHandler = new MyHandler(this);
+
+    private Emitter.Listener mOnErrMessage = new Emitter.Listener() {
+
+        @Override
+        public void call(Object... args) {
+            JSONObject data = (JSONObject) args[0];
+            String errorMessage = "";
+            int errorCode = 0;
+            try {
+                errorCode = data.getInt(KEY_ERRORCODE);
+                errorMessage = data.getString(KEY_ERRORMSG);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Message message = new Message();
+            message.what = MSG_CONNECT_ERROR;
+            message.obj = errorCode + ":" + errorMessage;
+            mHandler.sendMessage(message);
+
+            DebugFlag.log(LOG_TAG, "err code:" + errorCode + "\t errorMessage:" + errorMessage);
+        }
+    };
+
+
+    private Emitter.Listener mOnNewMessage = new Emitter.Listener() {
+
+        @Override
+        public void call(Object... args) {
+            JSONObject data = (JSONObject) args[0];
+            int progress = data.optInt("progress");
+
+            if (progress == 100) {
+                mHandler.sendEmptyMessage(MSG_CONVERT_COMPLETE);
+                String url = data.optString("url");
+                onConvertDone(url);
+            }else{
+                Message message = new Message();
+                message.what = MSG_UPDATE_PROGRESS;
+                message.arg1 = progress;
+                mHandler.sendMessage(message);
+            }
+        }
+    };
+
+    private void onConvertDone(final String url) {
+        final String localFilePath = Config.getPdfFilePath(mFileHash);
+        File file = new File(localFilePath);
+        if (!file.exists()) {
+            if (!file.getParentFile().isDirectory()) {
+                file.getParentFile().mkdirs();
+            }
+
+        }
+
+        HttpClient httpClient = new DefaultHttpClient();
+        httpClient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+
+
+        HttpGet httpGet = new HttpGet(url);
+        try {
+            HttpResponse response = httpClient.execute(httpGet);
+            Header header = response.getFirstHeader("Content-Length");
+            long totalLength = Long.parseLong(header.getValue());
+
+            InputStream in = response.getEntity().getContent();
+            FileOutputStream fos = new FileOutputStream(new File(localFilePath));
+
+            byte[] buffer = new byte[4096];
+            int length;
+            long byteNow = 0;
+            while ((length = in.read(buffer)) > 0) {
+                if (isStop) {
+                    break;
+                }
+                fos.write(buffer, 0, length);
+                byteNow += length;
+
+                Message message = new Message();
+                message.what = MSG_UPDATE_PROGRESS;
+                message.arg1 = (int) (((float) byteNow / (float) totalLength) * (float) 100) + 100;
+                mHandler.sendMessage(message);
+
+            }
+
+            if(isStop){
+                if(byteNow != totalLength){
+                    Util.deleteFile(localFilePath);
+                }
+                return;
+            }
+        } catch (IOException e) {
+            mHandler.sendEmptyMessage(MSG_DOWNLOAD_ERROR);
+            e.printStackTrace();
+            return;
+        }
+
+        openPDFFile(localFilePath);
+
+    }
+
+
+    private void openPDFFile(final String filePath) {
+        DebugFlag.log(LOG_TAG, "local path:" + filePath);
+        try {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    willShowMenu = true;
+                    supportInvalidateOptionsMenu();
+
+                    mDecodeService = new AKDecodeService(new PdfContext());
+                    CurrentPageModel currentPageModel = new CurrentPageModel();
+                    currentPageModel.addEventListener(PreviewActivity.this);
+                    mDocumentView = new DocumentView(PreviewActivity.this, currentPageModel);
+
+                    mDocumentView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                    mDecodeService.setContentResolver(getContentResolver());
+                    mDecodeService.setContainerView(mDocumentView);
+                    mDocumentView.setDecodeService(mDecodeService);
+                    mDecodeService.open(PreviewActivity.this, Uri.fromFile(new File(filePath)));
+
+                    setContentView(mDocumentView);
+                    mDocumentView.showDocument(new ExceptionCatcherRunnable.ExceptionListener() {
+                        @Override
+                        public void notifyThatDarnedExceptionHappened(String message) {
+                            createConvertViewer();
+                            onError(R.string.convert_error);
+                            Util.deleteFile(filePath);
+                        }
+                    });
+
+                }
+            });
+
+        } catch (Exception e) {
+            createConvertViewer();
+            onError(R.string.convert_error);
+        }
+
+    }
+
+    private void socketRelease() {
+        if (mSocket != null) {
+            mSocket.disconnect();
+            mSocket.off("progress", mOnNewMessage);
+            mSocket.off("err", mOnErrMessage);
+        }
+        isSocketConnecting = false;
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (willShowMenu) {
+            getMenuInflater().inflate(R.menu.menu_preview, menu);
+        }
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int i = item.getItemId();
+        if (i == R.id.menu_btn_send) {
+            FileOpenManager.getInstance().handle(PreviewActivity.this, mFileData);
+        } else if (i == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int i = v.getId();
+        if (i == R.id.preview_retry_btn) {
+            initData();
+        }
+    }
+
+    private void showErrorView(boolean show) {
+        if (mConvertErrorView != null) {
+            mConvertErrorView.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+
+        if (mPB_progress != null) {
+            mPB_progress.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+
+    }
+
+
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (isSocketConnecting) {
+            mHandler.sendEmptyMessageDelayed(MSG_CLOSE_SOCKET, 120000);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (mDocumentView != null) {
+            int height = mDocumentView.getHeight();
+            if (height <= 0) {
+                height = new ViewConfiguration().getScaledTouchSlop() * 2;
+            } else {
+                height = (int) (height * 0.03);
+            }
+            mDocumentView.setScrollMargin(height);
+            mDocumentView.setDecodePage(0);
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mDecodeService != null) {
+            mDecodeService.recycle();
+            mDecodeService = null;
+        }
+
+        if (mDocumentView != null) {
+            mDocumentView = null;
+        }
+
+        super.onDestroy();
+
+        socketRelease();
+
+        if (mFileDataTask != null) {
+            mFileDataTask.cancel(true);
+        }
+
+        if (mGetServerTask != null) {
+            mGetServerTask.cancel(true);
+        }
+
+        isStop = true;
+
+        //unregisterScreenReceiver();
+    }
+}

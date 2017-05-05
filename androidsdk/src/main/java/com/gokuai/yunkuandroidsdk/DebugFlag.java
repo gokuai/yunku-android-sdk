@@ -12,7 +12,7 @@ public class DebugFlag{
     public static boolean IS_DEBUG = true;
 
     static {
-        DebugConfig.PRINT_LOG = true;
+        DebugConfig.PRINT_LOG = false;
         DebugConfig.PRINT_LOG_TYPE = DebugConfig.LOG_TYPE_DETECTOR;
 
         DebugConfig.setListener(new DebugConfig.LogDetector() {

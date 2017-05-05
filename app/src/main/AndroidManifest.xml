@@ -30,7 +30,7 @@
             android:name=".DemoActivity"
             android:configChanges="orientation|screenSize" />
 
-        <!--============================需要注册以下Activity==============================-->
+        <!--============================V3.0需要注册以下Activity==============================-->
         <!--文件上传选择-->
         <activity android:name="com.gokuai.yunkuandroidsdk.FileUploadActivity" />
 
@@ -49,6 +49,27 @@
         <!--文件类型预览-->
         <activity
             android:name="com.gokuai.yunkuandroidsdk.PreviewActivity"
+            />
+
+        <!--============================V2.0需要注册以下Activity==============================-->
+        <!--文件上传选择-->
+        <activity android:name="com.gokuai.yunkuandroidsdk.compat.v2.FileUploadActivity" />
+
+        <!--Gknote 笔记工具-->
+        <activity
+            android:name="com.gokuai.yunkuandroidsdk.compat.v2.GKNoteEditorActivity"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!--图片类型预览-->
+        <activity
+            android:name="com.gokuai.yunkuandroidsdk.compat.v2.GalleryUrlActivity"
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTop"
+            android:uiOptions="splitActionBarWhenNarrow" />
+
+        <!--文件类型预览-->
+        <activity
+            android:name="com.gokuai.yunkuandroidsdk.compat.v2.PreviewActivity"
             />
         <!--==================================结束======================================-->
     </application>
