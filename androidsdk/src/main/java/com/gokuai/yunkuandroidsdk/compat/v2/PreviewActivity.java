@@ -18,9 +18,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.artifex.mupdfdemo.FilePicker;
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
 import com.gokuai.yunkuandroidsdk.BaseActivity;
 import com.gokuai.yunkuandroidsdk.Config;
 import com.gokuai.yunkuandroidsdk.Constants;
@@ -62,6 +59,10 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 /**
  * Created by Slf on 2015/6/25.

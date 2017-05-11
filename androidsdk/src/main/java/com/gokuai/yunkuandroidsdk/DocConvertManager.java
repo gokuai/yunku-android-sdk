@@ -7,9 +7,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
 import com.gokuai.yunkuandroidsdk.data.FileData;
 import com.gokuai.yunkuandroidsdk.data.ServerData;
 import com.gokuai.yunkuandroidsdk.data.ServerListData;
@@ -26,6 +23,10 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 /**
  * Created by Brandon on 15/7/20.

@@ -18,3 +18,16 @@ allprojects {
         maven { url 'https://jitpack.io' }
     }
 }
+
+ext {
+    android = [
+            compileSdkVersion: 22,
+            buildToolsVersion: "25.0.0",
+            targetSdkVersion: 25,
+
+
+    ]
+    dependencies = [
+            appcompatV7: 'com.android.support:appcompat-v7:22.1.1',
+    ]
+}

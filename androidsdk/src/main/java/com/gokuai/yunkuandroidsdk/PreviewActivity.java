@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,13 +15,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.artifex.mupdfdemo.FilePicker;
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
 import com.gokuai.yunkuandroidsdk.data.FileData;
 import com.gokuai.yunkuandroidsdk.data.ServerData;
 import com.gokuai.yunkuandroidsdk.data.ServerListData;
@@ -58,6 +53,10 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 /**
  * Created by Slf on 2015/6/25.
