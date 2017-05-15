@@ -258,7 +258,11 @@ public class Util {
     }
 
     public static boolean isNetworkAvailableEx() {
-        return isNetworkAvailable(GKApplication.getInstance());
+        if (Config.TEST_MODE){
+            return true;
+        }else{
+            return isNetworkAvailable(GKApplication.getInstance());
+        }
     }
 
 

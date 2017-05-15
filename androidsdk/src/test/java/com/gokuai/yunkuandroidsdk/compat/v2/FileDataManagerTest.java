@@ -1,5 +1,6 @@
-package com.gokuai.yunkuandroidsdk;
+package com.gokuai.yunkuandroidsdk.compat.v2;
 
+import com.gokuai.yunkuandroidsdk.HookCallback;
 import com.gokuai.yunkuandroidsdk.data.FileData;
 import com.gokuai.yunkuandroidsdk.data.ServerListData;
 import com.yunkuent.sdk.upload.UploadCallBack;
@@ -25,11 +26,11 @@ public class FileDataManagerTest {
     public void rename() throws Exception {
 
         final CountDownLatch Latch = new CountDownLatch(1);
-        FileDataManager.getInstance().rename("aa", "bb", new FileDataManager.DataListener() {
+        FileDataManager.getInstance().rename("aa.jpg", "hh", new FileDataManager.DataListener() {
             @Override
             public void onReceiveHttpResponse(int actionId) {
-                Latch.countDown();
                 Assert.assertEquals(5, actionId);
+                Latch.countDown();
             }
 
             @Override
@@ -123,6 +124,7 @@ public class FileDataManagerTest {
     public void getFileInfoSync() throws Exception {
 
         FileData f = FileDataManager.getInstance().getFileInfoSync("test");
+
 
         Assert.assertEquals(200, f.getCode());
     }
