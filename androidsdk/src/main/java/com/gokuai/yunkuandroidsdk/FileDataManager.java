@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
 
+import com.gokuai.base.utils.URLEncoder;
 import com.gokuai.yunkuandroidsdk.data.BaseData;
 import com.gokuai.yunkuandroidsdk.data.FileData;
 import com.gokuai.yunkuandroidsdk.data.FileDataKey;
@@ -15,7 +16,6 @@ import com.gokuai.yunkuandroidsdk.util.Util;
 import com.yunkuent.sdk.EntFileManager;
 import com.yunkuent.sdk.UploadRunnable;
 import com.yunkuent.sdk.upload.UploadCallBack;
-import com.yunkuent.sdk.utils.URLEncoder;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -171,7 +171,7 @@ public class FileDataManager {
     }
 
     public FileData getFileInfoSync(String fullPath) {
-        return FileData.create(mEntFileManager.getFileInfo(fullPath, EntFileManager.NetType.DEFAULT));
+        return FileData.create(mEntFileManager.getFileInfo(fullPath, EntFileManager.NetType.DEFAULT, false));
     }
 
 
@@ -218,7 +218,7 @@ public class FileDataManager {
             }
             string_to_sign += params.get(size - 1).getValue();
         }
-        return needEncode ? URLEncoder.encodeUTF8(com.yunkuent.sdk.utils.Util.getHmacSha1(string_to_sign, secret)) : com.yunkuent.sdk.utils.Util.getHmacSha1(string_to_sign, secret);
+        return needEncode ? URLEncoder.encodeUTF8(com.gokuai.base.utils.Util.getHmacSha1(string_to_sign, secret)) : com.gokuai.base.utils.Util.getHmacSha1(string_to_sign, secret);
     }
 
     private Comparator<NameValuePair> comparator = new Comparator<NameValuePair>() {

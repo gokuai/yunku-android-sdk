@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.artifex.mupdfdemo.FilePicker;
+import com.gokuai.base.utils.URLEncoder;
 import com.gokuai.yunkuandroidsdk.BaseActivity;
 import com.gokuai.yunkuandroidsdk.Config;
 import com.gokuai.yunkuandroidsdk.Constants;
@@ -29,7 +30,6 @@ import com.gokuai.yunkuandroidsdk.data.ServerData;
 import com.gokuai.yunkuandroidsdk.data.ServerListData;
 import com.gokuai.yunkuandroidsdk.util.Util;
 import com.gokuai.yunkuandroidsdk.util.UtilFile;
-import com.yunkuent.sdk.utils.URLEncoder;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;

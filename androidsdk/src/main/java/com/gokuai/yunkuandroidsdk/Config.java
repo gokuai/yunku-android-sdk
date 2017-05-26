@@ -29,9 +29,8 @@ public class Config {
 
     //======================================
 
-    public static boolean TEST_MODE = true;
-    public static final String DCIM_PATH = TEST_MODE ? "" : Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getPath();
-    public static final String SD_CARD_PATH = TEST_MODE ? "" : Environment.getExternalStorageDirectory().getPath();
+    public static final String DCIM_PATH = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getPath();
+    public static final String SD_CARD_PATH = Environment.getExternalStorageDirectory().getPath();
 
     public final static String WEBVIEW_USERAGENT = "GK_ANDROID;%s;Android";
 

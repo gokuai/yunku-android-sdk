@@ -7,8 +7,10 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion rootProject.ext.android.targetSdkVersion
+        multiDexEnabled true
         versionCode 2
         versionName "1.0.4"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
 
@@ -18,6 +20,21 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    packagingOptions {
+
+//        exclude 'META-INF/maven/com.google.guava/guava/pom.properties'
+//        exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/dependencies.txt'
+        exclude 'META-INF/LGPL2.1'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -30,11 +47,19 @@ android {
 
 dependencies {
     compile rootProject.ext.dependencies.appcompatV7
-    compile 'com.github.gokuai.yunku-sdk-java-gradle:YunkuJavaSDK:3.8'
+    compile 'com.github.gokuai.yunku-sdk-java-gradle:YunkuJavaSDK:3.16'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':mupdflibrary')
     testCompile 'junit:junit:4.12'
-    testCompile "org.mockito:mockito-core:2.+"
+//    testCompile "org.mockito:mockito-core:2.8.9"
+//    androidTestCompile 'org.mockito:mockito-android:2.8.9'
+//    testCompile "org.robolectric:robolectric:3.2.2"
+//    testCompile "org.robolectric:shadows-support-v4:3.2.2"
+//    testCompile "org.robolectric:shadows-multidex:3.2.2"
+//    testCompile "org.robolectric:robolectric-annotations:3.2.2"
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
     compile('io.socket:socket.io-client:0.8.3') {
         // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'

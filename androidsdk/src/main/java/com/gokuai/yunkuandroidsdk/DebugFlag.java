@@ -2,7 +2,7 @@ package com.gokuai.yunkuandroidsdk;
 
 import android.util.Log;
 
-import com.yunkuent.sdk.DebugConfig;
+import com.gokuai.base.DebugConfig;
 
 
 /**

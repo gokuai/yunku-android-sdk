@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.gokuai.base.utils.Util;
 import com.gokuai.yunkuandroidsdk.Config;
 import com.gokuai.yunkuandroidsdk.Constants;
 import com.gokuai.yunkuandroidsdk.FileDataManager;
@@ -24,7 +25,6 @@ import com.gokuai.yunkuandroidsdk.R;
 import com.gokuai.yunkuandroidsdk.adapter.FolderListAdapter;
 import com.gokuai.yunkuandroidsdk.data.FileData;
 import com.gokuai.yunkuandroidsdk.util.UtilDialog;
-import com.yunkuent.sdk.utils.Util;
 
 import java.util.ArrayList;
 

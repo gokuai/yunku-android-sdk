@@ -239,7 +239,7 @@ public class Util {
      * @param context
      * @return true可用, false不可用
      */
-    private static boolean isNetworkAvailable(Context context) {
+    public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivity = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity == null) {
@@ -258,11 +258,7 @@ public class Util {
     }
 
     public static boolean isNetworkAvailableEx() {
-        if (Config.TEST_MODE){
-            return true;
-        }else{
             return isNetworkAvailable(GKApplication.getInstance());
-        }
     }
 
 

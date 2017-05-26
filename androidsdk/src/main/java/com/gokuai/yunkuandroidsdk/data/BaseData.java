@@ -1,6 +1,7 @@
 package com.gokuai.yunkuandroidsdk.data;
 
-import com.yunkuent.sdk.data.ReturnResult;
+
+import com.gokuai.base.ReturnResult;
 
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;

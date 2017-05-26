@@ -5,10 +5,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import com.gokuai.base.ReturnResult;
 import com.gokuai.yunkuandroidsdk.util.FirstLetterUtil;
 import com.gokuai.yunkuandroidsdk.util.Util;
 import com.gokuai.yunkuandroidsdk.util.UtilFile;
-import com.yunkuent.sdk.data.ReturnResult;
 
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;

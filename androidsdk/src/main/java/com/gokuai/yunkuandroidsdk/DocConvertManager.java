@@ -7,12 +7,12 @@ import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 
+import com.gokuai.base.utils.URLEncoder;
 import com.gokuai.yunkuandroidsdk.data.FileData;
 import com.gokuai.yunkuandroidsdk.data.ServerData;
 import com.gokuai.yunkuandroidsdk.data.ServerListData;
 import com.gokuai.yunkuandroidsdk.util.Util;
 import com.gokuai.yunkuandroidsdk.util.UtilFile;
-import com.yunkuent.sdk.utils.URLEncoder;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
