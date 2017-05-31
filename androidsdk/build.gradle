@@ -10,7 +10,6 @@ android {
         multiDexEnabled true
         versionCode 2
         versionName "1.0.4"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
 
@@ -51,15 +50,6 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':mupdflibrary')
     testCompile 'junit:junit:4.12'
-//    testCompile "org.mockito:mockito-core:2.8.9"
-//    androidTestCompile 'org.mockito:mockito-android:2.8.9'
-//    testCompile "org.robolectric:robolectric:3.2.2"
-//    testCompile "org.robolectric:shadows-support-v4:3.2.2"
-//    testCompile "org.robolectric:shadows-multidex:3.2.2"
-//    testCompile "org.robolectric:robolectric-annotations:3.2.2"
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
     compile('io.socket:socket.io-client:0.8.3') {
         // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'

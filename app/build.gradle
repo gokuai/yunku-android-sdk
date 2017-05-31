@@ -71,11 +71,6 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':androidsdk')
     testCompile 'junit:junit:4.12'
-    testCompile "org.robolectric:robolectric:3.2.2"
-    testCompile "org.robolectric:shadows-support-v4:3.2.2"
-    testCompile "org.robolectric:shadows-multidex:3.2.2"
-    testCompile "org.robolectric:robolectric-annotations:3.2.2"
-    testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })

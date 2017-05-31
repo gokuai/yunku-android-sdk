@@ -13,6 +13,7 @@ import com.yunkuent.sdk.upload.UploadCallBack;
 import org.junit.Assert;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -33,7 +34,7 @@ public class GKAPITest extends AndroidTestCase {
             @Override
             public void onReceiveHttpResponse(int actionId) {
                 latch.countDown();
-                Log.i(TAG, "addDir-->" + actionId + "");
+                Log.i(TAG, "testRename-->" + actionId + "");
                 Assert.assertEquals(5, actionId);
             }
 
@@ -84,7 +85,7 @@ public class GKAPITest extends AndroidTestCase {
 
             @Override
             public void onReceiveHttpResponse(int actionId) {
-                Log.i(TAG, "addDir-->" + actionId + "");
+                Log.i(TAG, "testGetFileInfoAsync-->" + actionId + "");
             }
 
             @Override
@@ -205,6 +206,60 @@ public class GKAPITest extends AndroidTestCase {
         });
         latch.await();
 
+    }
+
+    public void testGetFileList() throws Exception {
+
+        final CountDownLatch latch = new CountDownLatch(2);
+
+        FileDataManager.getInstance().getFileList("test", new FileDataManager.FileDataListener() {
+
+            @Override
+            public void onReceiveCacheData(int start, ArrayList<FileData> list) {
+
+                latch.countDown();
+
+                Log.i(TAG, "onReceiveCacheData");
+
+                Assert.assertEquals(0, start);
+            }
+
+            @Override
+            public void onReceiveHttpData(ArrayList<FileData> list, int start, String parentPath) {
+
+                latch.countDown();
+
+                Log.i(TAG, "testGetFileList");
+
+                Assert.assertEquals(0, start);
+
+            }
+
+            @Override
+            public void onReceiveHttpResponse(int actionId) {
+                Log.i(TAG, "onReceiveHttpResponse");
+            }
+
+            @Override
+            public void onError(String errorMsg) {
+                Log.e(TAG, errorMsg);
+                Assert.fail();
+            }
+
+            @Override
+            public void onHookError(HookCallback.HookType type) {
+                Log.e(TAG, "Hook：此操作不被允许");
+                Assert.fail();
+            }
+
+            @Override
+            public void onNetUnable() {
+                Log.e(TAG, "Network is not available");
+                Assert.fail();
+            }
+        }, 0);
+
+        latch.await();
     }
 
     public void testFileExistInCache() throws Exception {
