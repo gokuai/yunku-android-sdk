@@ -350,7 +350,7 @@ context需要为MainViewBaseActivity 继承的Activity的实例
 
     
 ## 相关SDK
-[yunku-sdk-java] [1]
+https://github.com/gokuai/yunku-sdk-java
 
 [1]: https://github.com/gokuai/yunku-sdk-java
 [2]: https://www.gokuai.com/login
