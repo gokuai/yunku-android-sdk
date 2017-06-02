@@ -7,7 +7,9 @@ Robots: noindex,nofollow
 */
 # 够快云库Android SDK使用说明
 
-版本：1.0.3
+[![](https://jitpack.io/v/gokuai/yunku-sdk-android.svg)](https://jitpack.io/#gokuai/yunku-sdk-android)
+
+版本：1.0.4
 
 创建：2016-05-8
 
@@ -20,16 +22,53 @@ Robots: noindex,nofollow
 <img src="/Screenshot/3.png" alt="上传文件" title="上传文件" width="35%" height="35%" />
 
 ## 场景使用声明
-此SDK包含界面交互，适用客户端快入内嵌使用，包含文件列表、文件下载、预览、上传、文件删除和重命名功能，如果是基于文件管理的接口开发，请查看 https://github.com/gokuai/yunku-sdk-java
+此SDK包含界面交互，适用客户端快入内嵌使用，包含文件列表、文件下载、预览、上传、文件删除和重命名功能，如果是基于文件管理的接口开发，请查看 [yunku-sdk-java] [1]
 
 ## 兼容性声明
 
 	minSdkVersion 14
     
 ## 授权申请
-登录https://www.gokuai.com/login 网址，点击后台管理tab，输入后台帐号密码，设置 -> 库开发授权 开启，然后返回 云库 -> (选择要申请开发的库) -> 授权管理 ->（点击进行开发的库）-> 授权管理 -> 点击获取ClientID和ClientSecret，记下这个两个参数，在使用SDK的时候，会使用这两个参数
+登录[云库][2]，点击后台管理tab，输入后台帐号密码，设置 -> 库开发授权 开启，然后返回 云库 -> (选择要申请开发的库) -> 授权管理 ->（点击进行开发的库）-> 授权管理 -> 获取`ClientID`和`ClientSecret`
 
 ## 项目引用
+
+### Gradle
+
+```groovy
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+
+```groovy
+	dependencies {
+	        compile 'com.github.gokuai:yunku-sdk-android:v_1.0.4'
+	}
+```
+
+### Maven
+
+```xml
+	<repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+```
+
+```xml
+	<dependency>
+	    <groupId>com.github.gokuai</groupId>
+	    <artifactId>yunku-sdk-android</artifactId>
+	    <version>v_1.0.4</version>
+	</dependency>
+```
+
 Android Studio 可直接引用master 中 androidsdk Module，Eclispe 、IntelliJ 或者Android Studio 需要使用aar方式引用，需要先在https://github.com/gokuai/yunku-sdk-android/releases/ 下载最新的zip包，步骤如下：
 
 ### Android Studio
@@ -50,16 +89,16 @@ File>New Module>More Modules>Import .JAR or .AAR Package ,引用androidsdk.aar�
 
 ### Eclipse + ADT
 
-1.New>Project>Android>Android Application Project>任意填写包名和名称［例如 androidsdk］,然后将Eclipse和Source Code文件夹下文件复制替换到项目中	
-2.将Source Code/assets复制到App运行项目中	
-3.导入项目appcompat
+* 1.New>Project>Android>Android Application Project>任意填写包名和名称［例如 androidsdk］,然后将Eclipse和Source Code文件夹下文件复制替换到项目中	
+* 2.将Source Code/assets复制到App运行项目中	
+* 3.导入项目appcompat
 
 
 ### IntelliJ IDEA
 
-1.File>New >Module...>Empty Module任意填写包名和名称［例如 androidsdk］,然后将Eclipse和Source Code文件夹下文件复制替换到项目中	
-2.将Source Code/assets复制到App运行项目中	
-3.导入项目appcompat
+* 1.File>New >Module...>Empty Module任意填写包名和名称［例如 androidsdk］,然后将Eclipse和Source Code文件夹下文件复制替换到项目中	
+* 2.将Source Code/assets复制到App运行项目中	
+* 3.导入项目appcompat
 
 ## 项目必需设置
 **[YourActivity].class**
@@ -122,27 +161,48 @@ File>New Module>More Modules>Import .JAR or .AAR Package ,引用androidsdk.aar�
             </intent-filter>
         </activity>
 
-        <!--============================需要注册以下Activity==============================-->
-        <!--文件上传选择-->
-        <activity android:name="com.gokuai.yunkuandroidsdk.FileUploadActivity" />
-
-        <!--Gknote 笔记工具-->
-        <activity
-            android:name="com.gokuai.yunkuandroidsdk.GKNoteEditorActivity"
-            android:windowSoftInputMode="adjustResize" />
-            
-        <!--图片类型预览-->
-        <activity
-            android:name="com.gokuai.yunkuandroidsdk.GalleryUrlActivity"
-            android:configChanges="orientation|screenSize"
-            android:launchMode="singleTop"
-            android:uiOptions="splitActionBarWhenNarrow" />
-
-        <!--文件类型预览-->
-        <activity
-            android:name="com.gokuai.yunkuandroidsdk.PreviewActivity"
-            android:screenOrientation="portrait" />
-        <!--==================================结束======================================-->
+               <!--============================使用云库3.0API需要注册以下Activity==============================-->
+               <!--文件上传选择-->
+               <activity android:name="com.gokuai.yunkuandroidsdk.FileUploadActivity" />
+       
+               <!--Gknote 笔记工具-->
+               <activity
+                   android:name="com.gokuai.yunkuandroidsdk.GKNoteEditorActivity"
+                   android:windowSoftInputMode="adjustResize" />
+       
+               <!--图片类型预览-->
+               <activity
+                   android:name="com.gokuai.yunkuandroidsdk.GalleryUrlActivity"
+                   android:configChanges="orientation|screenSize"
+                   android:launchMode="singleTop"
+                   android:uiOptions="splitActionBarWhenNarrow" />
+       
+               <!--文件类型预览-->
+               <activity
+                   android:name="com.gokuai.yunkuandroidsdk.PreviewActivity"
+                   />
+       
+               <!--============================使用云库2.0API需要注册以下Activity==============================-->
+               <!--文件上传选择-->
+               <activity android:name="com.gokuai.yunkuandroidsdk.compat.v2.FileUploadActivity" />
+       
+               <!--Gknote 笔记工具-->
+               <activity
+                   android:name="com.gokuai.yunkuandroidsdk.compat.v2.GKNoteEditorActivity"
+                   android:windowSoftInputMode="adjustResize" />
+       
+               <!--图片类型预览-->
+               <activity
+                   android:name="com.gokuai.yunkuandroidsdk.compat.v2.GalleryUrlActivity"
+                   android:configChanges="orientation|screenSize"
+                   android:launchMode="singleTop"
+                   android:uiOptions="splitActionBarWhenNarrow" />
+       
+               <!--文件类型预览-->
+               <activity
+                   android:name="com.gokuai.yunkuandroidsdk.compat.v2.PreviewActivity"
+                   />
+               <!--==================================结束======================================-->
     </application>
     ……
 **styles.xml**
@@ -166,6 +226,12 @@ File>New Module>More Modules>Import .JAR or .AAR Package ,引用androidsdk.aar�
     </style>
 
 ## 类的使用说明
+
+## 兼容使用
+* 使用云库2.0API: `package com.gokuai.yunkuandroidsdk.compat.v2`
+
+* 使用云库3.0API: `package com.gokuai.yunkuandroidsdk`
+
 ### YKMainView类
 
 #### 构造
@@ -191,7 +257,7 @@ context需要为MainViewBaseActivity 继承的Activity的实例
 #### registerHook(HookCallback callback)
 注册hook,可以控制指定路径的文件创建、列表显示、文件上传、文件重命名、文件删除是否可以被允许执行
 
-###HookCallback接口
+### HookCallback接口
 	boolean hookInvoke(HookType type, String fullPath);
 	
 | 参数 | 类型 |说明 |
@@ -284,8 +350,9 @@ context需要为MainViewBaseActivity 继承的Activity的实例
 
     
 ## 相关SDK
-https://github.com/gokuai/yunku-sdk-java
+[yunku-sdk-java] [1]
 
-
+[1]: https://github.com/gokuai/yunku-sdk-java
+[2]: https://www.gokuai.com/login
 
 

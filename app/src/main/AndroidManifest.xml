@@ -30,7 +30,7 @@
             android:name=".DemoActivity"
             android:configChanges="orientation|screenSize" />
 
-        <!--============================V3.0需要注册以下Activity==============================-->
+        <!--============================使用云库3.0API需要注册以下Activity==============================-->
         <!--文件上传选择-->
         <activity android:name="com.gokuai.yunkuandroidsdk.FileUploadActivity" />
 
@@ -51,7 +51,7 @@
             android:name="com.gokuai.yunkuandroidsdk.PreviewActivity"
             />
 
-        <!--============================V2.0需要注册以下Activity==============================-->
+        <!--============================使用云库2.0API需要注册以下Activity==============================-->
         <!--文件上传选择-->
         <activity android:name="com.gokuai.yunkuandroidsdk.compat.v2.FileUploadActivity" />
 
