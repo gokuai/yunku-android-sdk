@@ -12,6 +12,7 @@ import com.gokuai.yunkuandroidsdk.HookCallback;
 import com.gokuai.yunkuandroidsdk.MainViewBaseActivity;
 import com.gokuai.yunkuandroidsdk.Option;
 import com.gokuai.yunkuandroidsdk.YKMainView;
+import com.gokuai.yunkuandroidsdk.util.Util;
 
 /**
  * DemoActivity 需要继承 MainViewBaseActivity
@@ -19,6 +20,7 @@ import com.gokuai.yunkuandroidsdk.YKMainView;
 
 public class DemoActivity extends MainViewBaseActivity implements HookCallback {
     ParamData mParamData;
+    private YKMainView mView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,16 +30,16 @@ public class DemoActivity extends MainViewBaseActivity implements HookCallback {
         mParamData = (ParamData) intent.getSerializableExtra("params");
         setConfigForDebug();
 
-        YKMainView view = new YKMainView(this);
+        mView = new YKMainView(this);
 
         //设置提供的操作参数
         Option option = new Option();
         option.canDel = mParamData.funcDelete;
         option.canRename = mParamData.funcRename;
         option.canUpload = mParamData.funcUpload;
-        view.setOption(option);
+        mView.setOption(option);
 
-        setContentView(view);
+        setContentView(mView);
 
 
         //注册hook控制文件的操作是否可以执行，这个方法需要写在initData()前面
@@ -45,7 +47,7 @@ public class DemoActivity extends MainViewBaseActivity implements HookCallback {
         FileDataManager.getInstance().registerHook(this);
 
         //初始化界面数据
-        view.initData();
+        mView.initData();
 
     }
 
@@ -53,20 +55,11 @@ public class DemoActivity extends MainViewBaseActivity implements HookCallback {
     public boolean hookInvoke(HookType type, String fullPath) {
 
         //根据要过滤的类型和路径，匹配不被允许的操作
+        boolean access = true;
         if (mParamData.hookPath.equals(fullPath)) {
-            boolean access = true;
             switch (type) {
                 case HOOK_TYPE_FILE_LIST:
                     access = mParamData.hookList;
-                    break;
-                case HOOK_TYPE_DOWNLOAD:
-                    access = mParamData.hookDownload;
-                    break;
-                case HOOK_TYPE_UPLOAD:
-                    access = mParamData.hookUpload;
-                    break;
-                case HOOK_TYPE_CREATE_DIR:
-                    access = mParamData.hookCreateDir;
                     break;
                 case HOOK_TYPE_RENAME:
                     access = mParamData.hookRename;
@@ -76,6 +69,28 @@ public class DemoActivity extends MainViewBaseActivity implements HookCallback {
                     break;
             }
 
+            if (!access) {
+                Toast.makeText(DemoActivity.this, "Hook：此操作不被允许", Toast.LENGTH_LONG).show();
+            }
+
+            return access;
+        }
+
+        String currentPath = mView.getCurrentPath();
+        String path = Util.getParentPath(mParamData.hookPath);
+
+        if (path.equals("") ? (mParamData.hookPath.equals(currentPath)) : (mParamData.hookPath.equals(Util.getParentPath(fullPath) + "/"))) {
+            switch (type) {
+                case HOOK_TYPE_DOWNLOAD:
+                    access = mParamData.hookDownload;
+                    break;
+                case HOOK_TYPE_UPLOAD:
+                    access = mParamData.hookUpload;
+                    break;
+                case HOOK_TYPE_CREATE_DIR:
+                    access = mParamData.hookCreateDir;
+                    break;
+            }
             if (!access) {
                 Toast.makeText(DemoActivity.this, "Hook：此操作不被允许", Toast.LENGTH_LONG).show();
             }

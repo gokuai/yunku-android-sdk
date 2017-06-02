@@ -500,6 +500,9 @@ public class YKMainView extends LinearLayout implements FileListAdapter.FileItem
                     public void onClick(DialogInterface dialog, int which) {
                         UtilDialog.showDialogLoading(mContext, mContext.getString(R.string.deleting), mDeleteTask);
                         mDeleteTask = FileDataManager.getInstance().del(fullPath, YKMainView.this);
+                        if (mDeleteTask == null) {
+                            UtilDialog.dismissLoadingDialog(mContext);
+                        }
                     }
                 })
                 .setNegativeButton(R.string.cancel, null).show();
