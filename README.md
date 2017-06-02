@@ -22,14 +22,14 @@ Robots: noindex,nofollow
 <img src="/Screenshot/3.png" alt="上传文件" title="上传文件" width="35%" height="35%" />
 
 ## 场景使用声明
-此SDK包含界面交互，适用客户端快入内嵌使用，包含文件列表、文件下载、预览、上传、文件删除和重命名功能，如果是基于文件管理的接口开发，请查看 [yunku-sdk-java] [1]
+此SDK包含界面交互，适用客户端快入内嵌使用，包含文件列表、文件下载、预览、上传、文件删除和重命名功能，如果是基于文件管理的接口开发，请查看 <a href="https://github.com/gokuai/yunku-sdk-java" target="_blank">yunku-sdk-java</a>
 
 ## 兼容性声明
 
 	minSdkVersion 14
     
 ## 授权申请
-登录[云库][2]，点击后台管理tab，输入后台帐号密码，设置 -> 库开发授权 开启，然后返回 云库 -> (选择要申请开发的库) -> 授权管理 ->（点击进行开发的库）-> 授权管理 -> 获取`ClientID`和`ClientSecret`
+登录<a href="https://www.gokuai.com/login" target="_blank">云库</a>，点击后台管理tab，输入后台帐号密码，设置 -> 库开发授权 开启，然后返回 云库 -> (选择要申请开发的库) -> 授权管理 ->（点击进行开发的库）-> 授权管理 -> 获取`ClientID`和`ClientSecret`
 
 ## 项目引用
 
@@ -351,8 +351,3 @@ context需要为MainViewBaseActivity 继承的Activity的实例
     
 ## 相关SDK
 https://github.com/gokuai/yunku-sdk-java
-
-[1]: https://github.com/gokuai/yunku-sdk-java
-[2]: https://www.gokuai.com/login
-
-
